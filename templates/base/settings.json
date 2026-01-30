@@ -1,0 +1,534 @@
+{
+  "epic": {
+    "title": "Configuracoes e Perfil",
+    "description": "Gestao de perfil, preferencias e configuracoes da conta",
+    "labels": [
+      "epic",
+      "core",
+      "settings"
+    ],
+    "depends_on": [
+      "[EPIC] Autenticacao e Gestao de Usuarios"
+    ]
+  },
+  "stories": [
+    {
+      "title": "Pagina de Perfil",
+      "description": "Como usuario, quero visualizar e editar meu perfil",
+      "acceptance_criteria": [
+        "Ver informacoes do perfil",
+        "Editar nome, bio, foto",
+        "Alterar email com verificacao",
+        "Feedback visual ao salvar"
+      ],
+      "labels": [
+        "story",
+        "settings"
+      ],
+      "tasks": [
+        {
+          "title": "Criar pagina de perfil",
+          "description": "UI de visualizacao e edicao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, React Hook Form, Zod",
+            "files": [
+              "app/(dashboard)/settings/profile/page.tsx",
+              "components/settings/profile-form.tsx",
+              "lib/validations/profile.ts"
+            ],
+            "packages": [
+              "react-hook-form",
+              "zod",
+              "@hookform/resolvers"
+            ],
+            "implementation_notes": "Server Component busca dados do usuario. Client Component para form com React Hook Form. Campos: name, bio (textarea 160 chars), website. Avatar com componente de upload separado. Skeleton loading. Toast de sucesso com sonner apos salvar."
+          }
+        },
+        {
+          "title": "Implementar API de perfil",
+          "description": "Endpoints GET/PUT /api/profile",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma, Zod",
+            "files": [
+              "lib/actions/user/update-profile.ts",
+              "lib/actions/user/get-profile.ts"
+            ],
+            "packages": [
+              "zod"
+            ],
+            "implementation_notes": "Server Action updateProfile(formData). Validar com Zod antes de salvar. Usar auth() para obter userId. prisma.user.update({ where: { id }, data }). Revalidar cache com revalidatePath('/settings/profile'). Retornar { success: true } ou { error: 'message' }."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de perfil"
+          ]
+        },
+        {
+          "title": "Implementar alteracao de email",
+          "description": "Fluxo de verificacao de novo email",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma, Resend",
+            "files": [
+              "lib/actions/user/change-email.ts",
+              "lib/email/templates/verify-new-email.tsx",
+              "app/api/auth/verify-email-change/route.ts"
+            ],
+            "packages": [
+              "resend"
+            ],
+            "implementation_notes": "Fluxo: 1) Usuario submete novo email, 2) Salvar em pendingEmail no User, 3) Enviar email de verificacao para novo endereco, 4) Click no link valida token e atualiza email. Nao alterar email ate confirmacao. Token expira em 24h."
+          },
+          "depends_on": [
+            "[TASK] Implementar API de perfil"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Alteracao de Senha",
+      "description": "Como usuario, quero alterar minha senha de forma segura",
+      "acceptance_criteria": [
+        "Exigir senha atual",
+        "Validacao de senha forte",
+        "Confirmacao de nova senha",
+        "Logout de outras sessoes opcional"
+      ],
+      "labels": [
+        "story",
+        "settings",
+        "security"
+      ],
+      "depends_on": [
+        "Pagina de Perfil"
+      ],
+      "tasks": [
+        {
+          "title": "Criar formulario de senha",
+          "description": "UI para alteracao de senha",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React Hook Form, Zod",
+            "files": [
+              "app/(dashboard)/settings/security/page.tsx",
+              "components/settings/change-password-form.tsx",
+              "lib/validations/password.ts"
+            ],
+            "packages": [
+              "react-hook-form",
+              "zod"
+            ],
+            "implementation_notes": "Form com 3 campos: currentPassword, newPassword, confirmPassword. Validacao Zod: min 8 chars, 1 uppercase, 1 number. Mostrar forca da senha com indicador visual. Checkbox 'Deslogar de outros dispositivos'. Esconder form se usuario logou via OAuth (sem senha)."
+          }
+        },
+        {
+          "title": "Implementar API de senha",
+          "description": "Endpoint PUT /api/auth/password",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma, bcrypt",
+            "files": [
+              "lib/actions/auth/change-password.ts"
+            ],
+            "packages": [
+              "bcryptjs"
+            ],
+            "implementation_notes": "Server Action changePassword({ currentPassword, newPassword }). Verificar senha atual com bcrypt.compare(). Se invalida, retornar erro. Hash nova senha com bcrypt.hash(newPassword, 12). prisma.user.update({ password: hashedPassword }). Opcional: invalidar outras sessoes."
+          },
+          "depends_on": [
+            "[TASK] Criar formulario de senha"
+          ]
+        },
+        {
+          "title": "Implementar invalidacao de sessoes",
+          "description": "Logout de outras sessoes ativas",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, NextAuth.js",
+            "files": [
+              "lib/actions/auth/invalidate-sessions.ts",
+              "lib/auth/session.ts"
+            ],
+            "packages": [
+              "next-auth"
+            ],
+            "implementation_notes": "Se usando database sessions: prisma.session.deleteMany({ where: { userId, NOT: { id: currentSessionId } } }). Se usando JWT: adicionar campo passwordChangedAt no User, verificar no callback jwt se token.iat < passwordChangedAt. Forcar re-login em outras sessoes."
+          },
+          "depends_on": [
+            "[TASK] Implementar API de senha"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Preferencias de Notificacao",
+      "description": "Como usuario, quero controlar quais notificacoes recebo",
+      "acceptance_criteria": [
+        "Toggle por tipo de notificacao",
+        "Opcao email vs push vs in-app",
+        "Frequencia de resumos",
+        "Unsubscribe facil"
+      ],
+      "labels": [
+        "story",
+        "settings"
+      ],
+      "depends_on": [
+        "Pagina de Perfil"
+      ],
+      "tasks": [
+        {
+          "title": "Criar pagina de notificacoes",
+          "description": "UI de preferencias de notificacao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Radix Switch, React Hook Form",
+            "files": [
+              "app/(dashboard)/settings/notifications/page.tsx",
+              "components/settings/notification-preferences.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-switch"
+            ],
+            "implementation_notes": "Grid de categorias (Marketing, Produto, Social, etc). Cada categoria: switches para Email, Push, In-app. Select para frequencia de digest (Imediato, Diario, Semanal, Nunca). Auto-save ao trocar toggle (debounced). Mostrar estado de loading por switch."
+          }
+        },
+        {
+          "title": "Implementar API de preferencias",
+          "description": "CRUD de preferencias de notificacao",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma",
+            "files": [
+              "lib/actions/user/update-notification-preferences.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [],
+            "implementation_notes": "Model NotificationPreferences: userId, marketingEmail, marketingPush, productEmail, productPush, socialEmail, socialPush, digestFrequency (enum: IMMEDIATE, DAILY, WEEKLY, NEVER). Relacao 1:1 com User. Server Action updateNotificationPreference(category, channel, enabled)."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de notificacoes"
+          ]
+        },
+        {
+          "title": "Integrar com sistema de notificacao",
+          "description": "Aplicar preferencias no envio",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Resend",
+            "files": [
+              "lib/notifications/should-notify.ts",
+              "lib/notifications/send.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Funcao shouldNotify(userId, category, channel): boolean. Consultar NotificationPreferences antes de enviar. Wrapper sendNotification(userId, { type, title, body }) que verifica preferencias. Respeitar digestFrequency para agrupar emails."
+          },
+          "depends_on": [
+            "[TASK] Implementar API de preferencias"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tema e Aparencia",
+      "description": "Como usuario, quero personalizar a aparencia do app",
+      "acceptance_criteria": [
+        "Escolher tema claro/escuro/sistema",
+        "Aplicar imediatamente",
+        "Persistir preferencia",
+        "Animacao de transicao suave"
+      ],
+      "labels": [
+        "story",
+        "settings"
+      ],
+      "depends_on": [
+        "Pagina de Perfil"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar sistema de temas",
+          "description": "CSS variables e toggle de tema",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, next-themes, Tailwind CSS",
+            "files": [
+              "app/providers.tsx",
+              "lib/themes/config.ts",
+              "app/globals.css"
+            ],
+            "packages": [
+              "next-themes"
+            ],
+            "implementation_notes": "Usar next-themes com ThemeProvider. Tailwind dark mode: class-based. CSS variables em :root e .dark para cores. Prevenir flash: script no head que le localStorage. Suportar 'system' para seguir preferencia do OS. Transicao suave: transition-colors em body."
+          }
+        },
+        {
+          "title": "Criar seletor de tema",
+          "description": "UI para escolher tema",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, next-themes, Radix",
+            "files": [
+              "components/settings/theme-selector.tsx",
+              "components/ui/theme-toggle.tsx"
+            ],
+            "packages": [
+              "next-themes",
+              "@radix-ui/react-dropdown-menu"
+            ],
+            "implementation_notes": "Componente com 3 opcoes: Light (Sun icon), Dark (Moon icon), System (Monitor icon). Usar useTheme() do next-themes. Dropdown ou SegmentedControl. Preview visual de cada tema. Tambem adicionar toggle rapido no header/sidebar."
+          },
+          "depends_on": [
+            "[TASK] Implementar sistema de temas"
+          ]
+        },
+        {
+          "title": "Persistir preferencia de tema",
+          "description": "Salvar no backend e localStorage",
+          "labels": [
+            "task",
+            "frontend",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "next-themes, Prisma",
+            "files": [
+              "lib/actions/user/update-theme.ts"
+            ],
+            "packages": [
+              "next-themes"
+            ],
+            "implementation_notes": "next-themes ja persiste em localStorage automaticamente. Para usuarios logados: salvar tambem no DB (User.theme). Ao fazer login, aplicar tema do DB. Sincronizar: useEffect que atualiza DB quando tema muda (debounced). Fallback para localStorage se offline."
+          },
+          "depends_on": [
+            "[TASK] Criar seletor de tema"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Exclusao de Conta",
+      "description": "Como usuario, quero poder excluir minha conta permanentemente",
+      "acceptance_criteria": [
+        "Confirmacao com senha",
+        "Aviso sobre dados perdidos",
+        "Periodo de graca de 30 dias",
+        "Email de confirmacao"
+      ],
+      "labels": [
+        "story",
+        "settings",
+        "security"
+      ],
+      "depends_on": [
+        "Alteracao de Senha"
+      ],
+      "tasks": [
+        {
+          "title": "Criar fluxo de exclusao",
+          "description": "UI com confirmacoes de seguranca",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Radix Dialog, React Hook Form",
+            "files": [
+              "app/(dashboard)/settings/account/page.tsx",
+              "components/settings/delete-account-dialog.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-alert-dialog"
+            ],
+            "implementation_notes": "Secao 'Danger Zone' com botao vermelho 'Excluir conta'. AlertDialog com: 1) Aviso dos dados que serao perdidos, 2) Input para digitar 'EXCLUIR', 3) Input de senha, 4) Botao de confirmacao. Mostrar data ate quando pode cancelar (30 dias)."
+          }
+        },
+        {
+          "title": "Implementar soft delete",
+          "description": "Marcar conta para exclusao",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma, bcrypt",
+            "files": [
+              "lib/actions/user/request-account-deletion.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [
+              "bcryptjs",
+              "date-fns"
+            ],
+            "implementation_notes": "Adicionar campos: deletionRequestedAt (DateTime?), deletionScheduledFor (DateTime?). Server Action requestAccountDeletion({ password }). Verificar senha. Setar deletionScheduledFor = addDays(now, 30). Enviar email de confirmacao. Nao deletar dados ainda."
+          },
+          "depends_on": [
+            "[TASK] Criar fluxo de exclusao"
+          ]
+        },
+        {
+          "title": "Implementar job de exclusao",
+          "description": "Excluir dados apos periodo de graca",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Vercel Cron, Prisma",
+            "files": [
+              "app/api/cron/delete-accounts/route.ts",
+              "lib/user/hard-delete.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Cron job diario. Query: users where deletionScheduledFor <= now. Para cada: deletar dados relacionados (cascade ou manual), deletar user, enviar email final de confirmacao. Log de auditoria. GDPR: garantir exclusao completa de PII."
+          },
+          "depends_on": [
+            "[TASK] Implementar soft delete"
+          ]
+        },
+        {
+          "title": "Implementar reativacao",
+          "description": "Permitir cancelar exclusao",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma",
+            "files": [
+              "lib/actions/user/cancel-account-deletion.ts",
+              "app/(dashboard)/settings/account/page.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Se deletionRequestedAt existe e deletionScheduledFor > now: mostrar banner 'Sua conta sera excluida em X dias'. Botao 'Cancelar exclusao'. Server Action cancelAccountDeletion(): setar deletionRequestedAt = null, deletionScheduledFor = null. Enviar email de confirmacao de cancelamento."
+          },
+          "depends_on": [
+            "[TASK] Implementar job de exclusao"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sessoes Ativas",
+      "description": "Como usuario, quero ver e gerenciar minhas sessoes ativas",
+      "acceptance_criteria": [
+        "Listar todas as sessoes",
+        "Ver dispositivo, local, data",
+        "Encerrar sessoes individualmente",
+        "Encerrar todas exceto atual"
+      ],
+      "labels": [
+        "story",
+        "settings",
+        "security"
+      ],
+      "depends_on": [
+        "Alteracao de Senha"
+      ],
+      "tasks": [
+        {
+          "title": "Criar pagina de sessoes",
+          "description": "UI listando sessoes ativas",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, Tailwind CSS",
+            "files": [
+              "app/(dashboard)/settings/sessions/page.tsx",
+              "components/settings/sessions-list.tsx",
+              "components/settings/session-card.tsx"
+            ],
+            "packages": [
+              "date-fns",
+              "lucide-react"
+            ],
+            "implementation_notes": "Lista de cards, cada um mostrando: icone do device (desktop/mobile), browser + OS, localizacao (cidade, pais), 'Ultima atividade: X atras'. Destacar sessao atual com badge 'Este dispositivo'. Botao 'Encerrar' em cada card. Botao 'Encerrar todas as outras'."
+          }
+        },
+        {
+          "title": "Implementar tracking de sessoes",
+          "description": "Salvar info de dispositivo e local",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, ua-parser-js, geoip-lite",
+            "files": [
+              "lib/auth/session-tracking.ts",
+              "prisma/schema.prisma",
+              "middleware.ts"
+            ],
+            "packages": [
+              "ua-parser-js",
+              "geoip-lite"
+            ],
+            "implementation_notes": "Model Session (se usando database sessions) ou modelo separado ActiveSession. Campos: userId, userAgent, ip, device, browser, os, country, city, lastActiveAt. No login/middleware: parsear user-agent com ua-parser-js, geolocate IP com geoip-lite. Atualizar lastActiveAt periodicamente."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de sessoes"
+          ]
+        },
+        {
+          "title": "Implementar revogacao de sessao",
+          "description": "API para encerrar sessoes",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma, NextAuth.js",
+            "files": [
+              "lib/actions/auth/revoke-session.ts",
+              "lib/actions/auth/revoke-all-sessions.ts"
+            ],
+            "packages": [
+              "next-auth"
+            ],
+            "implementation_notes": "Server Action revokeSession(sessionId): prisma.session.delete({ where: { id: sessionId, userId } }). Verificar que usuario nao pode deletar propria sessao atual. revokeAllOtherSessions(): deleteMany({ where: { userId, NOT: { id: currentSessionId } } }). Revalidar pagina apos acao."
+          },
+          "depends_on": [
+            "[TASK] Implementar tracking de sessoes"
+          ]
+        }
+      ]
+    }
+  ]
+}

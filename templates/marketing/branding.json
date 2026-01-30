@@ -1,0 +1,1937 @@
+{
+  "epic": {
+    "title": "Branding e Identidade de Marca",
+    "description": "Construcao completa da identidade visual e verbal da marca, incluindo logo, cores, tom de voz, missao, visao e valores",
+    "labels": [
+      "epic",
+      "marketing",
+      "branding"
+    ]
+  },
+  "stories": [
+    {
+      "title": "Fundacao da Marca",
+      "description": "Como fundador, quero definir os pilares fundamentais da marca para guiar todas as decisoes",
+      "acceptance_criteria": [
+        "Missao definida e documentada",
+        "Visao de longo prazo estabelecida",
+        "Valores core identificados",
+        "Proposito da marca articulado",
+        "Promessa da marca clara"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "tasks": [
+        {
+          "title": "Definir Missao da marca",
+          "description": "Declaracao que explica o que a empresa faz, para quem e como",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "format": "Declaracao de 1-2 frases",
+            "framework": "O que fazemos + Para quem + Como/Por que somos diferentes",
+            "examples": [
+              "Airbnb: Criar um mundo onde qualquer pessoa possa pertencer a qualquer lugar",
+              "Tesla: Acelerar a transicao do mundo para energia sustentavel"
+            ],
+            "deliverables": [
+              "Missao principal",
+              "Versao curta (tagline)",
+              "Versao expandida (1 paragrafo)"
+            ],
+            "validation": "Testar com stakeholders e potenciais clientes"
+          }
+        },
+        {
+          "title": "Definir Visao da marca",
+          "description": "Declaracao que descreve onde a empresa quer chegar no futuro",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "format": "Declaracao aspiracional de longo prazo (5-10 anos)",
+            "framework": "Descrever o impacto desejado no mundo/industria",
+            "tips": [
+              "Deve ser ambiciosa mas alcancavel",
+              "Inspirar a equipe e stakeholders",
+              "Diferente da missao (futuro vs presente)"
+            ],
+            "deliverables": [
+              "Visao statement",
+              "Metas de longo prazo alinhadas"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Missao da marca"
+          ]
+        },
+        {
+          "title": "Identificar Valores core",
+          "description": "Principios fundamentais que guiam comportamentos e decisoes",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "quantity": "3-5 valores (maximo 7)",
+            "format": "Palavra/frase + descricao de 1-2 linhas + comportamentos associados",
+            "examples": [
+              "Transparencia: Comunicamos abertamente, mesmo quando e dificil",
+              "Inovacao: Questionamos o status quo constantemente"
+            ],
+            "process": [
+              "Brainstorm de 20+ valores",
+              "Agrupar similares",
+              "Priorizar por importancia",
+              "Validar com equipe"
+            ],
+            "deliverables": [
+              "Lista de valores",
+              "Descricao de cada",
+              "Comportamentos esperados"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Missao da marca"
+          ]
+        },
+        {
+          "title": "Articular Proposito da marca",
+          "description": "O 'por que' fundamental da existencia da marca alem do lucro",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "framework": "Golden Circle de Simon Sinek (Why → How → What)",
+            "format": "Declaracao de proposito + narrativa de origem",
+            "questions": [
+              "Por que a empresa existe?",
+              "Que problema do mundo queremos resolver?",
+              "O que nos move alem do dinheiro?"
+            ],
+            "deliverables": [
+              "Purpose statement",
+              "Brand story (origem)",
+              "Manifesto da marca"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Missao da marca",
+            "[TASK] Identificar Valores core"
+          ]
+        },
+        {
+          "title": "Criar Promessa da marca",
+          "description": "Compromisso claro do que o cliente pode esperar",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "format": "Declaracao de 1 frase que pode ser usada em marketing",
+            "components": [
+              "Beneficio principal",
+              "Diferencial",
+              "Prova/razao para acreditar"
+            ],
+            "examples": [
+              "FedEx: Quando absolutamente, positivamente tem que chegar da noite pro dia",
+              "BMW: A maquina de dirigir definitiva"
+            ],
+            "deliverables": [
+              "Brand promise",
+              "Proof points (3-5 razoes para acreditar)"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Articular Proposito da marca"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Personalidade e Arquetipo da Marca",
+      "description": "Como estrategista, quero definir a personalidade da marca para guiar comunicacao",
+      "acceptance_criteria": [
+        "Arquetipo da marca selecionado",
+        "Tracos de personalidade definidos",
+        "Caracteristicas humanas da marca documentadas",
+        "Comportamentos da marca estabelecidos"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Fundacao da Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Selecionar Arquetipo da marca",
+          "description": "Escolher arquetipo de Jung que melhor representa a marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "archeypes": [
+              "Inocente - Otimismo, simplicidade (Coca-Cola, Dove)",
+              "Explorador - Liberdade, aventura (Jeep, North Face)",
+              "Sabio - Conhecimento, verdade (Google, BBC)",
+              "Heroi - Coragem, maestria (Nike, BMW)",
+              "Fora-da-lei - Revolucao, libertacao (Harley, Virgin)",
+              "Mago - Transformacao, visao (Apple, Disney)",
+              "Cara Comum - Pertencimento, autenticidade (IKEA, Gap)",
+              "Amante - Intimidade, paixao (Chanel, Haagen-Dazs)",
+              "Bobo - Alegria, diversao (M&M's, Old Spice)",
+              "Cuidador - Servico, protecao (Johnson's, Volvo)",
+              "Criador - Inovacao, imaginacao (Lego, Adobe)",
+              "Governante - Controle, lideranca (Mercedes, Rolex)"
+            ],
+            "process": [
+              "Analisar arquetipos vs valores da marca",
+              "Identificar 1 primario + 1 secundario",
+              "Mapear para comunicacao"
+            ],
+            "deliverables": [
+              "Arquetipo primario",
+              "Arquetipo secundario",
+              "Justificativa"
+            ]
+          }
+        },
+        {
+          "title": "Definir Tracos de personalidade",
+          "description": "Caracteristicas humanas que a marca expressa",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "framework": "Brand Personality de Aaker",
+            "dimensions": [
+              "Sinceridade (honesta, genuina, alegre)",
+              "Excitacao (ousada, animada, imaginativa)",
+              "Competencia (confiavel, inteligente, bem-sucedida)",
+              "Sofisticacao (elegante, prestigiosa, charmosa)",
+              "Robustez (forte, resistente, aventureira)"
+            ],
+            "format": "5-7 adjetivos que descrevem a marca como pessoa",
+            "exercise": "Se a marca fosse uma pessoa, como seria?",
+            "deliverables": [
+              "Lista de tracos",
+              "Escala de intensidade",
+              "Anti-tracos (o que NAO somos)"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Selecionar Arquetipo da marca"
+          ]
+        },
+        {
+          "title": "Criar Persona da marca",
+          "description": "Personificacao completa da marca como personagem",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "components": [
+              "Nome ficticio",
+              "Idade aparente",
+              "Estilo de se vestir",
+              "Como fala (formal/informal)",
+              "Hobbies e interesses",
+              "Celebridade/personagem similar"
+            ],
+            "format": "Documento de 1 pagina com descricao rica",
+            "use_case": "Guiar decisoes de comunicacao e design",
+            "deliverables": [
+              "Brand persona document",
+              "Moodboard visual da persona"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Tracos de personalidade"
+          ]
+        },
+        {
+          "title": "Mapear Comportamentos da marca",
+          "description": "Como a marca age em diferentes situacoes",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "scenarios": [
+              "Ao receber um elogio",
+              "Ao receber uma critica",
+              "Em momentos de crise",
+              "Em celebracoes",
+              "No atendimento ao cliente",
+              "Em redes sociais",
+              "Em comunicacao formal"
+            ],
+            "format": "Tabela de cenario → comportamento esperado → exemplo",
+            "deliverables": [
+              "Guia de comportamentos",
+              "Exemplos praticos",
+              "Anti-comportamentos"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar Persona da marca"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Posicionamento de Marca",
+      "description": "Como estrategista, quero posicionar a marca de forma unica no mercado",
+      "acceptance_criteria": [
+        "Publico-alvo detalhado",
+        "Analise de concorrentes completa",
+        "Diferenciais claros identificados",
+        "Positioning statement criado"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Personalidade e Arquetipo da Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Definir Publico-alvo detalhado",
+          "description": "Personas e segmentos de clientes ideais",
+          "labels": [
+            "task",
+            "content",
+            "ux"
+          ],
+          "technical_details": {
+            "components_per_persona": [
+              "Nome e foto ficticia",
+              "Dados demograficos",
+              "Cargo/profissao",
+              "Objetivos e motivacoes",
+              "Dores e frustracoese",
+              "Comportamento de compra",
+              "Canais preferidos",
+              "Objecoes comuns"
+            ],
+            "quantity": "2-4 personas primarias",
+            "format": "Documento visual de 1 pagina por persona",
+            "deliverables": [
+              "Buyer personas",
+              "Jornada do cliente",
+              "Mapa de empatia"
+            ]
+          }
+        },
+        {
+          "title": "Analisar Concorrentes",
+          "description": "Mapear posicionamento e branding dos competidores",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "competitors": "3-5 concorrentes diretos + 2-3 indiretos",
+            "analysis_points": [
+              "Proposta de valor",
+              "Tom de voz",
+              "Identidade visual",
+              "Pontos fortes/fracos",
+              "Posicionamento de preco",
+              "Percepcao do mercado"
+            ],
+            "tools": [
+              "SimilarWeb",
+              "SEMrush",
+              "Social Blade",
+              "Reviews em app stores"
+            ],
+            "deliverables": [
+              "Matriz competitiva",
+              "Mapa de posicionamento",
+              "Gaps de mercado"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Publico-alvo detalhado"
+          ]
+        },
+        {
+          "title": "Identificar Diferenciais unicos",
+          "description": "O que torna a marca verdadeiramente diferente",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "frameworks": [
+              "Unique Selling Proposition (USP)",
+              "Blue Ocean Strategy - criar novo espaco",
+              "Value Proposition Canvas"
+            ],
+            "questions": [
+              "O que fazemos melhor que todos?",
+              "O que so nos oferecemos?",
+              "Por que clientes nos escolhem vs concorrentes?"
+            ],
+            "format": "3-5 diferenciais com evidencias/provas",
+            "deliverables": [
+              "Lista de diferenciais",
+              "Provas para cada",
+              "Hierarquia de importancia"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Analisar Concorrentes"
+          ]
+        },
+        {
+          "title": "Criar Positioning Statement",
+          "description": "Declaracao formal de posicionamento da marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "template": "Para [publico-alvo] que [necessidade/oportunidade], [marca] e [categoria] que [beneficio-chave] porque [razao para acreditar]",
+            "example": "Para profissionais ocupados que precisam organizar tarefas, TaskApp e o app de produtividade que simplifica seu dia porque usa IA para priorizar automaticamente",
+            "variations": [
+              "Interno (completo)",
+              "Externo (simplificado)",
+              "Elevator pitch (30s)"
+            ],
+            "deliverables": [
+              "Positioning statement",
+              "Elevator pitch",
+              "One-liner"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Identificar Diferenciais unicos"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Naming e Identidade Verbal",
+      "description": "Como fundador, quero um nome forte e identidade verbal consistente",
+      "acceptance_criteria": [
+        "Nome da marca definido e validado",
+        "Tagline criada",
+        "Dominio disponivel verificado",
+        "Variantes do nome documentadas"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Posicionamento de Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Pesquisar e criar opcoes de Nome",
+          "description": "Brainstorm e selecao de nome da marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "naming_types": [
+              "Descritivo (PayPal - pagamento amigo)",
+              "Inventado (Kodak, Xerox)",
+              "Metaforico (Amazon, Apple)",
+              "Acronimo (IBM, BMW)",
+              "Fundador (Ford, Disney)",
+              "Geografico (American Airlines)"
+            ],
+            "criteria": [
+              "Facil de pronunciar",
+              "Facil de soletrar",
+              "Memoravel",
+              "Dominio .com disponivel",
+              "Sem conotacoes negativas",
+              "Funciona internacionalmente"
+            ],
+            "process": [
+              "Gerar 50+ opcoes",
+              "Filtrar para 10",
+              "Testar com publico",
+              "Verificar trademark",
+              "Escolher top 3"
+            ],
+            "deliverables": [
+              "Lista de 10 nomes finalistas",
+              "Pros/cons de cada",
+              "Recomendacao final"
+            ]
+          }
+        },
+        {
+          "title": "Verificar disponibilidade legal e digital",
+          "description": "Checar dominio, trademark e redes sociais",
+          "labels": [
+            "task",
+            "content",
+            "legal"
+          ],
+          "technical_details": {
+            "checks": [
+              "Dominio .com (e .com.br se Brasil)",
+              "Handles em Instagram, Twitter, LinkedIn, TikTok",
+              "Trademark no INPI (Brasil) ou USPTO (EUA)",
+              "Google search por conflitos",
+              "App stores (nome de app)"
+            ],
+            "tools": [
+              "Namechk.com - redes sociais",
+              "Instantdomainsearch.com - dominios",
+              "INPI.gov.br - marcas Brasil",
+              "USPTO.gov - marcas EUA"
+            ],
+            "deliverables": [
+              "Relatorio de disponibilidade",
+              "Dominios alternativos",
+              "Handles disponiveis"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Pesquisar e criar opcoes de Nome"
+          ]
+        },
+        {
+          "title": "Criar Tagline e Slogan",
+          "description": "Frase curta e memoravel que resume a marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "difference": "Tagline = permanente (Just Do It), Slogan = campanha especifica",
+            "characteristics": [
+              "Curta (3-7 palavras ideal)",
+              "Memoravel e ritmica",
+              "Comunica beneficio ou emocao",
+              "Unica e diferenciada"
+            ],
+            "examples": [
+              "Nike: Just Do It",
+              "Apple: Think Different",
+              "Mastercard: Priceless",
+              "Nubank: Sem complicacao"
+            ],
+            "process": [
+              "Criar 20+ opcoes",
+              "Testar com publico",
+              "Verificar unicidade"
+            ],
+            "deliverables": [
+              "Tagline principal",
+              "Variantes",
+              "Uso contextual"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Pesquisar e criar opcoes de Nome"
+          ]
+        },
+        {
+          "title": "Documentar variantes do nome",
+          "description": "Versoes oficiais do nome para diferentes contextos",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "variants": [
+              "Nome completo (Airbnb, Inc.)",
+              "Nome comum (Airbnb)",
+              "Nome curto/apelido (se houver)",
+              "Como escrever (CamelCase, minusculas, etc)",
+              "Como pronunciar (fonetica)",
+              "Traducoes (se internacionalizar)"
+            ],
+            "rules": [
+              "Quando usar cada variante",
+              "O que nunca fazer",
+              "Exemplos corretos vs incorretos"
+            ],
+            "deliverables": [
+              "Guia de uso do nome",
+              "Exemplos visuais"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Verificar disponibilidade legal e digital"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tom de Voz e Linguagem",
+      "description": "Como comunicador, quero um tom de voz consistente em todas as comunicacoes",
+      "acceptance_criteria": [
+        "Tom de voz definido com exemplos",
+        "Guia de escrita criado",
+        "Vocabulario da marca documentado",
+        "Exemplos por canal/contexto"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding",
+        "content"
+      ],
+      "depends_on": [
+        "Personalidade e Arquetipo da Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Definir Tom de voz da marca",
+          "description": "Como a marca 'fala' em todas as comunicacoes",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "dimensions": [
+              "Formal ←→ Casual",
+              "Serio ←→ Humoristico",
+              "Respeitoso ←→ Irreverente",
+              "Entusiasmado ←→ Neutro"
+            ],
+            "format": "4-5 atributos com escala e exemplos",
+            "framework": "Somos [atributo], mas nao [extremo]. Somos [atributo], nao [oposto].",
+            "example": "Somos amigaveis, mas nao infantis. Somos profissionais, nao roboticos.",
+            "deliverables": [
+              "Voice chart",
+              "Escala de atributos",
+              "Exemplos de cada"
+            ]
+          }
+        },
+        {
+          "title": "Criar Guia de escrita",
+          "description": "Regras de como escrever em nome da marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "sections": [
+              "Principios gerais de escrita",
+              "Gramatica e pontuacao",
+              "Formatacao (numeros, datas, moedas)",
+              "Estrutura de textos",
+              "Tamanho ideal por formato",
+              "SEO copywriting basics"
+            ],
+            "specifics": [
+              "Usar ou nao emojis",
+              "Contracao (voce vs vc)",
+              "Ponto de exclamacao (uso moderado)",
+              "Voz ativa vs passiva",
+              "Primeira pessoa (eu/nos) vs terceira"
+            ],
+            "deliverables": [
+              "Guia de estilo escrito",
+              "Checklist de revisao"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Tom de voz da marca"
+          ]
+        },
+        {
+          "title": "Criar Vocabulario da marca",
+          "description": "Palavras que usamos e evitamos",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "categories": [
+              "Power words (palavras que amamos)",
+              "Forbidden words (palavras proibidas)",
+              "Jargoes explicados (glossario)",
+              "Alternativas para termos comuns"
+            ],
+            "examples": {
+              "usamos": [
+                "parceiro vs cliente",
+                "ajudar vs suportar",
+                "simples vs facil"
+              ],
+              "evitamos": [
+                "lider de mercado",
+                "solucao",
+                "sinergia",
+                "paradigma"
+              ]
+            },
+            "deliverables": [
+              "Dicionario da marca",
+              "Lista de substituicoes",
+              "Glossario de produto"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir Tom de voz da marca"
+          ]
+        },
+        {
+          "title": "Criar exemplos por canal",
+          "description": "Adaptacao do tom para cada contexto",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "channels": [
+              "Website (home, produto, sobre)",
+              "Email marketing",
+              "Redes sociais (Instagram, Twitter, LinkedIn)",
+              "Suporte ao cliente",
+              "Documentacao/Help center",
+              "Comunicados de imprensa",
+              "Apresentacoes",
+              "Mensagens de erro/sistema"
+            ],
+            "format": "Por canal: tom especifico + 3-5 exemplos de textos",
+            "deliverables": [
+              "Biblioteca de exemplos",
+              "Templates por canal",
+              "Before/after comparisons"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar Guia de escrita",
+            "[TASK] Criar Vocabulario da marca"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Mensagens-chave da Marca",
+      "description": "Como marketer, quero mensagens prontas para usar em comunicacoes",
+      "acceptance_criteria": [
+        "Proposta de valor articulada",
+        "Elevator pitch criado",
+        "Mensagens por audiencia",
+        "Respostas para objecoes"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding",
+        "content"
+      ],
+      "depends_on": [
+        "Posicionamento de Marca",
+        "Tom de Voz e Linguagem"
+      ],
+      "tasks": [
+        {
+          "title": "Articular Proposta de valor",
+          "description": "Comunicacao clara do valor entregue ao cliente",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "framework": "Value Proposition Canvas",
+            "components": [
+              "Headline (beneficio principal)",
+              "Sub-headline (o que e, para quem)",
+              "3 bullet points (beneficios/features)",
+              "Visual (imagem do produto/servico)"
+            ],
+            "versions": [
+              "Longa (website)",
+              "Media (apresentacoes)",
+              "Curta (ads)"
+            ],
+            "deliverables": [
+              "Value prop em 3 tamanhos",
+              "Template visual"
+            ]
+          }
+        },
+        {
+          "title": "Criar Elevator pitch",
+          "description": "Apresentacao da empresa em 30-60 segundos",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "structure": [
+              "Hook (problema ou dado impactante)",
+              "Solucao (o que fazemos)",
+              "Diferencial (por que somos unicos)",
+              "Call to action (proximo passo)"
+            ],
+            "versions": [
+              "30 segundos",
+              "60 segundos",
+              "2 minutos"
+            ],
+            "practice": "Gravar audio para referencia",
+            "deliverables": [
+              "Pitch escrito em 3 versoes",
+              "Audio de referencia"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Articular Proposta de valor"
+          ]
+        },
+        {
+          "title": "Criar mensagens por audiencia",
+          "description": "Adaptacao da mensagem para cada persona",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "per_persona": [
+              "Headline especifica",
+              "Beneficios priorizados",
+              "Linguagem adaptada",
+              "Objecoes especificas",
+              "Call to action relevante"
+            ],
+            "audiences": [
+              "Usuarios finais",
+              "Decisores/compradores",
+              "Influenciadores",
+              "Imprensa",
+              "Investidores"
+            ],
+            "deliverables": [
+              "Matriz de mensagens",
+              "Templates por audiencia"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Articular Proposta de valor"
+          ]
+        },
+        {
+          "title": "Preparar respostas para objecoes",
+          "description": "Argumentos para superar duvidas comuns",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "common_objections": [
+              "Muito caro",
+              "Nao preciso disso",
+              "Ja uso concorrente X",
+              "Nao tenho tempo",
+              "Nao confio em empresa nova"
+            ],
+            "format": "Objecao → Empatia → Reframe → Prova → Call to action",
+            "deliverables": [
+              "Documento de objecoes",
+              "Scripts de vendas",
+              "FAQ"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar mensagens por audiencia"
+          ]
+        },
+        {
+          "title": "Criar Brand story",
+          "description": "Narrativa de origem e jornada da marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "structure": [
+              "Era uma vez (contexto/problema)",
+              "Ate que um dia (insight/fundacao)",
+              "Por causa disso (solucao criada)",
+              "Ate que finalmente (resultado/visao)",
+              "Moral da historia (proposito)"
+            ],
+            "formats": [
+              "Website 'Sobre nos'",
+              "Apresentacoes",
+              "Imprensa",
+              "Video script"
+            ],
+            "deliverables": [
+              "Brand story completa",
+              "Versao resumida",
+              "Timeline visual"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Articular Proposito da marca"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Design de Logo",
+      "description": "Como marca, quero um logo memoravel e versátil",
+      "acceptance_criteria": [
+        "Logo principal aprovado",
+        "Variacoes criadas (horizontal, vertical, icone)",
+        "Versoes para fundos claros e escuros",
+        "Arquivos em todos os formatos necessarios"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Naming e Identidade Verbal",
+        "Personalidade e Arquetipo da Marca"
+      ],
+      "related_to": [
+        "[STORY] Tom de Voz e Linguagem"
+      ],
+      "tasks": [
+        {
+          "title": "Criar briefing de design",
+          "description": "Documento com diretrizes para criacao do logo",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "sections": [
+              "Sobre a empresa",
+              "Publico-alvo",
+              "Personalidade da marca",
+              "Preferencias visuais (moodboard)",
+              "Logos que gostamos e nao gostamos",
+              "Restricoes tecnicas",
+              "Entregaveis esperados"
+            ],
+            "moodboard": "10-15 imagens de referencia",
+            "deliverables": [
+              "Brief PDF",
+              "Moodboard",
+              "Logos de inspiracao"
+            ]
+          }
+        },
+        {
+          "title": "Desenvolver conceitos de logo",
+          "description": "Criar multiplas direcoes criativas",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "quantity": "3-5 conceitos distintos",
+            "logo_types": [
+              "Wordmark (texto apenas)",
+              "Lettermark (iniciais)",
+              "Simbolo/icone",
+              "Combinacao (simbolo + texto)",
+              "Emblema"
+            ],
+            "tools": [
+              "Figma",
+              "Adobe Illustrator",
+              "Canva Pro"
+            ],
+            "process": [
+              "Sketches manuais",
+              "Digitalizacao",
+              "Refinamento",
+              "Apresentacao"
+            ],
+            "deliverables": [
+              "3-5 conceitos",
+              "Rationale de cada",
+              "Mockups de aplicacao"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar briefing de design"
+          ]
+        },
+        {
+          "title": "Refinar logo escolhido",
+          "description": "Polir detalhes do conceito aprovado",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "refinements": [
+              "Espacamento e proporcoes",
+              "Peso das linhas",
+              "Curvas e angulos",
+              "Legibilidade em tamanhos pequenos",
+              "Teste em preto e branco",
+              "Teste em fundos variados"
+            ],
+            "feedback_rounds": "2-3 rodadas de ajustes",
+            "deliverables": [
+              "Logo final aprovado",
+              "Registro de evolucao"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Desenvolver conceitos de logo"
+          ]
+        },
+        {
+          "title": "Criar variacoes do logo",
+          "description": "Versoes para diferentes aplicacoes",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "variations": [
+              "Logo principal (horizontal)",
+              "Logo empilhado (vertical)",
+              "Icone/simbolo apenas",
+              "Logo para fundos claros",
+              "Logo para fundos escuros",
+              "Versao monocromatica (preto)",
+              "Versao monocromatica (branco)",
+              "Versao para espacos pequenos"
+            ],
+            "deliverables": [
+              "Todas as variacoes em vetor",
+              "Guia de quando usar cada"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Refinar logo escolhido"
+          ]
+        },
+        {
+          "title": "Exportar arquivos finais",
+          "description": "Gerar todos os formatos necessarios",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "formats": {
+              "vetor": [
+                "SVG",
+                "AI",
+                "EPS",
+                "PDF"
+              ],
+              "raster": [
+                "PNG (transparente)",
+                "JPG (fundos)"
+              ],
+              "sizes": [
+                "Favicon (16x16, 32x32)",
+                "Social (512x512)",
+                "Print (300dpi)"
+              ]
+            },
+            "organization": "Pastas: /logo/primary, /logo/secondary, /logo/icon, /logo/monochrome",
+            "naming": "brandname-logo-[variacao]-[cor].[formato]",
+            "deliverables": [
+              "Pasta organizada com todos os arquivos",
+              "README de uso"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar variacoes do logo"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Paleta de Cores",
+      "description": "Como designer, quero uma paleta de cores coesa e acessivel",
+      "acceptance_criteria": [
+        "Cores primarias definidas",
+        "Cores secundarias definidas",
+        "Cores de suporte/neutras",
+        "Paleta para dark mode",
+        "Acessibilidade verificada"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding",
+        "frontend"
+      ],
+      "depends_on": [
+        "Design de Logo",
+        "Personalidade e Arquetipo da Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Selecionar cores primarias",
+          "description": "Cor principal da marca e variantes",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "psychology": {
+              "azul": "confianca, profissionalismo",
+              "verde": "crescimento, sustentabilidade",
+              "vermelho": "energia, urgencia",
+              "amarelo": "otimismo, criatividade",
+              "roxo": "luxo, criatividade",
+              "laranja": "amigavel, acessivel",
+              "preto": "sofisticacao, poder"
+            },
+            "format": [
+              "Cor primaria principal",
+              "Variante clara (light)",
+              "Variante escura (dark)",
+              "Valores: HEX, RGB, HSL, CMYK"
+            ],
+            "tools": [
+              "Coolors.co",
+              "Adobe Color",
+              "Realtime Colors"
+            ],
+            "deliverables": [
+              "Cor primaria + variantes",
+              "Codigos em todos os formatos"
+            ]
+          }
+        },
+        {
+          "title": "Definir cores secundarias e de suporte",
+          "description": "Cores complementares para interface e marketing",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "categories": [
+              "Secundaria (1-2 cores de destaque)",
+              "Sucesso (verde)",
+              "Erro (vermelho)",
+              "Alerta (amarelo)",
+              "Info (azul)",
+              "Neutras (cinzas do claro ao escuro)"
+            ],
+            "gray_scale": "5-7 tons de cinza, do #F9FAFB ao #111827",
+            "deliverables": [
+              "Paleta completa",
+              "Uso recomendado de cada cor"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Selecionar cores primarias"
+          ]
+        },
+        {
+          "title": "Criar paleta para dark mode",
+          "description": "Adaptacao de cores para tema escuro",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "principles": [
+              "Nao inverter cores, adaptar",
+              "Reduzir saturacao de cores vibrantes",
+              "Usar cinzas quentes para fundos",
+              "Aumentar contraste de textos"
+            ],
+            "dark_backgrounds": "#0F0F0F a #1F1F1F (evitar preto puro #000)",
+            "deliverables": [
+              "Paleta dark mode completa",
+              "Mapeamento light ↔ dark"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir cores secundarias e de suporte"
+          ]
+        },
+        {
+          "title": "Verificar acessibilidade de cores",
+          "description": "Garantir contraste adequado (WCAG)",
+          "labels": [
+            "task",
+            "frontend",
+            "branding",
+            "ux"
+          ],
+          "technical_details": {
+            "wcag_requirements": [
+              "AA: contraste minimo 4.5:1 para texto normal",
+              "AA: contraste minimo 3:1 para texto grande",
+              "AAA: contraste minimo 7:1 (ideal)"
+            ],
+            "tests": [
+              "Texto sobre fundos",
+              "Botoes e links",
+              "Estados (hover, focus, disabled)",
+              "Graficos e icones"
+            ],
+            "tools": [
+              "WebAIM Contrast Checker",
+              "Stark plugin (Figma)",
+              "Colour Contrast Analyzer"
+            ],
+            "deliverables": [
+              "Relatorio de acessibilidade",
+              "Combinacoes aprovadas",
+              "Combinacoes proibidas"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar paleta para dark mode"
+          ]
+        },
+        {
+          "title": "Documentar uso de cores",
+          "description": "Guia de aplicacao das cores",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "documentation": [
+              "CSS variables (:root {})",
+              "Tailwind config (colors: {})",
+              "Proporcoes de uso (60-30-10 rule)",
+              "Exemplos de aplicacao correta",
+              "Exemplos de erros comuns"
+            ],
+            "deliverables": [
+              "Guia de cores PDF",
+              "Codigo CSS/Tailwind",
+              "Exemplos visuais"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Verificar acessibilidade de cores"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sistema Tipografico",
+      "description": "Como designer, quero tipografia consistente e legivel",
+      "acceptance_criteria": [
+        "Fonte primaria selecionada",
+        "Fonte secundaria (se necessario)",
+        "Escala tipografica definida",
+        "Hierarquia de textos documentada"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding",
+        "frontend"
+      ],
+      "depends_on": [
+        "Paleta de Cores"
+      ],
+      "tasks": [
+        {
+          "title": "Selecionar tipografia primaria",
+          "description": "Fonte principal para titulos e textos",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "categories": [
+              "Sans-serif (moderna, limpa): Inter, Poppins, DM Sans",
+              "Serif (tradicional, confiavel): Merriweather, Playfair",
+              "Monospace (tech, codigo): JetBrains Mono, Fira Code"
+            ],
+            "criteria": [
+              "Legibilidade em tela",
+              "Variedade de pesos (400, 500, 600, 700)",
+              "Suporte a caracteres especiais",
+              "Performance web (Google Fonts, fontsource)",
+              "Licenca (gratuita vs paga)"
+            ],
+            "popular_choices": [
+              "Inter",
+              "Plus Jakarta Sans",
+              "DM Sans",
+              "Satoshi",
+              "General Sans"
+            ],
+            "deliverables": [
+              "Fonte escolhida",
+              "Pesos a usar",
+              "Link para download/embed"
+            ]
+          }
+        },
+        {
+          "title": "Definir escala tipografica",
+          "description": "Tamanhos padronizados para textos",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "scale_ratio": "1.25 (major third) ou 1.333 (perfect fourth)",
+            "sizes": {
+              "xs": "12px",
+              "sm": "14px",
+              "base": "16px",
+              "lg": "18px",
+              "xl": "20px",
+              "2xl": "24px",
+              "3xl": "30px",
+              "4xl": "36px",
+              "5xl": "48px"
+            },
+            "tools": [
+              "Type-scale.com",
+              "Modularscale.com"
+            ],
+            "deliverables": [
+              "Escala completa",
+              "CSS/Tailwind config"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Selecionar tipografia primaria"
+          ]
+        },
+        {
+          "title": "Criar hierarquia tipografica",
+          "description": "Estilos para diferentes tipos de texto",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "styles": [
+              "h1: Display/Hero (48-64px, bold)",
+              "h2: Section heading (30-36px, semibold)",
+              "h3: Subsection (24px, semibold)",
+              "h4: Card title (20px, medium)",
+              "body: Texto principal (16px, regular)",
+              "body-sm: Texto secundario (14px)",
+              "caption: Labels e legendas (12px)",
+              "overline: Categorias (12px, uppercase, spacing)"
+            ],
+            "properties": "Size, weight, line-height, letter-spacing",
+            "deliverables": [
+              "Guia de estilos",
+              "Componentes de texto"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir escala tipografica"
+          ]
+        },
+        {
+          "title": "Documentar regras tipograficas",
+          "description": "Guia de uso da tipografia",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "rules": [
+              "Comprimento maximo de linha (60-75 caracteres)",
+              "Espacamento entre paragrafos",
+              "Alinhamento (esquerda vs justificado)",
+              "Uso de italico e bold",
+              "Links e texto interativo"
+            ],
+            "deliverables": [
+              "Guia tipografico",
+              "CSS/Tailwind utilities",
+              "Exemplos"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Criar hierarquia tipografica"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Linguagem Visual e Imagens",
+      "description": "Como designer, quero diretrizes claras para fotos, ilustracoes e icones",
+      "acceptance_criteria": [
+        "Estilo fotografico definido",
+        "Estilo de ilustracao escolhido",
+        "Sistema de icones selecionado",
+        "Prompts para IA documentados"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Paleta de Cores",
+        "Personalidade e Arquetipo da Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Definir estilo fotografico",
+          "description": "Diretrizes para fotos da marca",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "aspects": [
+              "Iluminacao (natural, estudio, moody)",
+              "Composicao (centralizado, rule of thirds)",
+              "Paleta de cores nas fotos",
+              "Pessoas (diversidade, expressoes)",
+              "Ambiente (escritorio, natureza, abstrato)",
+              "Filtros e edicao"
+            ],
+            "moodboard": "15-20 fotos de referencia",
+            "sources": [
+              "Unsplash",
+              "Pexels",
+              "Freepik",
+              "Shutterstock",
+              "IA (Midjourney)"
+            ],
+            "deliverables": [
+              "Moodboard fotografico",
+              "Do's e Don'ts",
+              "Filtros/presets LUT"
+            ]
+          }
+        },
+        {
+          "title": "Definir estilo de ilustracao",
+          "description": "Diretrizes para ilustracoes e graficos",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "styles": [
+              "Flat design (simples, cores solidas)",
+              "Line art (contornos, minimalista)",
+              "3D isometrico (profundidade)",
+              "Hand-drawn (organico, humano)",
+              "Geometric (abstrato, moderno)"
+            ],
+            "usage": [
+              "Empty states",
+              "Onboarding",
+              "Blog",
+              "Apresentacoes",
+              "Social media"
+            ],
+            "consistency": "Peso de linha, paleta, proporcoes",
+            "deliverables": [
+              "Moodboard de ilustracao",
+              "Exemplos de aplicacao",
+              "Assets base"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir estilo fotografico"
+          ]
+        },
+        {
+          "title": "Selecionar sistema de icones",
+          "description": "Biblioteca de icones consistente",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "libraries": [
+              "Lucide (recomendado para Next.js)",
+              "Heroicons",
+              "Phosphor Icons",
+              "Tabler Icons",
+              "Feather Icons"
+            ],
+            "criteria": [
+              "Estilo alinhado com a marca",
+              "Variedade de icones",
+              "Suporte a React",
+              "Customizacao de tamanho e cor",
+              "Licenca adequada"
+            ],
+            "customization": "Tamanho padrao, stroke width, corner radius",
+            "deliverables": [
+              "Biblioteca escolhida",
+              "Configuracao de uso",
+              "Icones customizados se necessario"
+            ]
+          }
+        },
+        {
+          "title": "Criar prompts descritivos para IA",
+          "description": "Templates para gerar imagens com IA",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "tools": [
+              "Midjourney",
+              "DALL-E",
+              "Stable Diffusion",
+              "Leonardo.ai"
+            ],
+            "prompt_structure": "[Estilo] + [Sujeito] + [Acao/Contexto] + [Ambiente] + [Iluminacao] + [Cores] + [Camera/Angulo]",
+            "examples": [
+              "Foto de produto: 'Minimalist product photography, [produto], clean white background, soft natural lighting, brand colors accent, 4K, professional'",
+              "Ilustracao: 'Flat design illustration, person working on laptop, [cor primaria] and [cor secundaria], clean lines, modern, vector style'",
+              "Social media: 'Abstract background, gradient [cores], geometric shapes, modern, minimal, Instagram post'"
+            ],
+            "categories": [
+              "Fotos de produto",
+              "Pessoas/lifestyle",
+              "Abstrato/backgrounds",
+              "Ilustracoes"
+            ],
+            "deliverables": [
+              "Biblioteca de prompts",
+              "Exemplos gerados",
+              "Guia de uso"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir estilo fotografico",
+            "[TASK] Definir estilo de ilustracao"
+          ]
+        },
+        {
+          "title": "Definir tratamento de imagens",
+          "description": "Filtros, overlays e efeitos padrao",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "treatments": [
+              "Filtro de cor (overlay com cor da marca)",
+              "Duotone effect",
+              "Gradients",
+              "Bordas e shadows",
+              "Mascaras e shapes"
+            ],
+            "css_effects": "filter: brightness() contrast() saturate()",
+            "deliverables": [
+              "Presets de edicao",
+              "CSS/Tailwind utilities",
+              "Exemplos de antes/depois"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Definir estilo fotografico"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Aplicacoes da Marca",
+      "description": "Como marketer, quero templates prontos para materiais de marca",
+      "acceptance_criteria": [
+        "Templates de social media criados",
+        "Email signature padronizada",
+        "Template de apresentacao",
+        "Business card desenhado"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Design de Logo",
+        "Paleta de Cores",
+        "Sistema Tipografico"
+      ],
+      "tasks": [
+        {
+          "title": "Criar templates de social media",
+          "description": "Templates para posts em redes sociais",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "platforms": {
+              "instagram": {
+                "post": "1080x1080px",
+                "story": "1080x1920px",
+                "reel_cover": "1080x1920px"
+              },
+              "linkedin": {
+                "post": "1200x1200px",
+                "banner": "1584x396px"
+              },
+              "twitter": {
+                "post": "1200x675px",
+                "header": "1500x500px"
+              }
+            },
+            "template_types": [
+              "Quote/texto",
+              "Produto/feature",
+              "Anuncio",
+              "Carrossel",
+              "Data/estatistica"
+            ],
+            "tools": [
+              "Figma",
+              "Canva",
+              "Adobe Express"
+            ],
+            "deliverables": [
+              "Templates editaveis",
+              "Guia de uso",
+              "Exemplos preenchidos"
+            ]
+          }
+        },
+        {
+          "title": "Criar email signature",
+          "description": "Assinatura de email padronizada",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "components": [
+              "Nome e cargo",
+              "Logo da empresa",
+              "Telefone e email",
+              "Links sociais",
+              "Banner promocional (opcional)"
+            ],
+            "technical": [
+              "HTML inline (sem CSS externo)",
+              "Imagens hospedadas",
+              "Largura maxima 600px",
+              "Fallback para texto"
+            ],
+            "tools": [
+              "Wisestamp",
+              "HubSpot",
+              "MySignature"
+            ],
+            "deliverables": [
+              "Template HTML",
+              "Instrucoes de instalacao por cliente de email"
+            ]
+          }
+        },
+        {
+          "title": "Criar template de apresentacao",
+          "description": "Slides padronizados para apresentacoes",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "slides": [
+              "Capa/titulo",
+              "Agenda",
+              "Texto + imagem",
+              "Bullets/lista",
+              "Quote/depoimento",
+              "Dados/grafico",
+              "Comparativo",
+              "CTA/contato",
+              "Obrigado/final"
+            ],
+            "tools": [
+              "Google Slides",
+              "PowerPoint",
+              "Keynote",
+              "Figma"
+            ],
+            "format": "16:9 (1920x1080px)",
+            "deliverables": [
+              "Template editavel",
+              "Versao Google Slides",
+              "Versao PowerPoint"
+            ]
+          }
+        },
+        {
+          "title": "Criar business card digital",
+          "description": "Cartao de visita para impressao e digital",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "specs": {
+              "print": "90x50mm ou 85x55mm, 300dpi, CMYK, bleed 3mm",
+              "digital": "PNG/PDF para compartilhar"
+            },
+            "content": [
+              "Logo",
+              "Nome",
+              "Cargo",
+              "Email",
+              "Telefone",
+              "Website",
+              "QR code (opcional)"
+            ],
+            "deliverables": [
+              "Arquivo para impressao (AI/PDF)",
+              "Versao digital (PNG)",
+              "QR code para LinkedIn/vCard"
+            ]
+          }
+        },
+        {
+          "title": "Criar assets para website",
+          "description": "Favicon, OG images, app icons",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "assets": [
+              "Favicon (16x16, 32x32, ico)",
+              "Apple touch icon (180x180)",
+              "Android icons (192x192, 512x512)",
+              "OG image padrao (1200x630)",
+              "Twitter card (1200x600)"
+            ],
+            "tools": [
+              "RealFaviconGenerator.net",
+              "Figma"
+            ],
+            "deliverables": [
+              "Pasta /public com todos os assets",
+              "Codigo meta tags"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "title": "Brand Guidelines Document",
+      "description": "Como marca, quero um manual completo para garantir consistencia",
+      "acceptance_criteria": [
+        "Brand book completo criado",
+        "Versao PDF para compartilhar",
+        "Versao web interativa (opcional)",
+        "Assets organizados e acessiveis"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "branding"
+      ],
+      "depends_on": [
+        "Design de Logo",
+        "Paleta de Cores",
+        "Sistema Tipografico",
+        "Tom de Voz e Linguagem",
+        "Linguagem Visual e Imagens",
+        "Aplicacoes da Marca"
+      ],
+      "tasks": [
+        {
+          "title": "Compilar Brand Book",
+          "description": "Documento unico com todas as diretrizes",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "sections": [
+              "1. Introducao (sobre a marca, como usar o guia)",
+              "2. Fundacao (missao, visao, valores, proposito)",
+              "3. Personalidade (arquetipo, tracos, persona)",
+              "4. Logo (versoes, espacamento, uso incorreto)",
+              "5. Cores (paleta, codigos, acessibilidade)",
+              "6. Tipografia (fontes, escala, hierarquia)",
+              "7. Voz e tom (atributos, exemplos, vocabulario)",
+              "8. Imagens (foto, ilustracao, icones)",
+              "9. Aplicacoes (templates, exemplos)",
+              "10. Recursos (onde encontrar assets)"
+            ],
+            "format": "40-80 paginas, visual e pratico",
+            "tools": [
+              "Figma",
+              "InDesign",
+              "Canva"
+            ],
+            "deliverables": [
+              "Brand book PDF",
+              "Arquivo editavel"
+            ]
+          }
+        },
+        {
+          "title": "Criar secao de Do's e Don'ts",
+          "description": "Exemplos claros do que fazer e nao fazer",
+          "labels": [
+            "task",
+            "content",
+            "branding"
+          ],
+          "technical_details": {
+            "areas": [
+              "Logo (distorcao, cores erradas, fundos)",
+              "Cores (combinacoes proibidas, contraste)",
+              "Tipografia (fontes substitutas, hierarquia)",
+              "Tom de voz (frases a evitar)",
+              "Imagens (estilos fora da marca)"
+            ],
+            "format": "Side-by-side visual (correto vs incorreto)",
+            "deliverables": [
+              "Paginas de do's e don'ts por area"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Compilar Brand Book"
+          ]
+        },
+        {
+          "title": "Organizar biblioteca de assets",
+          "description": "Pasta estruturada com todos os arquivos",
+          "labels": [
+            "task",
+            "fullstack",
+            "branding"
+          ],
+          "technical_details": {
+            "structure": [
+              "/brand-assets",
+              "  /logo (todas variantes e formatos)",
+              "  /colors (swatches, paletas)",
+              "  /typography (arquivos de fonte, specimen)",
+              "  /templates (social, apresentacao, email)",
+              "  /images (fotos aprovadas, ilustracoes)",
+              "  /icons (biblioteca, customizados)",
+              "  /guidelines (brand book PDF)"
+            ],
+            "hosting": [
+              "Google Drive",
+              "Dropbox",
+              "Notion",
+              "Frontify",
+              "Brandfolder"
+            ],
+            "deliverables": [
+              "Pasta organizada",
+              "README com instrucoes",
+              "Link de acesso"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Compilar Brand Book"
+          ]
+        },
+        {
+          "title": "Criar versao web do brand guide",
+          "description": "Site interativo com as diretrizes (opcional)",
+          "labels": [
+            "task",
+            "frontend",
+            "branding"
+          ],
+          "technical_details": {
+            "options": [
+              "Notion (rapido, gratuito)",
+              "Gitbook (documentacao)",
+              "Site custom (Next.js)",
+              "Frontify/Brandfolder (pago, robusto)"
+            ],
+            "benefits": [
+              "Sempre atualizado",
+              "Facil de compartilhar",
+              "Interativo",
+              "Busca"
+            ],
+            "deliverables": [
+              "URL do brand guide",
+              "Instrucoes de atualizacao"
+            ]
+          },
+          "depends_on": [
+            "[TASK] Organizar biblioteca de assets"
+          ]
+        }
+      ]
+    }
+  ]
+}

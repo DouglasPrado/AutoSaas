@@ -1,0 +1,413 @@
+{
+  "epic": {
+    "title": "Onboarding de Usuarios",
+    "description": "Fluxo de primeira experiencia e ativacao de usuarios",
+    "labels": [
+      "epic",
+      "core",
+      "onboarding"
+    ],
+    "depends_on": [
+      "[EPIC] Autenticacao e Gestao de Usuarios"
+    ]
+  },
+  "stories": [
+    {
+      "title": "Welcome Screen",
+      "description": "Como novo usuario, quero ser bem-vindo e entender os proximos passos",
+      "acceptance_criteria": [
+        "Mensagem de boas-vindas personalizada",
+        "Overview das principais features",
+        "CTA claro para proximo passo",
+        "Opcao de pular onboarding"
+      ],
+      "labels": [
+        "story",
+        "onboarding"
+      ],
+      "tasks": [
+        {
+          "title": "Criar tela de welcome",
+          "description": "UI de boas-vindas com animacoes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, Framer Motion, Tailwind CSS",
+            "files": [
+              "app/(dashboard)/onboarding/page.tsx",
+              "components/onboarding/welcome-screen.tsx",
+              "components/onboarding/onboarding-layout.tsx"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "Pagina fullscreen com animacoes de entrada (fade-in, slide-up). Mostrar nome do usuario com session.user.name. Ilustracao ou Lottie animation. Cards das 3 principais features com icones. Botao 'Comecar' e link 'Pular' discreto. Redirect se onboarding ja completado."
+          }
+        },
+        {
+          "title": "Implementar tracking de onboarding",
+          "description": "Salvar progresso do usuario",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Next.js Server Actions",
+            "files": [
+              "lib/actions/onboarding/update-progress.ts",
+              "lib/onboarding/steps.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [],
+            "implementation_notes": "Adicionar campo onboardingStep (Int) e onboardingCompletedAt (DateTime?) no User model. Enum de steps: WELCOME, PROFILE, TOUR, CHECKLIST, COMPLETED. Server Action updateOnboardingStep(step). Query onboarding status em middleware para redirect automatico."
+          },
+          "depends_on": [
+            "[TASK] Criar tela de welcome"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Inicial do Perfil",
+      "description": "Como novo usuario, quero configurar meu perfil rapidamente",
+      "acceptance_criteria": [
+        "Upload de foto de perfil",
+        "Nome e informacoes basicas",
+        "Preferencias iniciais",
+        "Progresso visual do setup"
+      ],
+      "labels": [
+        "story",
+        "onboarding"
+      ],
+      "depends_on": [
+        "Welcome Screen"
+      ],
+      "tasks": [
+        {
+          "title": "Criar wizard de perfil",
+          "description": "Formulario em etapas",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React Hook Form, Zod, Framer Motion",
+            "files": [
+              "app/(dashboard)/onboarding/profile/page.tsx",
+              "components/onboarding/profile-wizard.tsx",
+              "components/onboarding/step-indicator.tsx"
+            ],
+            "packages": [
+              "react-hook-form",
+              "zod",
+              "framer-motion"
+            ],
+            "implementation_notes": "Wizard multi-step com AnimatePresence para transicoes. Steps: 1) Nome e cargo, 2) Avatar, 3) Preferencias. Progress bar no topo mostrando step atual. Botoes 'Voltar' e 'Proximo'. Validacao por step com Zod. Salvar parcialmente a cada step."
+          }
+        },
+        {
+          "title": "Implementar upload de imagem",
+          "description": "Upload e crop de foto de perfil",
+          "labels": [
+            "task",
+            "frontend",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, UploadThing ou R2, react-image-crop",
+            "files": [
+              "components/ui/avatar-upload.tsx",
+              "app/api/upload/route.ts",
+              "lib/upload/config.ts"
+            ],
+            "packages": [
+              "uploadthing",
+              "react-image-crop",
+              "@uploadthing/react"
+            ],
+            "implementation_notes": "Usar UploadThing para upload simplificado (integra com S3). Componente com drag-and-drop e click. Modal de crop circular com react-image-crop. Gerar thumbnail 128x128. Salvar URL no User.image. Validar tipo (jpg, png, webp) e tamanho (max 5MB)."
+          },
+          "depends_on": [
+            "[TASK] Criar wizard de perfil"
+          ]
+        },
+        {
+          "title": "Criar API de preferencias",
+          "description": "Salvar configuracoes iniciais",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma",
+            "files": [
+              "lib/actions/onboarding/save-preferences.ts",
+              "lib/actions/user/update-profile.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [],
+            "implementation_notes": "Model UserPreferences: id, userId, theme (LIGHT/DARK/SYSTEM), language, timezone, emailNotifications (boolean), weeklyDigest (boolean). Relacao 1:1 com User. Server Action saveInitialPreferences(data). Criar preferences junto com o User ou no onboarding."
+          },
+          "depends_on": [
+            "[TASK] Criar wizard de perfil"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tour Guiado do Produto",
+      "description": "Como novo usuario, quero conhecer as principais funcionalidades",
+      "acceptance_criteria": [
+        "Tooltips interativos nas features principais",
+        "Progresso do tour visivel",
+        "Opcao de refazer tour depois",
+        "Conclusao com celebracao"
+      ],
+      "labels": [
+        "story",
+        "onboarding"
+      ],
+      "depends_on": [
+        "Setup Inicial do Perfil"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar sistema de tour",
+          "description": "Componente de tour reutilizavel",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "React Joyride ou Driver.js, Zustand",
+            "files": [
+              "components/onboarding/product-tour.tsx",
+              "lib/stores/tour-store.ts",
+              "lib/onboarding/tour-steps.ts"
+            ],
+            "packages": [
+              "react-joyride",
+              "@types/react-joyride"
+            ],
+            "implementation_notes": "Usar react-joyride para tooltips posicionados. Zustand store: isTourActive, currentStep, completedSteps. Array de steps com: target (CSS selector), content, placement. Highlight do elemento com overlay escuro. Botoes 'Proximo', 'Pular', 'Voltar'."
+          }
+        },
+        {
+          "title": "Criar conteudo do tour",
+          "description": "Textos e sequencia do tour",
+          "labels": [
+            "task",
+            "frontend",
+            "ux"
+          ],
+          "technical_details": {
+            "stack": "React Joyride, Tailwind CSS",
+            "files": [
+              "lib/onboarding/tour-steps.ts",
+              "components/onboarding/tour-tooltip.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Definir 5-7 steps focando em: 1) Sidebar/navegacao, 2) Dashboard principal, 3) Criar primeiro item, 4) Configuracoes, 5) Ajuda/suporte. Tooltip customizado com imagem/gif demonstrativo. Texto curto e actionable. Tracking de qual step usuario parou."
+          },
+          "depends_on": [
+            "[TASK] Implementar sistema de tour"
+          ]
+        },
+        {
+          "title": "Salvar progresso do tour",
+          "description": "Persistir estado do onboarding",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Next.js Server Actions",
+            "files": [
+              "lib/actions/onboarding/complete-tour.ts",
+              "lib/actions/onboarding/skip-tour.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Salvar tourCompletedAt no User model. Server Action completeTour() marca como concluido. Se usuario pular, salvar tourSkippedAt. Permitir refazer tour: botao em Settings que reseta tourCompletedAt para null. Analytics: % usuarios que completam vs pulam."
+          },
+          "depends_on": [
+            "[TASK] Criar conteudo do tour"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Checklist de Ativacao",
+      "description": "Como novo usuario, quero saber o que fazer para aproveitar o produto",
+      "acceptance_criteria": [
+        "Lista de acoes recomendadas",
+        "Progresso visual",
+        "Recompensa ao completar",
+        "Persiste entre sessoes"
+      ],
+      "labels": [
+        "story",
+        "onboarding",
+        "growth"
+      ],
+      "depends_on": [
+        "Tour Guiado do Produto"
+      ],
+      "tasks": [
+        {
+          "title": "Criar componente de checklist",
+          "description": "UI de checklist com progresso",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, Framer Motion",
+            "files": [
+              "components/onboarding/activation-checklist.tsx",
+              "components/onboarding/checklist-item.tsx",
+              "components/onboarding/checklist-progress.tsx"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "Card colapsavel no dashboard com lista de items. Cada item: checkbox animado, titulo, descricao curta, link para acao. Progress bar circular ou linear mostrando X/Y completos. Animacao de confetti ao completar todos. Persistir estado aberto/fechado em localStorage."
+          }
+        },
+        {
+          "title": "Definir criterios de ativacao",
+          "description": "Quais acoes contam como ativacao",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Next.js",
+            "files": [
+              "lib/onboarding/activation-criteria.ts",
+              "lib/actions/onboarding/check-activation.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [],
+            "implementation_notes": "Model ActivationChecklist: userId, profileCompleted, firstProjectCreated, firstTaskCreated, teamMemberInvited, integrationConnected. Cada boolean. Funcao checkActivationStatus(userId) retorna objeto com status de cada criterio. Trigger: verificar apos cada acao relevante."
+          },
+          "depends_on": [
+            "[TASK] Criar componente de checklist"
+          ]
+        },
+        {
+          "title": "Implementar gamificacao",
+          "description": "Badges ou recompensas por completar",
+          "labels": [
+            "task",
+            "frontend",
+            "growth"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Framer Motion, Canvas Confetti",
+            "files": [
+              "components/onboarding/completion-celebration.tsx",
+              "components/ui/confetti.tsx",
+              "lib/onboarding/rewards.ts"
+            ],
+            "packages": [
+              "canvas-confetti"
+            ],
+            "implementation_notes": "Ao completar checklist: modal de celebracao com confetti (canvas-confetti). Badge 'Early Adopter' ou similar. Opcional: desconto especial para upgrade. Salvar achievementUnlockedAt no User. Mostrar badge no perfil publico."
+          },
+          "depends_on": [
+            "[TASK] Definir criterios de ativacao"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Emails de Onboarding",
+      "description": "Como novo usuario, quero receber dicas por email para usar melhor o produto",
+      "acceptance_criteria": [
+        "Sequencia de 5-7 emails",
+        "Espacamento adequado (dia 1, 3, 7...)",
+        "Conteudo educativo e actionable",
+        "Parar se usuario ativar"
+      ],
+      "labels": [
+        "story",
+        "onboarding",
+        "growth"
+      ],
+      "depends_on": [
+        "Checklist de Ativacao"
+      ],
+      "tasks": [
+        {
+          "title": "Criar templates de email",
+          "description": "Design e conteudo dos emails",
+          "labels": [
+            "task",
+            "backend",
+            "growth"
+          ],
+          "technical_details": {
+            "stack": "React Email, Resend",
+            "files": [
+              "lib/email/templates/onboarding/day-1-welcome.tsx",
+              "lib/email/templates/onboarding/day-3-first-steps.tsx",
+              "lib/email/templates/onboarding/day-7-tips.tsx",
+              "lib/email/templates/onboarding/day-14-check-in.tsx"
+            ],
+            "packages": [
+              "@react-email/components",
+              "resend"
+            ],
+            "implementation_notes": "Templates com React Email: Header com logo, corpo com texto + CTA, footer com unsubscribe. Dia 1: Boas-vindas + link para tour. Dia 3: Dica de feature principal. Dia 7: Case de sucesso. Dia 14: 'Precisa de ajuda?'. Personalizar com nome do usuario."
+          }
+        },
+        {
+          "title": "Implementar sequencia automatica",
+          "description": "Automacao de envio de emails",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Vercel Cron, Resend, Prisma",
+            "files": [
+              "app/api/cron/onboarding-emails/route.ts",
+              "lib/email/onboarding-sequence.ts",
+              "vercel.json"
+            ],
+            "packages": [
+              "resend"
+            ],
+            "implementation_notes": "Cron job diario (vercel.json: crons). Query usuarios: createdAt = X dias atras AND NOT activated AND emailsEnabled. Map de dia -> template. Usar Resend batch send. Salvar lastOnboardingEmailSent no User. Rate limit: max 100 emails/batch."
+          },
+          "depends_on": [
+            "[TASK] Criar templates de email"
+          ]
+        },
+        {
+          "title": "Criar logica de segmentacao",
+          "description": "Parar emails baseado em acoes",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Next.js",
+            "files": [
+              "lib/email/should-send-onboarding.ts",
+              "lib/actions/user/unsubscribe.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Funcao shouldSendOnboardingEmail(userId): retorna false se usuario ativado (completou checklist), ou unsubscribed, ou ja recebeu todos emails. Endpoint /api/unsubscribe?token=xxx para one-click unsubscribe (link no email). Respeitar onboardingEmailsEnabled no User."
+          },
+          "depends_on": [
+            "[TASK] Implementar sequencia automatica"
+          ]
+        }
+      ]
+    }
+  ]
+}

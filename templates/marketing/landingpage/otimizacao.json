@@ -1,0 +1,1084 @@
+{
+  "epic": {
+    "title": "Otimizacao de Landing Page",
+    "description": "Melhorias continuas de conversao, A/B testing e analytics avancado para maximizar resultados",
+    "labels": [
+      "epic",
+      "marketing",
+      "growth"
+    ],
+    "depends_on": [
+      "[EPIC] Landing Page e Marketing"
+    ]
+  },
+  "stories": [
+    {
+      "title": "A/B Testing de Headlines",
+      "description": "Como growth hacker, quero testar diferentes headlines para aumentar conversao",
+      "acceptance_criteria": [
+        "Criar variantes de headline",
+        "Distribuir trafego entre variantes",
+        "Medir taxa de conversao por variante",
+        "Declarar vencedor com significancia estatistica",
+        "Aplicar vencedor automaticamente"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "growth"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Hero Section",
+        "[STORY] Landing Page - Analytics e Tracking"
+      ],
+      "related_to": [
+        "[STORY] Copywriting - Headline Principal"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar sistema de A/B testing",
+          "description": "Engine para criar e gerenciar experimentos",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Prisma, Cookies",
+            "files": [
+              "lib/ab-testing/engine.ts",
+              "lib/ab-testing/types.ts",
+              "lib/actions/experiments/create-experiment.ts",
+              "lib/actions/experiments/get-variant.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [
+              "uuid",
+              "js-cookie"
+            ],
+            "implementation_notes": "Models: Experiment (id, name, status: DRAFT/RUNNING/COMPLETED, startedAt, endedAt), Variant (id, experimentId, name, weight, content JSON), Conversion (id, variantId, visitorId, convertedAt). Funcao getVariantForVisitor(experimentId, visitorId): usa hash consistente do visitorId para distribuir por peso. Salvar variantId em cookie ab_[experimentId]. Server Action createExperiment com validacao de pesos somando 100%."
+          }
+        },
+        {
+          "title": "Criar UI de gestao de experimentos",
+          "description": "Dashboard para criar e acompanhar testes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar sistema de A/B testing"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, React Hook Form, Zod, Recharts",
+            "files": [
+              "app/(dashboard)/experiments/page.tsx",
+              "app/(dashboard)/experiments/[id]/page.tsx",
+              "app/(dashboard)/experiments/new/page.tsx",
+              "components/experiments/experiment-list.tsx",
+              "components/experiments/experiment-form.tsx",
+              "components/experiments/results-chart.tsx"
+            ],
+            "packages": [
+              "recharts",
+              "react-hook-form",
+              "zod"
+            ],
+            "implementation_notes": "Lista de experimentos com status badge (Draft/Running/Completed). Form para criar: nome, tipo (headline/cta/layout), variantes com editor de conteudo. Pagina de resultados: grafico de barras comparando conversao por variante, tabela com visitors/conversions/rate. Botao 'Declarar Vencedor' que encerra experimento. Grafico de linha mostrando conversao ao longo do tempo."
+          }
+        },
+        {
+          "title": "Implementar calculo de significancia",
+          "description": "Estatistica para determinar vencedor",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar sistema de A/B testing"
+          ],
+          "technical_details": {
+            "stack": "TypeScript, Estatistica",
+            "files": [
+              "lib/ab-testing/statistics.ts",
+              "lib/ab-testing/confidence.ts"
+            ],
+            "packages": [
+              "jstat"
+            ],
+            "implementation_notes": "Usar jstat para calculos estatisticos. Implementar Chi-squared test para comparar taxas de conversao. Funcao calculateSignificance(variantA, variantB): retorna {significant: boolean, confidence: number, winner: string}. Threshold padrao: 95% confidence. Mostrar 'Needs more data' se sample size < 100 por variante. Calcular sample size necessario para detectar diferenca minima (MDE)."
+          }
+        },
+        {
+          "title": "Integrar com analytics",
+          "description": "Enviar eventos de experimento para GA",
+          "labels": [
+            "task",
+            "frontend",
+            "integration"
+          ],
+          "depends_on": [
+            "[TASK] Implementar sistema de A/B testing",
+            "[TASK] Integrar Google Analytics"
+          ],
+          "technical_details": {
+            "stack": "Google Analytics 4, Next.js",
+            "files": [
+              "lib/ab-testing/analytics-integration.ts",
+              "components/analytics/experiment-tracker.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Enviar evento gtag('event', 'experiment_view', {experiment_id, variant_id, experiment_name}). Enviar experiment_conversion quando usuario converte. Usar User Property ga('set', 'user_properties', {experiment_variant: variantId}) para segmentar no GA. Custom dimension para filtrar relatorios por experimento. Integrar com Google Optimize se disponivel."
+          }
+        }
+      ]
+    },
+    {
+      "title": "A/B Testing de CTAs",
+      "description": "Como growth hacker, quero testar diferentes CTAs para melhorar cliques",
+      "acceptance_criteria": [
+        "Testar texto do botao",
+        "Testar cor do botao",
+        "Testar posicionamento",
+        "Medir CTR por variante",
+        "Relatorio de resultados"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "growth"
+      ],
+      "depends_on": [
+        "A/B Testing de Headlines",
+        "[STORY] Landing Page - CTA Final e Footer"
+      ],
+      "related_to": [
+        "[STORY] Copywriting - CTAs"
+      ],
+      "tasks": [
+        {
+          "title": "Criar variantes de CTA",
+          "description": "Componente CTA com suporte a variantes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar sistema de A/B testing"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React, Tailwind CSS",
+            "files": [
+              "components/landing/ab-cta-button.tsx",
+              "lib/ab-testing/cta-variants.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Componente ABCtaButton que recebe experimentId e renderiza variante correta. Variantes configuradas em JSON: {text, color, size, icon, position}. Usar cn() do shadcn para aplicar classes dinamicamente. Suportar variantes de: texto (Comecar Gratis vs Criar Conta), cor (primary vs secondary vs gradient), tamanho (default vs lg). Cache da variante em state para evitar flicker."
+          }
+        },
+        {
+          "title": "Implementar tracking de cliques",
+          "description": "Eventos de clique por variante",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Criar variantes de CTA"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Google Analytics, Prisma",
+            "files": [
+              "lib/ab-testing/track-click.ts",
+              "lib/actions/experiments/record-click.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Server Action recordClick(experimentId, variantId, visitorId). Debounce para evitar double-clicks. Event GA: gtag('event', 'cta_click', {experiment_id, variant_id, cta_text, cta_position}). Model CtaClick: id visitorId, variantId, clickedAt, converted (boolean). Atualizar converted quando signup completado via webhook ou server action."
+          }
+        },
+        {
+          "title": "Criar relatorio de CTR",
+          "description": "Dashboard com metricas de CTA",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar tracking de cliques"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Recharts, TanStack Table",
+            "files": [
+              "app/(dashboard)/experiments/cta/page.tsx",
+              "components/experiments/ctr-report.tsx",
+              "components/experiments/ctr-chart.tsx"
+            ],
+            "packages": [
+              "recharts",
+              "@tanstack/react-table"
+            ],
+            "implementation_notes": "Metricas: impressoes, cliques, CTR, conversoes, conversion rate. Grafico de barras comparando CTR por variante. Tabela com breakdown por dia. Filtros: periodo, dispositivo, origem de trafego. Heatmap mostrando cliques por posicao (se multiplos CTAs). Export para CSV. Calcular uplift percentual do vencedor vs controle."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Heatmaps e Gravacao de Sessao",
+      "description": "Como product manager, quero ver como usuarios interagem com a pagina",
+      "acceptance_criteria": [
+        "Heatmap de cliques",
+        "Heatmap de scroll",
+        "Gravacao de sessoes",
+        "Filtros por dispositivo e origem",
+        "Anonimizacao de dados sensiveis"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "analytics"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Analytics e Tracking",
+        "[STORY] Landing Page - Paginas Legais"
+      ],
+      "tasks": [
+        {
+          "title": "Integrar Hotjar ou similar",
+          "description": "Setup de ferramenta de heatmap",
+          "labels": [
+            "task",
+            "frontend",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Hotjar ou PostHog",
+            "files": [
+              "components/analytics/heatmap-provider.tsx",
+              "lib/analytics/hotjar.ts",
+              "app/layout.tsx"
+            ],
+            "packages": [
+              "@hotjar/browser"
+            ],
+            "implementation_notes": "Opcao 1: Hotjar - usar @hotjar/browser, inicializar com Hotjar.init(siteId, hotjarVersion). Opcao 2: PostHog (open source) - posthog.capture('$pageview') com session recording habilitado. Carregar script apenas em producao. Respeitar cookie consent antes de inicializar. Configurar sampling rate (ex: 10% dos usuarios) para controlar custos."
+          }
+        },
+        {
+          "title": "Configurar gravacao de sessao",
+          "description": "Regras de gravacao e retencao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Integrar Hotjar ou similar"
+          ],
+          "technical_details": {
+            "stack": "Hotjar/PostHog Config",
+            "files": [
+              "lib/analytics/session-recording.ts",
+              "lib/analytics/recording-rules.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Configurar triggers de gravacao: visitantes de campanhas pagas (utm_source), usuarios que abandonam form, sessoes > 30 segundos. Definir retencao: 30 dias para gratis, 90 dias para paid. Tagging automatico: converter vs nao-converter, dispositivo, origem. Excluir gravacoes de bots (verificar user-agent). Limite de storage para controlar custos."
+          }
+        },
+        {
+          "title": "Implementar mascaramento de dados",
+          "description": "Ocultar campos sensiveis nas gravacoes",
+          "labels": [
+            "task",
+            "frontend",
+            "security"
+          ],
+          "depends_on": [
+            "[TASK] Configurar gravacao de sessao"
+          ],
+          "technical_details": {
+            "stack": "Hotjar/PostHog, CSS Data Attributes",
+            "files": [
+              "lib/analytics/data-masking.ts",
+              "components/ui/masked-input.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Adicionar data-hj-suppress ou data-ph-no-capture em elementos sensiveis. CSS class .hj-suppress para areas inteiras. Mascarar automaticamente: inputs type=password/email/tel/credit-card. Criar componente MaskedInput que adiciona atributos automaticamente. Lista de seletores a mascarar: [data-sensitive], .user-email, .credit-card. Testar gravacao para verificar mascaramento funciona."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Funil de Conversao",
+      "description": "Como growth hacker, quero visualizar o funil de conversao da landing",
+      "acceptance_criteria": [
+        "Definir etapas do funil",
+        "Medir drop-off entre etapas",
+        "Visualizar funil graficamente",
+        "Segmentar por origem de trafego",
+        "Alertas de queda de conversao"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "analytics"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Analytics e Tracking"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar tracking de funil",
+          "description": "Eventos para cada etapa do funil",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Integrar Google Analytics"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Google Analytics 4, Prisma",
+            "files": [
+              "lib/analytics/funnel-tracking.ts",
+              "lib/analytics/funnel-events.ts",
+              "lib/actions/analytics/track-funnel-step.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [],
+            "implementation_notes": "Definir steps: PAGE_VIEW -> SCROLL_50 -> CTA_VIEW -> CTA_CLICK -> FORM_START -> FORM_SUBMIT -> SIGNUP_COMPLETE. Model FunnelEvent: id, visitorId, sessionId, step, timestamp, metadata (JSON). Funcao trackFunnelStep(step, metadata) que envia para GA e salva no DB. Usar Intersection Observer para detectar scroll e view de CTAs. Gerar sessionId unico por visita."
+          }
+        },
+        {
+          "title": "Criar visualizacao de funil",
+          "description": "Grafico de funil com percentuais",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar tracking de funil"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Recharts, TanStack Query",
+            "files": [
+              "app/(dashboard)/analytics/funnel/page.tsx",
+              "components/analytics/funnel-chart.tsx",
+              "components/analytics/funnel-table.tsx",
+              "lib/actions/analytics/get-funnel-data.ts"
+            ],
+            "packages": [
+              "recharts",
+              "@tanstack/react-query"
+            ],
+            "implementation_notes": "Grafico de funil usando FunnelChart do Recharts ou custom SVG. Mostrar: step name, count absoluto, % do total, % do step anterior (drop-off). Cores: verde para bom (>50%), amarelo para medio (20-50%), vermelho para ruim (<20%). Tabela com breakdown detalhado. Filtros: periodo (7d, 30d, custom), origem (organic, paid, social), dispositivo. Comparar periodos lado a lado."
+          }
+        },
+        {
+          "title": "Implementar alertas",
+          "description": "Notificar quedas anormais de conversao",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar tracking de funil"
+          ],
+          "technical_details": {
+            "stack": "Vercel Cron, Resend, Prisma",
+            "files": [
+              "app/api/cron/funnel-alerts/route.ts",
+              "lib/analytics/anomaly-detection.ts",
+              "lib/email/templates/funnel-alert.tsx"
+            ],
+            "packages": [
+              "resend"
+            ],
+            "implementation_notes": "Cron job diario que compara metricas com media movel de 7 dias. Detectar anomalias: drop-off > 20% acima da media, conversao < 50% da media. Algoritmo simples: (atual - media) / desvio_padrao > 2. Email de alerta com: step afetado, valor atual vs esperado, link para dashboard. Configurar threshold por usuario em Settings. Slack webhook opcional."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Personalizacao por Segmento",
+      "description": "Como marketer, quero mostrar conteudo personalizado por segmento",
+      "acceptance_criteria": [
+        "Identificar segmento do visitante",
+        "Personalizar headline por segmento",
+        "Personalizar features destacadas",
+        "Personalizar social proof",
+        "Medir conversao por segmento"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "growth"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Hero Section",
+        "[STORY] Landing Page - Analytics e Tracking",
+        "A/B Testing de Headlines"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar deteccao de segmento",
+          "description": "Identificar segmento por UTM, referrer, etc",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Capturar UTM parameters"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Cookies, Zustand",
+            "files": [
+              "lib/personalization/segment-detection.ts",
+              "lib/personalization/segments.ts",
+              "lib/stores/visitor-store.ts",
+              "middleware.ts"
+            ],
+            "packages": [
+              "zustand",
+              "js-cookie"
+            ],
+            "implementation_notes": "Regras de segmentacao: utm_source (google/facebook/linkedin), utm_campaign (startups/enterprise/agencies), referrer domain, geo (via Vercel headers), horario de acesso. Funcao detectSegment(request): retorna segmentId. Prioridade: UTM > referrer > geo > default. Salvar segmento em cookie visitor_segment. Zustand store com segment info acessivel em toda app."
+          }
+        },
+        {
+          "title": "Criar sistema de conteudo dinamico",
+          "description": "Componentes que mudam por segmento",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar deteccao de segmento"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React Context, Tailwind CSS",
+            "files": [
+              "lib/personalization/content-variants.ts",
+              "components/personalization/dynamic-content.tsx",
+              "components/personalization/personalization-provider.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Mapa de conteudo por segmento: {segmentId: {headline, subheadline, features: [], testimonials: [], cta}}. Componente DynamicContent: <DynamicContent contentKey='headline' /> que renderiza baseado no segmento atual. Provider que injeta segmento via Context. Fallback para conteudo default se segmento nao mapeado. Suportar interpolacao: 'Perfeito para {segment.name}'."
+          }
+        },
+        {
+          "title": "Criar painel de personalizacao",
+          "description": "UI para configurar conteudo por segmento",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Criar sistema de conteudo dinamico"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React Hook Form, Prisma",
+            "files": [
+              "app/(dashboard)/personalization/page.tsx",
+              "app/(dashboard)/personalization/segments/page.tsx",
+              "components/personalization/segment-editor.tsx",
+              "components/personalization/content-editor.tsx",
+              "lib/actions/personalization/save-segment-content.ts"
+            ],
+            "packages": [
+              "react-hook-form",
+              "zod"
+            ],
+            "implementation_notes": "Lista de segmentos com regras de matching. Editor de conteudo por segmento: campos para headline, subheadline, lista de features. Preview lado a lado (original vs personalizado). Validacao: pelo menos conteudo default definido. Publicar/despublicar personalizacoes. Historico de mudancas com rollback."
+          }
+        },
+        {
+          "title": "Implementar analytics por segmento",
+          "description": "Metricas separadas por segmento",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar deteccao de segmento",
+            "[TASK] Funil de Conversao"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Next.js Server Actions, Recharts",
+            "files": [
+              "lib/actions/analytics/get-segment-analytics.ts",
+              "app/(dashboard)/analytics/segments/page.tsx",
+              "components/analytics/segment-comparison.tsx"
+            ],
+            "packages": [
+              "recharts"
+            ],
+            "implementation_notes": "Query FunnelEvent agrupando por segmentId. Metricas por segmento: visitors, conversions, conversion_rate, avg_time_on_page, bounce_rate. Comparacao visual: grafico de barras empilhadas. Tabela com ranking de segmentos por performance. Identificar segmentos underperforming para otimizacao. Export para analise externa."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Otimizacao de Formularios",
+      "description": "Como growth hacker, quero otimizar formularios para aumentar submissoes",
+      "acceptance_criteria": [
+        "Testar numero de campos",
+        "Testar ordem dos campos",
+        "Implementar preenchimento progressivo",
+        "Medir abandono por campo",
+        "Validacao em tempo real"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "growth"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - CTA Final e Footer",
+        "Heatmaps e Gravacao de Sessao"
+      ],
+      "related_to": [
+        "[STORY] Copywriting - Microcopy e UX Writing"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar tracking de campos",
+          "description": "Medir interacao com cada campo",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Integrar Google Analytics"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React, Google Analytics",
+            "files": [
+              "lib/analytics/form-tracking.ts",
+              "components/forms/tracked-input.tsx",
+              "lib/hooks/use-form-tracking.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Hook useFormTracking que adiciona listeners em campos. Eventos: field_focus (quando entra), field_blur (quando sai), field_error (quando validacao falha), form_abandon (quando sai da pagina com form incompleto). Dados: fieldName, timeSpent, hasError, fieldOrder. GA events com custom dimensions. Componente TrackedInput que wrapa Input do shadcn automaticamente."
+          }
+        },
+        {
+          "title": "Criar formulario multi-step",
+          "description": "Dividir formulario em etapas",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React Hook Form, Zod, Framer Motion",
+            "files": [
+              "components/forms/multi-step-form.tsx",
+              "components/forms/form-step.tsx",
+              "components/forms/step-indicator.tsx",
+              "lib/hooks/use-multi-step-form.ts"
+            ],
+            "packages": [
+              "react-hook-form",
+              "zod",
+              "framer-motion"
+            ],
+            "implementation_notes": "Hook useMultiStepForm: currentStep, nextStep(), prevStep(), isFirstStep, isLastStep. Validacao por step com schema Zod parcial. Animacao de transicao com AnimatePresence (slide left/right). Progress indicator: dots ou bar mostrando step atual. Salvar progresso parcial em sessionStorage. Permitir navegar entre steps ja visitados. Analytics: track step completion rate."
+          }
+        },
+        {
+          "title": "Implementar validacao inline",
+          "description": "Feedback imediato de erros",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "React Hook Form, Zod, Tailwind CSS",
+            "files": [
+              "components/forms/validated-input.tsx",
+              "components/forms/field-error.tsx",
+              "lib/validation/inline-rules.ts"
+            ],
+            "packages": [
+              "react-hook-form",
+              "zod"
+            ],
+            "implementation_notes": "Validacao onChange (nao apenas onBlur) para feedback imediato. Debounce de 300ms para evitar validar a cada tecla. Icone de check verde quando valido, X vermelho quando invalido. Mensagens de erro contextuais embaixo do campo. Validacoes: email format, password strength meter, phone format. Highlight do campo com borda vermelha/verde. Animacao suave de entrada do erro."
+          }
+        },
+        {
+          "title": "Criar relatorio de formularios",
+          "description": "Metricas de abandono e conversao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar tracking de campos"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Recharts, TanStack Table",
+            "files": [
+              "app/(dashboard)/analytics/forms/page.tsx",
+              "components/analytics/form-analytics.tsx",
+              "components/analytics/field-funnel.tsx",
+              "lib/actions/analytics/get-form-analytics.ts"
+            ],
+            "packages": [
+              "recharts",
+              "@tanstack/react-table"
+            ],
+            "implementation_notes": "Metricas: form views, form starts, form submits, abandonment rate. Funil por campo: mostrar drop-off em cada campo. Heatmap de campos problematicos (alto tempo ou erros). Tabela: campo, interacoes, tempo medio, taxa de erro. Identificar 'campos assassinos' que causam abandono. Sugestoes automaticas: 'Campo X tem 40% de abandono - considere remover'."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Exit Intent Popup",
+      "description": "Como marketer, quero capturar visitantes que estao saindo",
+      "acceptance_criteria": [
+        "Detectar intencao de saida",
+        "Mostrar popup com oferta",
+        "Nao mostrar para quem ja converteu",
+        "Limitar frequencia de exibicao",
+        "A/B testar ofertas"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "growth"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Analytics e Tracking",
+        "A/B Testing de Headlines"
+      ],
+      "related_to": [
+        "[STORY] Copywriting - Urgencia e Escassez"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar deteccao de exit intent",
+          "description": "Detectar movimento do mouse para fechar",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "React, TypeScript",
+            "files": [
+              "lib/hooks/use-exit-intent.ts",
+              "lib/exit-intent/detection.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Hook useExitIntent que detecta: mouse saindo da viewport (mouseout com clientY < 0), velocidade do mouse (movimento rapido para cima), tab blur (usuario mudando de aba). Desktop: mouseout event. Mobile: scroll up rapido + pause, ou back button via beforeunload. Debounce para evitar falsos positivos. Cooldown de 30 segundos entre triggers. Retornar {isExiting, trigger: 'mouse'|'scroll'|'blur'}."
+          }
+        },
+        {
+          "title": "Criar componente de popup",
+          "description": "Modal com oferta e formulario",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar deteccao de exit intent"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Radix Dialog, Framer Motion, React Hook Form",
+            "files": [
+              "components/marketing/exit-popup.tsx",
+              "components/marketing/exit-popup-form.tsx",
+              "components/marketing/offer-card.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-dialog",
+              "framer-motion",
+              "react-hook-form"
+            ],
+            "implementation_notes": "Modal centralizado com overlay escuro (50% opacity). Animacao de entrada: scale de 0.95 para 1 com fade. Conteudo: headline de urgencia, oferta (desconto/bonus), form simples (apenas email), CTA forte. Botao de fechar discreto no canto. Variantes de ofertas: desconto %, trial estendido, conteudo exclusivo. Form inline sem redirect - mostrar confirmacao no mesmo modal."
+          }
+        },
+        {
+          "title": "Implementar regras de exibicao",
+          "description": "Frequencia, cookies, segmentacao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Criar componente de popup"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Cookies, Zustand",
+            "files": [
+              "lib/exit-intent/display-rules.ts",
+              "lib/exit-intent/storage.ts",
+              "lib/stores/popup-store.ts"
+            ],
+            "packages": [
+              "js-cookie",
+              "zustand"
+            ],
+            "implementation_notes": "Regras: nao mostrar se ja converteu (check cookie), max 1x por sessao (sessionStorage), max 2x por semana (cookie com expiry). Delay minimo: so mostrar apos 10 segundos na pagina. Nao mostrar se usuario veio de email (utm_medium=email). Nao mostrar em mobile se scroll < 50%. Store Zustand: hasSeenPopup, lastSeenAt, timesShown. Respeitar cookie consent."
+          }
+        },
+        {
+          "title": "Integrar com A/B testing",
+          "description": "Testar diferentes ofertas",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Criar componente de popup",
+            "[TASK] Implementar sistema de A/B testing"
+          ],
+          "technical_details": {
+            "stack": "Next.js, A/B Testing Engine",
+            "files": [
+              "lib/exit-intent/ab-variants.ts",
+              "components/marketing/exit-popup-ab.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Definir variantes de popup: oferta (10% vs 20% desconto), headline (urgencia vs beneficio), form (email only vs email+nome), visual (imagem vs sem imagem). Usar engine de A/B testing existente para distribuir variantes. Track events: popup_view, popup_close, popup_submit. Metricas: view-to-submit rate por variante. Auto-declarar vencedor apos significancia estatistica."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Social Proof Dinamico",
+      "description": "Como marketer, quero mostrar prova social em tempo real",
+      "acceptance_criteria": [
+        "Notificacoes de signups recentes",
+        "Contador de usuarios online",
+        "Reviews dinamicos",
+        "Logos de clientes rotativos",
+        "Numeros atualizados automaticamente"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "growth"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Social Proof e Depoimentos"
+      ],
+      "related_to": [
+        "[STORY] Copywriting - Social Proof Copy"
+      ],
+      "tasks": [
+        {
+          "title": "Criar notificacao de signup",
+          "description": "Toast mostrando signups recentes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Framer Motion, Prisma",
+            "files": [
+              "components/marketing/signup-notification.tsx",
+              "lib/actions/marketing/get-recent-signups.ts",
+              "lib/marketing/notification-queue.ts"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "Toast no canto inferior esquerdo: 'Maria de Sao Paulo acabou de se cadastrar'. Mostrar avatar placeholder + nome parcial (Maria S.) + cidade + 'ha 2 min'. Animacao slide-in da esquerda, auto-dismiss apos 5s. Queue de notificacoes: mostrar 1 a cada 30-60s (randomizado). Buscar signups reais das ultimas 24h. Fallback para notificacoes fake se poucos signups (etico: usar dados realistas)."
+          }
+        },
+        {
+          "title": "Implementar contador em tempo real",
+          "description": "WebSocket para usuarios online",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "depends_on": [
+            "[TASK] Criar notificacao de signup"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Pusher ou Ably, Redis",
+            "files": [
+              "lib/realtime/online-counter.ts",
+              "components/marketing/online-counter.tsx",
+              "app/api/realtime/presence/route.ts"
+            ],
+            "packages": [
+              "pusher-js",
+              "ioredis"
+            ],
+            "implementation_notes": "Usar Pusher presence channels para contar usuarios online. Alternativa: Redis INCR/DECR com TTL de 60s + heartbeat. Componente: '127 pessoas vendo esta pagina agora'. Atualizar a cada 5s. Animacao de numero mudando (count up/down). Mostrar indicador pulsante (dot verde) ao lado. Fallback se WebSocket indisponivel: estimativa baseada em analytics."
+          }
+        },
+        {
+          "title": "Criar carrossel de reviews",
+          "description": "Rotacao automatica de depoimentos",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Embla Carousel, Framer Motion",
+            "files": [
+              "components/marketing/review-carousel.tsx",
+              "components/marketing/review-card.tsx",
+              "lib/marketing/reviews-data.ts"
+            ],
+            "packages": [
+              "embla-carousel-react",
+              "embla-carousel-autoplay"
+            ],
+            "implementation_notes": "Carousel com autoplay: trocar review a cada 5s. Plugin embla-carousel-autoplay com stopOnInteraction. Review card: foto, nome, cargo, empresa, texto (max 150 chars), rating (5 stars). Indicadores de navegacao (dots). Pause on hover. Fetch reviews de CMS ou banco de dados. Ordenar por: featured primeiro, depois randomizar. Lazy load de imagens."
+          }
+        },
+        {
+          "title": "Implementar API de metricas publicas",
+          "description": "Endpoint para numeros da landing",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js API Routes, Prisma, Redis Cache",
+            "files": [
+              "app/api/public/metrics/route.ts",
+              "lib/marketing/public-metrics.ts",
+              "lib/cache/metrics-cache.ts"
+            ],
+            "packages": [
+              "ioredis"
+            ],
+            "implementation_notes": "Endpoint GET /api/public/metrics retorna: {totalUsers, activeUsers, countriesServed, averageRating}. Cache em Redis por 5 minutos para performance. Nao expor dados sensiveis. Rate limit: 10 req/min por IP. Usar para: hero stats, social proof section. Atualizar cache via cron job (nao em tempo real). Arredondar numeros: 1,247 -> '1,200+' para parecer mais natural."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Speed Optimization",
+      "description": "Como desenvolvedor, quero otimizar velocidade para melhorar conversao",
+      "acceptance_criteria": [
+        "LCP < 1.5s",
+        "TTI < 2s",
+        "Bundle size otimizado",
+        "Imagens em formato next-gen",
+        "Cache agressivo"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Performance e Core Web Vitals"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar lazy loading avancado",
+          "description": "Carregar imagens e componentes sob demanda",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Otimizar imagens"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React, Intersection Observer",
+            "files": [
+              "lib/performance/lazy-loading.ts",
+              "components/ui/lazy-component.tsx",
+              "components/ui/lazy-image.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Usar next/dynamic para componentes pesados: dynamic(() => import('./heavy-component'), {ssr: false, loading: () => <Skeleton />}). Para imagens abaixo do fold: loading='lazy' + placeholder='blur'. Intersection Observer para carregar secoes apenas quando visiveis (threshold 0.1). Prefetch de proxima secao quando usuario se aproxima. Suspense boundaries para loading states granulares."
+          }
+        },
+        {
+          "title": "Otimizar bundle avancado",
+          "description": "Tree shaking agressivo e code splitting",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Implementar code splitting"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Webpack Bundle Analyzer",
+            "files": [
+              "next.config.js",
+              "lib/performance/bundle-analysis.ts"
+            ],
+            "packages": [
+              "@next/bundle-analyzer"
+            ],
+            "implementation_notes": "Configurar bundle analyzer: ANALYZE=true npm run build. Identificar dependencias pesadas e importar seletivamente: import { specific } from 'lodash-es'. Usar modularizeImports no next.config.js para libs como lucide-react. Code splitting por rota ja e automatico. Extrair CSS critico inline. Verificar se nao ha dependencias duplicadas. Target: bundle < 200KB gzipped para landing."
+          }
+        },
+        {
+          "title": "Converter imagens para AVIF",
+          "description": "Formato mais moderno com fallback WebP",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Image, Sharp",
+            "files": [
+              "next.config.js",
+              "lib/images/optimization.ts",
+              "scripts/convert-images.ts"
+            ],
+            "packages": [
+              "sharp"
+            ],
+            "implementation_notes": "Next.js Image ja serve AVIF automaticamente para browsers compatíveis. Configurar next.config.js: images: {formats: ['image/avif', 'image/webp']}. Para imagens estaticas: criar script com Sharp para pre-converter. Quality settings: AVIF 80%, WebP 85%, JPEG 90%. Usar picture element para fallback manual se necessario. Verificar suporte: Chrome/Firefox (AVIF), Safari 16+ (AVIF)."
+          }
+        },
+        {
+          "title": "Configurar cache avancado",
+          "description": "Service worker e cache-first strategy",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Configurar CDN"
+          ],
+          "technical_details": {
+            "stack": "Next.js, next-pwa, Workbox",
+            "files": [
+              "next.config.js",
+              "public/sw.js",
+              "lib/performance/cache-config.ts"
+            ],
+            "packages": [
+              "next-pwa"
+            ],
+            "implementation_notes": "Configurar next-pwa para gerar service worker. Estrategias: StaleWhileRevalidate para API, CacheFirst para assets estaticos, NetworkFirst para HTML. Cache de fontes: max-age=31536000. Cache de imagens: max-age=86400 com revalidation. Headers em next.config.js ou vercel.json. Precache de assets criticos. Offline fallback page. Limpar cache antigo automaticamente."
+          }
+        },
+        {
+          "title": "Implementar preload/prefetch inteligente",
+          "description": "Carregar recursos baseado em comportamento",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React, Intersection Observer",
+            "files": [
+              "lib/performance/smart-prefetch.ts",
+              "components/ui/smart-link.tsx",
+              "lib/hooks/use-prefetch.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Preload de LCP image: <link rel='preload' as='image' href='hero.avif'>. Prefetch de rotas provaveis: next/link ja faz automaticamente. Preconnect para dominios externos: Google Fonts, analytics, CDN. DNS prefetch para APIs. Carregar recursos de proxima secao quando usuario scrolla 80% da atual. Prioridade: preload > prefetch > preconnect. Usar fetchpriority='high' para hero image."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Mobile Optimization",
+      "description": "Como growth hacker, quero otimizar experiencia mobile",
+      "acceptance_criteria": [
+        "Layout 100% responsivo",
+        "Touch targets adequados (48px)",
+        "Formularios otimizados para mobile",
+        "CTA fixo no mobile",
+        "Performance mobile otimizada"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "[STORY] Landing Page - Hero Section",
+        "[STORY] Landing Page - CTA Final e Footer",
+        "Heatmaps e Gravacao de Sessao"
+      ],
+      "tasks": [
+        {
+          "title": "Auditar responsividade",
+          "description": "Testar em multiplos dispositivos",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Chrome DevTools, Playwright",
+            "files": [
+              "tests/e2e/responsive.spec.ts",
+              "lib/testing/viewports.ts"
+            ],
+            "packages": [
+              "@playwright/test"
+            ],
+            "implementation_notes": "Testes Playwright em viewports: iPhone SE (375x667), iPhone 14 (390x844), iPad (768x1024), Desktop (1440x900). Verificar: nenhum overflow horizontal, texto legivel (min 16px), espacamento adequado. Screenshot comparison para detectar regressoes. Testar orientacao portrait e landscape. Checklist manual: navegacao funciona, forms usaveis, CTAs visiveis. Usar Chrome DevTools device mode para debug."
+          }
+        },
+        {
+          "title": "Otimizar touch targets",
+          "description": "Aumentar areas clicaveis",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Auditar responsividade"
+          ],
+          "technical_details": {
+            "stack": "Tailwind CSS",
+            "files": [
+              "components/ui/touch-target.tsx",
+              "app/globals.css"
+            ],
+            "packages": [],
+            "implementation_notes": "Minimo 48x48px para touch targets (Google guidelines). Usar padding ao inves de apenas aumentar elemento. CSS: min-h-[48px] min-w-[48px] para botoes. Espacamento entre elementos clicaveis: min 8px. Links em texto: aumentar line-height e padding vertical. Criar componente TouchTarget que garante tamanho minimo. Audit com Lighthouse accessibility check."
+          }
+        },
+        {
+          "title": "Implementar sticky CTA mobile",
+          "description": "Botao fixo no rodape mobile",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Auditar responsividade"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, Framer Motion",
+            "files": [
+              "components/marketing/sticky-cta.tsx",
+              "lib/hooks/use-scroll-direction.ts"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "Componente sticky no bottom: fixed bottom-0 left-0 right-0. Mostrar apenas em mobile: hidden md:hidden. Aparecer apos scroll de 500px (hero fora da viewport). Esconder quando usuario scrolla para cima (melhor UX). Safe area padding para iPhones: pb-safe. Background com blur: bg-white/80 backdrop-blur. Sombra sutil: shadow-lg. Botao full-width com padding adequado. Nao cobrir conteudo importante."
+          }
+        },
+        {
+          "title": "Otimizar inputs mobile",
+          "description": "Teclado correto, autocomplete",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Otimizacao de Formularios"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React Hook Form, HTML5",
+            "files": [
+              "components/forms/mobile-input.tsx",
+              "lib/forms/mobile-attributes.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Atributos HTML5: inputmode='email' para email, inputmode='tel' para telefone, inputmode='numeric' para numeros. Autocomplete: autocomplete='email', autocomplete='tel', autocomplete='name'. Desabilitar zoom em focus: font-size >= 16px. Usar type correto: type='email', type='tel'. Labels acima do input (nao placeholder-only). Botao submit com type='submit' para teclado mostrar 'Go'. Testar em iOS e Android."
+          }
+        }
+      ]
+    }
+  ]
+}

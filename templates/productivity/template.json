@@ -1,0 +1,1398 @@
+{
+  "name": "Produtividade e Tools",
+  "description": "Template para SaaS de produtividade, ferramentas de trabalho, colaboracao e automacao",
+  "base_modules": [
+    "auth",
+    "billing",
+    "onboarding",
+    "settings"
+  ],
+  "epics": [
+    {
+      "title": "Dashboard e Overview",
+      "description": "Visao geral de atividades, metricas e acesso rapido a funcoes principais",
+      "labels": [
+        "epic",
+        "dashboard"
+      ],
+      "stories": [
+        {
+          "title": "Dashboard Principal",
+          "description": "Como usuario, quero ver um resumo das minhas atividades e metricas",
+          "acceptance_criteria": [
+            "Widgets personalizaveis",
+            "Metricas principais em destaque",
+            "Acoes rapidas acessiveis",
+            "Atualizacao em tempo real"
+          ],
+          "labels": [
+            "story",
+            "dashboard"
+          ],
+          "tasks": [
+            {
+              "title": "Criar layout do dashboard",
+              "description": "Grid responsivo com areas de widgets",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js App Router, Tailwind CSS, CSS Grid",
+                "files": [
+                  "app/(dashboard)/dashboard/page.tsx",
+                  "components/dashboard/dashboard-grid.tsx",
+                  "components/dashboard/widget-container.tsx"
+                ],
+                "packages": [
+                  "react-grid-layout"
+                ],
+                "implementation_notes": "Server Component para dados iniciais. CSS Grid com areas nomeadas. react-grid-layout para drag-and-drop de widgets. Breakpoints: 1 coluna mobile, 2 tablet, 3+ desktop. Skeleton loading durante fetch."
+              }
+            },
+            {
+              "title": "Implementar widgets base",
+              "description": "Componentes de metricas e graficos",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Recharts, Tailwind CSS",
+                "files": [
+                  "components/dashboard/widgets/stats-widget.tsx",
+                  "components/dashboard/widgets/chart-widget.tsx",
+                  "components/dashboard/widgets/activity-widget.tsx",
+                  "components/dashboard/widgets/quick-actions-widget.tsx"
+                ],
+                "packages": [
+                  "recharts"
+                ],
+                "implementation_notes": "StatsWidget: numero grande + variacao percentual + sparkline. ChartWidget: LineChart ou BarChart do Recharts. ActivityWidget: timeline de acoes recentes. QuickActionsWidget: botoes para criar task, projeto, etc. Cada widget com header + body + opcional footer."
+              },
+              "depends_on": [
+                "[TASK] Criar layout do dashboard"
+              ]
+            },
+            {
+              "title": "Criar API de metricas",
+              "description": "Endpoint agregando dados do usuario",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma",
+                "files": [
+                  "lib/actions/dashboard/get-metrics.ts",
+                  "lib/dashboard/aggregations.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Server Action getMetrics(userId, period): { tasksCompleted, tasksOverdue, projectsActive, streak }. Queries agregadas com Prisma: _count, _avg. Cache com unstable_cache por 5min. Periodo: today, week, month, year."
+              },
+              "depends_on": [
+                "[TASK] Implementar widgets base"
+              ]
+            },
+            {
+              "title": "Implementar personalizacao",
+              "description": "Drag-and-drop e persistencia de layout",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "react-grid-layout, Prisma",
+                "files": [
+                  "components/dashboard/dashboard-customizer.tsx",
+                  "lib/actions/dashboard/save-layout.ts"
+                ],
+                "packages": [
+                  "react-grid-layout"
+                ],
+                "implementation_notes": "react-grid-layout com onLayoutChange callback. Salvar layout no UserPreferences (JSON). Botao 'Editar dashboard' ativa modo de edicao. Opcao de adicionar/remover widgets. Reset para layout padrao."
+              },
+              "depends_on": [
+                "[TASK] Criar API de metricas"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Atividades Recentes",
+          "description": "Como usuario, quero ver minhas atividades recentes",
+          "acceptance_criteria": [
+            "Timeline de acoes",
+            "Filtro por tipo de atividade",
+            "Link direto para item relacionado",
+            "Paginacao ou scroll infinito"
+          ],
+          "labels": [
+            "story",
+            "dashboard"
+          ],
+          "depends_on": [
+            "Dashboard Principal"
+          ],
+          "tasks": [
+            {
+              "title": "Criar componente de timeline",
+              "description": "UI de atividades recentes",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS, date-fns",
+                "files": [
+                  "components/activity/activity-feed.tsx",
+                  "components/activity/activity-item.tsx",
+                  "components/activity/activity-filters.tsx"
+                ],
+                "packages": [
+                  "date-fns"
+                ],
+                "implementation_notes": "Timeline vertical com icone + conteudo + timestamp. Agrupar por dia: 'Hoje', 'Ontem', data. Icone por tipo: task, project, comment, etc. Link no item abre o recurso. formatDistanceToNow para tempo relativo."
+              }
+            },
+            {
+              "title": "Implementar API de atividades",
+              "description": "Endpoint GET /api/activities",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma",
+                "files": [
+                  "lib/actions/activity/get-activities.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Activity: id, userId, type (enum), entityId, entityType, metadata (JSON), createdAt. Query com cursor-based pagination: take: 20, cursor: lastId. Filtro por type. Ordenar por createdAt DESC."
+              },
+              "depends_on": [
+                "[TASK] Criar componente de timeline"
+              ]
+            },
+            {
+              "title": "Implementar tracking de acoes",
+              "description": "Registrar acoes do usuario",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js",
+                "files": [
+                  "lib/activity/track.ts",
+                  "lib/activity/types.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Funcao trackActivity(userId, { type, entityId, entityType, metadata }). Chamar em: criar/atualizar/deletar task, projeto, comentario. Metadata: { oldStatus, newStatus } para mudancas. Limpar activities antigas (> 90 dias) via cron."
+              },
+              "depends_on": [
+                "[TASK] Implementar API de atividades"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Workspace e Projetos",
+      "description": "Organizacao de trabalho em projetos e workspaces",
+      "labels": [
+        "epic",
+        "workspace"
+      ],
+      "depends_on": [
+        "[EPIC] Dashboard e Overview"
+      ],
+      "stories": [
+        {
+          "title": "Criar e Gerenciar Workspaces",
+          "description": "Como usuario, quero criar workspaces para organizar meu trabalho",
+          "acceptance_criteria": [
+            "Criar workspace com nome e descricao",
+            "Convidar membros",
+            "Definir permissoes por membro",
+            "Arquivar workspace"
+          ],
+          "labels": [
+            "story",
+            "workspace"
+          ],
+          "tasks": [
+            {
+              "title": "Criar CRUD de workspace",
+              "description": "API e UI para gerenciar workspaces",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma, React Hook Form",
+                "files": [
+                  "app/(dashboard)/workspaces/page.tsx",
+                  "app/(dashboard)/workspaces/new/page.tsx",
+                  "app/(dashboard)/workspaces/[workspaceId]/settings/page.tsx",
+                  "lib/actions/workspace/crud.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [
+                  "react-hook-form",
+                  "zod"
+                ],
+                "implementation_notes": "Model Workspace: id, name, slug, description, ownerId, createdAt. Relacao WorkspaceMember: workspaceId, userId, role (OWNER, ADMIN, MEMBER). Server Actions: createWorkspace, updateWorkspace, deleteWorkspace. Soft delete com archivedAt."
+              }
+            },
+            {
+              "title": "Implementar convites",
+              "description": "Sistema de convite por email ou link",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma, Resend",
+                "files": [
+                  "lib/actions/workspace/invite.ts",
+                  "lib/email/templates/workspace-invite.tsx",
+                  "app/invite/[token]/page.tsx"
+                ],
+                "packages": [
+                  "resend"
+                ],
+                "implementation_notes": "Model WorkspaceInvite: id, workspaceId, email, role, token, expiresAt, acceptedAt. Server Action inviteToWorkspace(workspaceId, email, role). Enviar email com link /invite/[token]. Pagina de aceite valida token e adiciona membro."
+              },
+              "depends_on": [
+                "[TASK] Criar CRUD de workspace"
+              ]
+            },
+            {
+              "title": "Implementar permissoes",
+              "description": "Roles e permissions por workspace",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js",
+                "files": [
+                  "lib/permissions/workspace.ts",
+                  "lib/permissions/check.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Enum Role: OWNER, ADMIN, MEMBER, VIEWER. Mapa de permissoes: canEdit, canDelete, canInvite, canManageMembers. Helper hasPermission(userId, workspaceId, permission). Middleware para verificar em actions. OWNER pode tudo, ADMIN quase tudo."
+              },
+              "depends_on": [
+                "[TASK] Criar CRUD de workspace"
+              ]
+            },
+            {
+              "title": "Criar sidebar de workspaces",
+              "description": "Navegacao entre workspaces",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS, Radix",
+                "files": [
+                  "components/workspace/workspace-switcher.tsx",
+                  "components/layouts/sidebar.tsx"
+                ],
+                "packages": [
+                  "@radix-ui/react-select"
+                ],
+                "implementation_notes": "Dropdown Select com workspaces do usuario. Mostrar: icone/avatar, nome, role. Opcao 'Criar workspace' no final. Persistir workspace selecionado em cookie/URL. Context WorkspaceProvider para acesso global."
+              },
+              "depends_on": [
+                "[TASK] Criar CRUD de workspace"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Criar e Gerenciar Projetos",
+          "description": "Como usuario, quero criar projetos dentro de workspaces",
+          "acceptance_criteria": [
+            "Criar projeto com nome, descricao, cor",
+            "Definir membros do projeto",
+            "Ver progresso do projeto",
+            "Duplicar e arquivar projetos"
+          ],
+          "labels": [
+            "story",
+            "workspace"
+          ],
+          "depends_on": [
+            "Criar e Gerenciar Workspaces"
+          ],
+          "tasks": [
+            {
+              "title": "Criar CRUD de projetos",
+              "description": "API e UI para gerenciar projetos",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma, React Hook Form",
+                "files": [
+                  "app/(dashboard)/[workspaceSlug]/projects/page.tsx",
+                  "app/(dashboard)/[workspaceSlug]/projects/new/page.tsx",
+                  "app/(dashboard)/[workspaceSlug]/projects/[projectId]/page.tsx",
+                  "lib/actions/project/crud.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [
+                  "react-hook-form",
+                  "zod"
+                ],
+                "implementation_notes": "Model Project: id, workspaceId, name, description, color, status (ACTIVE, COMPLETED, ARCHIVED), startDate, dueDate, ownerId. Relacao ProjectMember. generateStaticParams para ISR de paginas de projeto."
+              }
+            },
+            {
+              "title": "Criar lista de projetos",
+              "description": "UI com cards ou lista de projetos",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS",
+                "files": [
+                  "components/project/project-list.tsx",
+                  "components/project/project-card.tsx",
+                  "components/project/project-filters.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Toggle list/grid view. Card com: cor, nome, descricao truncada, progress bar, membros (avatars), due date. Filtros: status, owner, search. Ordenar por: nome, data, progresso. Empty state com CTA criar projeto."
+              },
+              "depends_on": [
+                "[TASK] Criar CRUD de projetos"
+              ]
+            },
+            {
+              "title": "Implementar duplicacao",
+              "description": "Copiar projeto com itens",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/project/duplicate.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Server Action duplicateProject(projectId, { includeTasks, includeMembers }). Copiar projeto com novo nome '[Nome] (copia)'. Se includeTasks: copiar tasks sem assignee e com status inicial. Transacao Prisma para atomicidade."
+              },
+              "depends_on": [
+                "[TASK] Criar CRUD de projetos"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tarefas e Todo Lists",
+      "description": "Gestao de tarefas, checklists e acompanhamento",
+      "labels": [
+        "epic",
+        "tasks"
+      ],
+      "depends_on": [
+        "[EPIC] Workspace e Projetos"
+      ],
+      "stories": [
+        {
+          "title": "CRUD de Tarefas",
+          "description": "Como usuario, quero criar e gerenciar tarefas",
+          "acceptance_criteria": [
+            "Criar tarefa com titulo e descricao",
+            "Definir prioridade e data limite",
+            "Atribuir responsavel",
+            "Adicionar tags/labels",
+            "Marcar como concluida"
+          ],
+          "labels": [
+            "story",
+            "tasks"
+          ],
+          "tasks": [
+            {
+              "title": "Criar modelo de tarefa",
+              "description": "Schema e migrations",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma",
+                "files": [
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Task: id, projectId, title, description (text), status (enum: TODO, IN_PROGRESS, DONE), priority (enum: LOW, MEDIUM, HIGH, URGENT), dueDate, assigneeId, creatorId, position (Int para ordenacao), createdAt, updatedAt. Relacoes: project, assignee, creator, labels, subtasks."
+              }
+            },
+            {
+              "title": "Criar API de tarefas",
+              "description": "CRUD completo de tarefas",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma, Zod",
+                "files": [
+                  "lib/actions/task/create.ts",
+                  "lib/actions/task/update.ts",
+                  "lib/actions/task/delete.ts",
+                  "lib/validations/task.ts"
+                ],
+                "packages": [
+                  "zod"
+                ],
+                "implementation_notes": "Server Actions com validacao Zod. createTask: calcular position como max + 1. updateTask: aceita partial update. deleteTask: soft delete ou cascade subtasks. Batch update para reordenacao. Verificar permissao de projeto."
+              },
+              "depends_on": [
+                "[TASK] Criar modelo de tarefa"
+              ]
+            },
+            {
+              "title": "Criar formulario de tarefa",
+              "description": "UI de criacao e edicao",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, React Hook Form, Radix, Tiptap",
+                "files": [
+                  "components/task/task-form.tsx",
+                  "components/task/task-dialog.tsx",
+                  "components/task/task-detail-panel.tsx"
+                ],
+                "packages": [
+                  "react-hook-form",
+                  "@radix-ui/react-dialog",
+                  "@tiptap/react",
+                  "@tiptap/starter-kit"
+                ],
+                "implementation_notes": "Dialog ou Slide-over panel. Form com: titulo (input), descricao (Tiptap editor), status (select), priority (select com cores), dueDate (date picker), assignee (combobox com usuarios). Modo rapido: apenas titulo, depois expandir."
+              },
+              "depends_on": [
+                "[TASK] Criar API de tarefas"
+              ]
+            },
+            {
+              "title": "Criar lista de tarefas",
+              "description": "UI com filtros e ordenacao",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS, Radix",
+                "files": [
+                  "components/task/task-list.tsx",
+                  "components/task/task-item.tsx",
+                  "components/task/task-filters.tsx"
+                ],
+                "packages": [
+                  "@radix-ui/react-checkbox"
+                ],
+                "implementation_notes": "Lista com checkbox de complete, titulo, assignee avatar, due date badge, priority indicator. Hover mostra acoes rapidas. Filtros: status, assignee, priority, labels. Ordenar: posicao, due date, priority. Agrupar por status opcional."
+              },
+              "depends_on": [
+                "[TASK] Criar formulario de tarefa"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Visualizacao Kanban",
+          "description": "Como usuario, quero ver minhas tarefas em um board Kanban",
+          "acceptance_criteria": [
+            "Colunas customizaveis",
+            "Drag-and-drop entre colunas",
+            "Filtros e busca",
+            "WIP limits opcionais"
+          ],
+          "labels": [
+            "story",
+            "tasks"
+          ],
+          "depends_on": [
+            "CRUD de Tarefas"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar board Kanban",
+              "description": "UI com drag-and-drop",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, @dnd-kit, Tailwind CSS",
+                "files": [
+                  "components/kanban/kanban-board.tsx",
+                  "components/kanban/kanban-column.tsx",
+                  "components/kanban/kanban-card.tsx",
+                  "components/kanban/kanban-add-card.tsx"
+                ],
+                "packages": [
+                  "@dnd-kit/core",
+                  "@dnd-kit/sortable",
+                  "@dnd-kit/utilities"
+                ],
+                "implementation_notes": "DndContext com SortableContext por coluna. DragOverlay para preview durante drag. onDragEnd: atualizar status e position. Colunas: TODO, IN_PROGRESS, DONE (customizaveis). Card compacto: titulo, assignee, priority dot, due date."
+              }
+            },
+            {
+              "title": "Criar API de status",
+              "description": "Gerenciar colunas customizadas",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/task/update-status.ts",
+                  "lib/actions/task/reorder.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Server Action updateTaskStatus(taskId, newStatus, newPosition). Batch reorder: recalcular positions na coluna. Optimistic update no client. Opcional: Model TaskStatus para colunas customizadas por projeto."
+              },
+              "depends_on": [
+                "[TASK] Implementar board Kanban"
+              ]
+            },
+            {
+              "title": "Implementar filtros",
+              "description": "Filtrar por responsavel, tag, data",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, nuqs, Radix",
+                "files": [
+                  "components/kanban/kanban-filters.tsx",
+                  "lib/hooks/use-task-filters.ts"
+                ],
+                "packages": [
+                  "nuqs"
+                ],
+                "implementation_notes": "Usar nuqs para sync filtros com URL params. Filtros: assignee (multi-select), priority (multi-select), labels, due date range, search text. Aplicar filtros: esconder cards que nao batem. Mostrar contador de filtros ativos."
+              },
+              "depends_on": [
+                "[TASK] Implementar board Kanban"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Subtarefas e Checklists",
+          "description": "Como usuario, quero quebrar tarefas em subtarefas",
+          "acceptance_criteria": [
+            "Adicionar subtarefas a uma tarefa",
+            "Checklist com progresso visual",
+            "Reordenar subtarefas",
+            "Converter subtarefa em tarefa"
+          ],
+          "labels": [
+            "story",
+            "tasks"
+          ],
+          "depends_on": [
+            "CRUD de Tarefas"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar subtarefas",
+              "description": "Modelo e API de subtarefas",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/subtask/crud.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Subtask: id, taskId, title, completed, position. Relacao Task hasMany Subtasks. Server Actions: addSubtask, toggleSubtask, deleteSubtask, reorderSubtasks. Limite: max 20 subtasks por task."
+              }
+            },
+            {
+              "title": "Criar UI de checklist",
+              "description": "Componente de subtarefas",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, @dnd-kit, Framer Motion",
+                "files": [
+                  "components/task/subtask-list.tsx",
+                  "components/task/subtask-item.tsx",
+                  "components/task/add-subtask.tsx"
+                ],
+                "packages": [
+                  "@dnd-kit/sortable",
+                  "framer-motion"
+                ],
+                "implementation_notes": "Lista dentro do task detail. Cada item: checkbox + input editavel. Drag handle para reordenar. Input no final para adicionar. Progress bar: X/Y completas. Animacao de check com Framer Motion."
+              },
+              "depends_on": [
+                "[TASK] Implementar subtarefas"
+              ]
+            },
+            {
+              "title": "Calcular progresso",
+              "description": "Percentual de conclusao",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma",
+                "files": [
+                  "lib/task/progress.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Funcao getTaskProgress(taskId): { total, completed, percentage }. Usar Prisma aggregate: _count. Atualizar progress no task pai ao toggle subtask. Mostrar progress na task list e kanban card. Se 100% e task nao DONE, sugerir marcar como done."
+              },
+              "depends_on": [
+                "[TASK] Criar UI de checklist"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Recorrencia de Tarefas",
+          "description": "Como usuario, quero criar tarefas recorrentes",
+          "acceptance_criteria": [
+            "Definir frequencia (diaria, semanal, mensal)",
+            "Gerar proxima ocorrencia automaticamente",
+            "Editar serie ou ocorrencia",
+            "Pausar recorrencia"
+          ],
+          "labels": [
+            "story",
+            "tasks"
+          ],
+          "depends_on": [
+            "CRUD de Tarefas"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar modelo de recorrencia",
+              "description": "Schema e logica de repeticao",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, rrule",
+                "files": [
+                  "prisma/schema.prisma",
+                  "lib/recurrence/parser.ts"
+                ],
+                "packages": [
+                  "rrule"
+                ],
+                "implementation_notes": "Adicionar no Task: recurrenceRule (String, formato RRULE), recurrenceParentId (auto-referencia). Usar biblioteca rrule para parse e generate dates. RRULE exemplo: 'FREQ=WEEKLY;BYDAY=MO,WE,FR'. Subtask nao pode ter recorrencia."
+              }
+            },
+            {
+              "title": "Criar job de geracao",
+              "description": "Cron job para criar tarefas",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Vercel Cron, Prisma, rrule",
+                "files": [
+                  "app/api/cron/generate-recurring-tasks/route.ts",
+                  "lib/recurrence/generate.ts"
+                ],
+                "packages": [
+                  "rrule"
+                ],
+                "implementation_notes": "Cron diario as 00:00 UTC. Query tasks com recurrenceRule. Para cada: calcular proximas ocorrencias com rrule.between(). Criar novas tasks para proximos 7 dias (buffer). Marcar como geradas para nao duplicar."
+              },
+              "depends_on": [
+                "[TASK] Implementar modelo de recorrencia"
+              ]
+            },
+            {
+              "title": "Criar UI de recorrencia",
+              "description": "Formulario de configuracao",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, React Hook Form, Radix",
+                "files": [
+                  "components/task/recurrence-picker.tsx",
+                  "components/task/recurrence-summary.tsx"
+                ],
+                "packages": [
+                  "rrule"
+                ],
+                "implementation_notes": "Select: Daily, Weekly, Monthly, Custom. Weekly: checkboxes para dias. Monthly: radio 'dia X' ou 'primeira segunda'. Custom: intervalo numerico. Preview: 'Repete toda segunda e quarta'. Opcao de data fim ou numero de ocorrencias."
+              },
+              "depends_on": [
+                "[TASK] Criar job de geracao"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Colaboracao em Tempo Real",
+      "description": "Features de colaboracao e comunicacao entre usuarios",
+      "labels": [
+        "epic",
+        "collaboration"
+      ],
+      "depends_on": [
+        "[EPIC] Tarefas e Todo Lists"
+      ],
+      "stories": [
+        {
+          "title": "Comentarios",
+          "description": "Como usuario, quero comentar em tarefas e projetos",
+          "acceptance_criteria": [
+            "Adicionar comentarios com rich text",
+            "Mencionar usuarios com @",
+            "Editar e deletar comentarios",
+            "Notificar mencionados"
+          ],
+          "labels": [
+            "story",
+            "collaboration"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar sistema de comentarios",
+              "description": "API e modelo de comentarios",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/comment/crud.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Comment: id, content (text, HTML do editor), authorId, taskId (ou projectId), mentions (String[], userIds), createdAt, updatedAt. Soft delete com deletedAt. Server Actions: createComment, updateComment, deleteComment."
+              }
+            },
+            {
+              "title": "Criar editor de comentario",
+              "description": "Rich text com mencoes",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Tiptap, Next.js",
+                "files": [
+                  "components/comments/comment-editor.tsx",
+                  "components/comments/mention-extension.ts"
+                ],
+                "packages": [
+                  "@tiptap/react",
+                  "@tiptap/starter-kit",
+                  "@tiptap/extension-mention",
+                  "@tiptap/extension-placeholder"
+                ],
+                "implementation_notes": "Tiptap com extensions: StarterKit, Mention, Placeholder. Mention trigger: '@'. Suggestion dropdown com usuarios do workspace. Render mention como link/badge. Toolbar opcional: bold, italic, link, code."
+              },
+              "depends_on": [
+                "[TASK] Implementar sistema de comentarios"
+              ]
+            },
+            {
+              "title": "Implementar mencoes",
+              "description": "Autocomplete e notificacoes",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Tiptap, Prisma, Resend",
+                "files": [
+                  "lib/actions/comment/notify-mentions.ts",
+                  "lib/email/templates/mention-notification.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "No createComment: extrair userIds das mentions do HTML. Para cada mencionado: criar notificacao in-app, enviar email se preferencia ativa. Debounce email se multiplas mentions em curto periodo. Link direto para o comentario."
+              },
+              "depends_on": [
+                "[TASK] Criar editor de comentario"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Notificacoes em Tempo Real",
+          "description": "Como usuario, quero receber notificacoes instantaneas",
+          "acceptance_criteria": [
+            "Notificacoes in-app instantaneas",
+            "Badge de nao lidas",
+            "Centro de notificacoes",
+            "Marcar como lida"
+          ],
+          "labels": [
+            "story",
+            "collaboration"
+          ],
+          "depends_on": [
+            "Comentarios"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar WebSocket",
+              "description": "Conexao real-time",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Pusher ou Ably, Next.js",
+                "files": [
+                  "lib/realtime/pusher.ts",
+                  "lib/realtime/channels.ts"
+                ],
+                "packages": [
+                  "pusher",
+                  "pusher-js"
+                ],
+                "implementation_notes": "Usar Pusher (gratis ate 200k mensagens/dia) ou Ably. Server: pusher.trigger(channel, event, data). Channels: private-user-{userId} para notificacoes, presence-workspace-{id} para presenca. Client: subscribe no useEffect."
+              }
+            },
+            {
+              "title": "Criar centro de notificacoes",
+              "description": "UI de listagem de notificacoes",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Pusher, Radix",
+                "files": [
+                  "components/notifications/notification-center.tsx",
+                  "components/notifications/notification-item.tsx",
+                  "components/notifications/notification-bell.tsx"
+                ],
+                "packages": [
+                  "pusher-js",
+                  "@radix-ui/react-popover"
+                ],
+                "implementation_notes": "Bell icon com badge de nao lidas. Popover com lista de notificacoes. Cada item: icone, mensagem, tempo, link. Agrupar: 'Novas' e 'Anteriores'. Marcar como lida ao clicar. 'Marcar todas como lidas'. Pagina /notifications para historico completo."
+              },
+              "depends_on": [
+                "[TASK] Implementar WebSocket"
+              ]
+            },
+            {
+              "title": "Implementar badges",
+              "description": "Contador de nao lidas",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Pusher, Zustand",
+                "files": [
+                  "lib/stores/notification-store.ts",
+                  "components/notifications/notification-badge.tsx"
+                ],
+                "packages": [
+                  "zustand",
+                  "pusher-js"
+                ],
+                "implementation_notes": "Zustand store: unreadCount, notifications. Subscribe no Pusher channel ao montar. Incrementar count ao receber notificacao. Decrementar ao marcar como lida. Sync inicial: fetch unread count da API. Badge: numero ou dot se > 99."
+              },
+              "depends_on": [
+                "[TASK] Criar centro de notificacoes"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Presenca Online",
+          "description": "Como usuario, quero ver quem esta online",
+          "acceptance_criteria": [
+            "Indicador de online/offline",
+            "Ver quem esta vendo o mesmo item",
+            "Cursor colaborativo opcional"
+          ],
+          "labels": [
+            "story",
+            "collaboration"
+          ],
+          "depends_on": [
+            "Notificacoes em Tempo Real"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar tracking de presenca",
+              "description": "WebSocket de presenca",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Pusher Presence Channels",
+                "files": [
+                  "lib/realtime/presence.ts",
+                  "app/api/pusher/auth/route.ts"
+                ],
+                "packages": [
+                  "pusher"
+                ],
+                "implementation_notes": "Pusher Presence Channels: presence-workspace-{id}, presence-task-{id}. Auth endpoint retorna user_id e user_info (name, image). Eventos: pusher:subscription_succeeded, pusher:member_added, pusher:member_removed. Listar membros online."
+              }
+            },
+            {
+              "title": "Criar indicadores visuais",
+              "description": "Avatares com status",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Pusher, Tailwind CSS",
+                "files": [
+                  "components/presence/online-indicator.tsx",
+                  "components/presence/presence-avatars.tsx",
+                  "lib/hooks/use-presence.ts"
+                ],
+                "packages": [
+                  "pusher-js"
+                ],
+                "implementation_notes": "Hook usePresence(channelName): { members, isConnected }. OnlineIndicator: dot verde/cinza no avatar. PresenceAvatars: stack de avatares de quem esta vendo (no task detail). Tooltip com nomes. Max 3 visíveis + '+N'."
+              },
+              "depends_on": [
+                "[TASK] Implementar tracking de presenca"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Automacoes e Integracoes",
+      "description": "Automatizar fluxos de trabalho e integrar com ferramentas externas",
+      "labels": [
+        "epic",
+        "automation"
+      ],
+      "depends_on": [
+        "[EPIC] Tarefas e Todo Lists"
+      ],
+      "stories": [
+        {
+          "title": "Automacoes Basicas",
+          "description": "Como usuario, quero automatizar acoes repetitivas",
+          "acceptance_criteria": [
+            "Criar regras quando/entao",
+            "Triggers: mudanca de status, data, etc",
+            "Acoes: mover, notificar, atribuir",
+            "Ativar/desativar automacoes"
+          ],
+          "labels": [
+            "story",
+            "automation"
+          ],
+          "tasks": [
+            {
+              "title": "Criar engine de automacao",
+              "description": "Sistema de triggers e acoes",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js",
+                "files": [
+                  "lib/automation/engine.ts",
+                  "lib/automation/triggers.ts",
+                  "lib/automation/actions.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Automation: id, projectId, name, trigger (JSON: { type, conditions }), action (JSON: { type, params }), isActive, createdBy. Triggers: task_status_changed, task_created, due_date_reached. Actions: change_status, assign_user, send_notification, add_label."
+              }
+            },
+            {
+              "title": "Criar builder de automacao",
+              "description": "UI visual para criar regras",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, React Hook Form, Radix",
+                "files": [
+                  "components/automation/automation-builder.tsx",
+                  "components/automation/trigger-select.tsx",
+                  "components/automation/action-select.tsx",
+                  "components/automation/condition-builder.tsx"
+                ],
+                "packages": [
+                  "react-hook-form"
+                ],
+                "implementation_notes": "UI: 'Quando [trigger] entao [action]'. Selects para trigger e action. Condicoes extras: 'apenas se priority = HIGH'. Preview em linguagem natural. Lista de automacoes com toggle on/off. Templates pre-definidos."
+              },
+              "depends_on": [
+                "[TASK] Criar engine de automacao"
+              ]
+            },
+            {
+              "title": "Implementar triggers",
+              "description": "Detectar eventos para disparar",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js",
+                "files": [
+                  "lib/automation/trigger-handlers.ts",
+                  "lib/automation/evaluate.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Em cada Server Action (updateTask, etc): chamar checkAutomations(event, data). Query automacoes ativas do projeto. Avaliar condicoes. Se match, executar action. Log de execucoes para debug. Limit: max 10 automacoes por projeto (free tier)."
+              },
+              "depends_on": [
+                "[TASK] Criar builder de automacao"
+              ]
+            },
+            {
+              "title": "Implementar acoes",
+              "description": "Executar acoes automaticamente",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Resend",
+                "files": [
+                  "lib/automation/action-handlers.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "ActionHandlers: changeStatus(task, newStatus), assignUser(task, userId), sendNotification(users, message), addLabel(task, labelId), moveToProject(task, projectId). Cada handler recebe context com task e automation. Reuse das Server Actions existentes."
+              },
+              "depends_on": [
+                "[TASK] Implementar triggers"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Integracoes com Terceiros",
+          "description": "Como usuario, quero conectar com outras ferramentas",
+          "acceptance_criteria": [
+            "Integracao com Slack",
+            "Integracao com Google Calendar",
+            "Integracao com Zapier/Webhooks",
+            "Configuracao simples"
+          ],
+          "labels": [
+            "story",
+            "automation",
+            "integration"
+          ],
+          "depends_on": [
+            "Automacoes Basicas"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar integracao Slack",
+              "description": "OAuth e envio de mensagens",
+              "labels": [
+                "task",
+                "backend",
+                "integration"
+              ],
+              "technical_details": {
+                "stack": "Slack Web API, OAuth 2.0",
+                "files": [
+                  "lib/integrations/slack/client.ts",
+                  "lib/integrations/slack/oauth.ts",
+                  "app/api/integrations/slack/callback/route.ts"
+                ],
+                "packages": [
+                  "@slack/web-api"
+                ],
+                "implementation_notes": "OAuth flow: redirect para Slack, callback salva access_token. Model Integration: userId, type, accessToken (encrypted), config (JSON: channel_id). Funcao sendSlackMessage(userId, message). Trigger: task completed, comment added."
+              }
+            },
+            {
+              "title": "Implementar integracao Calendar",
+              "description": "Sincronizar datas com Google Calendar",
+              "labels": [
+                "task",
+                "backend",
+                "integration"
+              ],
+              "technical_details": {
+                "stack": "Google Calendar API, OAuth 2.0",
+                "files": [
+                  "lib/integrations/google/calendar.ts",
+                  "lib/integrations/google/oauth.ts",
+                  "app/api/integrations/google/callback/route.ts"
+                ],
+                "packages": [
+                  "googleapis"
+                ],
+                "implementation_notes": "OAuth scopes: calendar.events. Criar evento ao definir due date. Atualizar evento ao mudar data. Deletar ao completar ou remover data. Sincronizar nos dois sentidos opcional (mais complexo). Refresh token para access persistente."
+              },
+              "depends_on": [
+                "[TASK] Implementar integracao Slack"
+              ]
+            },
+            {
+              "title": "Criar sistema de webhooks",
+              "description": "Endpoints para integracao externa",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js API Routes, Prisma",
+                "files": [
+                  "lib/webhooks/send.ts",
+                  "app/api/webhooks/outgoing/route.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Webhook: id, projectId, url, events (String[]), secret. Ao evento: POST para url com payload + signature (HMAC-SHA256). Retry com exponential backoff. Log de deliveries. UI para criar/testar webhooks. Compativel com Zapier."
+              },
+              "depends_on": [
+                "[TASK] Implementar integracao Calendar"
+              ]
+            },
+            {
+              "title": "Criar pagina de integracoes",
+              "description": "UI para conectar servicos",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS",
+                "files": [
+                  "app/(dashboard)/[workspaceSlug]/settings/integrations/page.tsx",
+                  "components/integrations/integration-card.tsx",
+                  "components/integrations/connect-dialog.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Grid de integracoes disponiveis. Card: logo, nome, descricao, status (connected/not). Botao Connect inicia OAuth. Se conectado: configuracoes (ex: canal Slack), botao Disconnect. Coming soon badge para futuras integracoes."
+              },
+              "depends_on": [
+                "[TASK] Criar sistema de webhooks"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Relatorios e Analytics",
+      "description": "Metricas, relatorios e insights sobre produtividade",
+      "labels": [
+        "epic",
+        "analytics"
+      ],
+      "depends_on": [
+        "[EPIC] Tarefas e Todo Lists"
+      ],
+      "stories": [
+        {
+          "title": "Relatorios de Produtividade",
+          "description": "Como usuario, quero ver relatorios da minha produtividade",
+          "acceptance_criteria": [
+            "Tarefas concluidas por periodo",
+            "Tempo medio de conclusao",
+            "Graficos de tendencia",
+            "Comparativo com periodos anteriores"
+          ],
+          "labels": [
+            "story",
+            "analytics"
+          ],
+          "tasks": [
+            {
+              "title": "Criar API de analytics",
+              "description": "Endpoints de agregacao de dados",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/analytics/get-productivity-stats.ts",
+                  "lib/analytics/aggregations.ts"
+                ],
+                "packages": [
+                  "date-fns"
+                ],
+                "implementation_notes": "Server Action getProductivityStats({ userId, projectId, startDate, endDate }). Metricas: tasksCompleted, tasksCreated, avgCompletionTime (diff entre createdAt e completedAt), completionRate. Agrupar por dia/semana/mes. Usar Prisma groupBy e aggregate."
+              }
+            },
+            {
+              "title": "Criar pagina de relatorios",
+              "description": "Dashboard de analytics",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Recharts, Tailwind CSS",
+                "files": [
+                  "app/(dashboard)/[workspaceSlug]/analytics/page.tsx",
+                  "components/analytics/productivity-dashboard.tsx",
+                  "components/analytics/date-range-picker.tsx"
+                ],
+                "packages": [
+                  "recharts",
+                  "date-fns"
+                ],
+                "implementation_notes": "Date range picker no topo. Cards de metricas principais. Graficos: linha de tarefas por dia, pizza de status, barra de tarefas por membro. Tabela de ranking de membros. Export para PDF."
+              },
+              "depends_on": [
+                "[TASK] Criar API de analytics"
+              ]
+            },
+            {
+              "title": "Implementar graficos",
+              "description": "Visualizacoes com Recharts",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Recharts, Tailwind CSS",
+                "files": [
+                  "components/analytics/charts/line-chart.tsx",
+                  "components/analytics/charts/bar-chart.tsx",
+                  "components/analytics/charts/pie-chart.tsx"
+                ],
+                "packages": [
+                  "recharts"
+                ],
+                "implementation_notes": "Componentes wrappers do Recharts com estilos consistentes. ResponsiveContainer para responsividade. Tooltip customizado. Cores do tema (CSS variables). Loading skeleton enquanto carrega dados. Empty state se sem dados."
+              },
+              "depends_on": [
+                "[TASK] Criar pagina de relatorios"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Exportacao de Dados",
+          "description": "Como usuario, quero exportar meus dados",
+          "acceptance_criteria": [
+            "Exportar para CSV",
+            "Exportar para PDF",
+            "Selecionar periodo e filtros",
+            "Exportar dados completos (GDPR)"
+          ],
+          "labels": [
+            "story",
+            "analytics"
+          ],
+          "depends_on": [
+            "Relatorios de Produtividade"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar export CSV",
+              "description": "Gerar arquivo CSV",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js API Routes, papaparse",
+                "files": [
+                  "app/api/export/csv/route.ts",
+                  "lib/export/csv.ts"
+                ],
+                "packages": [
+                  "papaparse"
+                ],
+                "implementation_notes": "Route handler GET /api/export/csv?type=tasks&projectId=xxx. Query dados, transformar em array de objetos flat. Usar papaparse.unparse(). Headers: Content-Type text/csv, Content-Disposition attachment. Streaming para datasets grandes."
+              }
+            },
+            {
+              "title": "Implementar export PDF",
+              "description": "Gerar relatorios em PDF",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "React PDF, Next.js",
+                "files": [
+                  "app/api/export/pdf/route.ts",
+                  "lib/export/pdf-template.tsx"
+                ],
+                "packages": [
+                  "@react-pdf/renderer"
+                ],
+                "implementation_notes": "Usar @react-pdf/renderer para gerar PDF no server. Template com: header (logo, titulo, periodo), metricas, graficos (como imagens), tabelas. renderToBuffer() para stream. Alternativa: Puppeteer para screenshot de pagina HTML."
+              },
+              "depends_on": [
+                "[TASK] Implementar export CSV"
+              ]
+            },
+            {
+              "title": "Criar UI de exportacao",
+              "description": "Modal com opcoes de export",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Radix Dialog",
+                "files": [
+                  "components/export/export-dialog.tsx",
+                  "components/export/export-options.tsx"
+                ],
+                "packages": [
+                  "@radix-ui/react-dialog"
+                ],
+                "implementation_notes": "Dialog com: formato (CSV, PDF), tipo de dados (tasks, analytics, all), periodo, filtros opcionais. Progress indicator durante geracao. Download automatico ao completar. Opcao de email para exports grandes."
+              },
+              "depends_on": [
+                "[TASK] Implementar export PDF"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1208 @@
+{
+  "name": "Conteudo e Social",
+  "description": "Template para SaaS de publicacao de conteudo, comunidades, redes sociais e midia",
+  "base_modules": [
+    "auth",
+    "billing",
+    "onboarding",
+    "settings"
+  ],
+  "epics": [
+    {
+      "title": "Feed e Timeline",
+      "description": "Exibicao de conteudo em feed personalizado",
+      "labels": [
+        "epic",
+        "feed"
+      ],
+      "stories": [
+        {
+          "title": "Feed Principal",
+          "description": "Como usuario, quero ver um feed com conteudo relevante",
+          "acceptance_criteria": [
+            "Feed ordenado por relevancia ou cronologico",
+            "Scroll infinito performatico",
+            "Pull-to-refresh",
+            "Indicador de novos posts"
+          ],
+          "labels": [
+            "story",
+            "feed"
+          ],
+          "tasks": [
+            {
+              "title": "Criar componente de feed",
+              "description": "UI com virtualizacao de lista",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, @tanstack/react-virtual, Tailwind CSS",
+                "files": [
+                  "components/feed/feed-list.tsx",
+                  "components/feed/feed-item.tsx",
+                  "components/feed/virtual-feed.tsx"
+                ],
+                "packages": [
+                  "@tanstack/react-virtual"
+                ],
+                "implementation_notes": "useVirtualizer para renderizar apenas itens visiveis. Estimar altura de cada item (variable). Infinite scroll: onReachEnd carrega mais. Skeleton loading para items. Gap consistente entre posts."
+              }
+            },
+            {
+              "title": "Implementar API de feed",
+              "description": "Endpoint com paginacao cursor-based",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js Server Actions, Prisma",
+                "files": [
+                  "lib/actions/feed/get-feed.ts",
+                  "lib/feed/query.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Cursor-based pagination: take: 20, cursor: lastPostId. Include: author, likes count, comments count, media. Ordenar por createdAt DESC ou score (relevancia). Cache com unstable_cache por 30s. Filtro: following only ou all."
+              },
+              "depends_on": [
+                "[TASK] Criar componente de feed"
+              ]
+            },
+            {
+              "title": "Implementar algoritmo de relevancia",
+              "description": "Ranking de conteudo personalizado",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Score calculation",
+                "files": [
+                  "lib/feed/ranking.ts",
+                  "lib/feed/score.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Score = (likes * 1) + (comments * 2) + (shares * 3) - (hoursSincePost * 0.5). Boost para: following, same interests. Decay temporal. Calcular em batch via cron ou em query. Guardar score no Post para performance."
+              },
+              "depends_on": [
+                "[TASK] Implementar API de feed"
+              ]
+            },
+            {
+              "title": "Implementar real-time updates",
+              "description": "Novos posts sem reload",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Pusher, Next.js",
+                "files": [
+                  "lib/realtime/feed-updates.ts",
+                  "components/feed/new-posts-indicator.tsx"
+                ],
+                "packages": [
+                  "pusher",
+                  "pusher-js"
+                ],
+                "implementation_notes": "Subscribe em channel feed-{userId}. Ao novo post de following: push evento. Client: mostrar banner 'X novos posts' no topo. Click carrega novos. Nao auto-scroll para nao perder posicao."
+              },
+              "depends_on": [
+                "[TASK] Implementar API de feed"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Filtros e Descoberta",
+          "description": "Como usuario, quero filtrar e descobrir conteudo",
+          "acceptance_criteria": [
+            "Filtrar por categoria/tag",
+            "Busca de conteudo",
+            "Trending/Em alta",
+            "Recomendacoes personalizadas"
+          ],
+          "labels": [
+            "story",
+            "feed"
+          ],
+          "depends_on": [
+            "Feed Principal"
+          ],
+          "tasks": [
+            {
+              "title": "Criar barra de filtros",
+              "description": "UI de filtros e categorias",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, nuqs, Radix",
+                "files": [
+                  "components/feed/feed-filters.tsx",
+                  "components/feed/category-tabs.tsx"
+                ],
+                "packages": [
+                  "nuqs",
+                  "@radix-ui/react-tabs"
+                ],
+                "implementation_notes": "Tabs horizontais para categorias principais. URL sync com nuqs: ?category=tech&sort=trending. Chips para tags selecionadas. Clear all filters. Persistir ultima escolha."
+              }
+            },
+            {
+              "title": "Implementar busca full-text",
+              "description": "Busca com Prisma ou Meilisearch",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma full-text ou Meilisearch",
+                "files": [
+                  "lib/search/index.ts",
+                  "app/api/search/route.ts"
+                ],
+                "packages": [
+                  "meilisearch"
+                ],
+                "implementation_notes": "Prisma: usar @@ mode em PostgreSQL. Melhor: Meilisearch (free self-hosted ou cloud). Indexar: titulo, conteudo, tags, author name. Search endpoint com debounce 300ms. Highlight matches no resultado."
+              },
+              "depends_on": [
+                "[TASK] Criar barra de filtros"
+              ]
+            },
+            {
+              "title": "Criar secao de trending",
+              "description": "Calcular e exibir trending",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js, Cron",
+                "files": [
+                  "lib/trending/calculate.ts",
+                  "app/api/cron/calculate-trending/route.ts",
+                  "components/sidebar/trending-section.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Cron a cada hora: calcular posts com mais engajamento nas ultimas 24h. Salvar em cache (Redis ou DB). Sidebar widget: top 5 trending. Pagina /explore com trending completo."
+              },
+              "depends_on": [
+                "[TASK] Criar barra de filtros"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Criacao de Conteudo",
+      "description": "Ferramentas para criar e publicar conteudo",
+      "labels": [
+        "epic",
+        "content"
+      ],
+      "depends_on": [
+        "[EPIC] Feed e Timeline"
+      ],
+      "stories": [
+        {
+          "title": "Editor de Posts",
+          "description": "Como criador, quero criar posts com rich content",
+          "acceptance_criteria": [
+            "Editor rich text (negrito, italico, links)",
+            "Upload de imagens e videos",
+            "Preview antes de publicar",
+            "Rascunhos salvos automaticamente"
+          ],
+          "labels": [
+            "story",
+            "content"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar editor rich text",
+              "description": "Editor com Tiptap",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Tiptap, Next.js",
+                "files": [
+                  "components/editor/post-editor.tsx",
+                  "components/editor/editor-toolbar.tsx",
+                  "components/editor/extensions/index.ts"
+                ],
+                "packages": [
+                  "@tiptap/react",
+                  "@tiptap/starter-kit",
+                  "@tiptap/extension-link",
+                  "@tiptap/extension-image",
+                  "@tiptap/extension-placeholder",
+                  "@tiptap/extension-character-count"
+                ],
+                "implementation_notes": "Extensions: StarterKit, Link, Image, Placeholder, CharacterCount. Toolbar: bold, italic, link, image. Character limit: 2000. Mention com @. Hashtag com #. Bubble menu para selecao."
+              }
+            },
+            {
+              "title": "Implementar upload de midia",
+              "description": "Upload para S3/R2 com progress",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "UploadThing ou Cloudflare R2, Next.js",
+                "files": [
+                  "components/editor/media-upload.tsx",
+                  "lib/upload/media.ts",
+                  "app/api/upload/route.ts"
+                ],
+                "packages": [
+                  "uploadthing",
+                  "@uploadthing/react"
+                ],
+                "implementation_notes": "UploadThing para simplicidade ou presigned URLs para R2. Aceitar: images (jpg, png, gif, webp), videos (mp4, webm) ate 100MB. Progress bar. Thumbnail generation. Drag-and-drop zone. Paste from clipboard."
+              },
+              "depends_on": [
+                "[TASK] Implementar editor rich text"
+              ]
+            },
+            {
+              "title": "Implementar preview",
+              "description": "Visualizacao antes de publicar",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Radix Dialog",
+                "files": [
+                  "components/editor/post-preview.tsx",
+                  "components/editor/preview-dialog.tsx"
+                ],
+                "packages": [
+                  "@radix-ui/react-dialog"
+                ],
+                "implementation_notes": "Botao 'Preview' abre dialog. Renderizar post exatamente como aparecera no feed. Mostrar: autor, content formatado, medias, timestamp fake. Mobile preview toggle. Voltar para editar ou publicar."
+              },
+              "depends_on": [
+                "[TASK] Implementar upload de midia"
+              ]
+            },
+            {
+              "title": "Implementar rascunhos",
+              "description": "Auto-save e lista de rascunhos",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js, localStorage",
+                "files": [
+                  "lib/actions/post/save-draft.ts",
+                  "components/editor/draft-indicator.tsx",
+                  "app/(dashboard)/drafts/page.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Post com status: DRAFT, PUBLISHED, SCHEDULED. Auto-save a cada 30s (debounced) se conteudo mudou. Indicador 'Salvo' ou 'Salvando...'. Pagina /drafts lista rascunhos. localStorage backup para offline."
+              },
+              "depends_on": [
+                "[TASK] Implementar preview"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Agendamento de Posts",
+          "description": "Como criador, quero agendar posts para publicacao futura",
+          "acceptance_criteria": [
+            "Selecionar data e hora",
+            "Fuso horario do usuario",
+            "Ver posts agendados",
+            "Editar ou cancelar agendamento"
+          ],
+          "labels": [
+            "story",
+            "content"
+          ],
+          "depends_on": [
+            "Editor de Posts"
+          ],
+          "tasks": [
+            {
+              "title": "Criar UI de agendamento",
+              "description": "Date/time picker",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, date-fns, Radix",
+                "files": [
+                  "components/editor/schedule-picker.tsx",
+                  "components/ui/datetime-picker.tsx"
+                ],
+                "packages": [
+                  "date-fns",
+                  "@radix-ui/react-popover",
+                  "react-day-picker"
+                ],
+                "implementation_notes": "Popover com calendar (react-day-picker) + time select. Mostrar timezone do usuario. Minimo: 5min no futuro. Botao 'Agendar' ao inves de 'Publicar'. Mostrar preview do horario local."
+              }
+            },
+            {
+              "title": "Implementar fila de publicacao",
+              "description": "Job scheduler para posts",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Vercel Cron ou Trigger.dev, Prisma",
+                "files": [
+                  "app/api/cron/publish-scheduled/route.ts",
+                  "lib/scheduler/publish.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Post com status SCHEDULED e scheduledAt. Cron a cada minuto: query posts where scheduledAt <= now AND status = SCHEDULED. Atualizar status para PUBLISHED. Trigger notificacoes. Log de publicacao."
+              },
+              "depends_on": [
+                "[TASK] Criar UI de agendamento"
+              ]
+            },
+            {
+              "title": "Criar calendario de conteudo",
+              "description": "Visualizacao de agendados",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, FullCalendar ou custom",
+                "files": [
+                  "app/(dashboard)/calendar/page.tsx",
+                  "components/calendar/content-calendar.tsx"
+                ],
+                "packages": [
+                  "@fullcalendar/react",
+                  "@fullcalendar/daygrid"
+                ],
+                "implementation_notes": "Calendario mensal com posts agendados. Click no dia mostra posts. Drag-and-drop para reagendar. Cores por tipo de conteudo. Vista semanal opcional. Mobile: lista cronologica."
+              },
+              "depends_on": [
+                "[TASK] Implementar fila de publicacao"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Interacoes Sociais",
+      "description": "Likes, comentarios, compartilhamentos e engajamento",
+      "labels": [
+        "epic",
+        "social"
+      ],
+      "depends_on": [
+        "[EPIC] Criacao de Conteudo"
+      ],
+      "stories": [
+        {
+          "title": "Sistema de Likes/Reacoes",
+          "description": "Como usuario, quero reagir ao conteudo",
+          "acceptance_criteria": [
+            "Like com um clique",
+            "Opcao de multiplas reacoes (emoji)",
+            "Contador de reacoes",
+            "Ver quem reagiu"
+          ],
+          "labels": [
+            "story",
+            "social"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar modelo de reacoes",
+              "description": "Schema e API de likes",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/reaction/toggle.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Reaction: id, postId, userId, type (enum: LIKE, LOVE, HAHA, WOW, SAD, ANGRY). Unique constraint: postId + userId. Server Action toggleReaction(postId, type): criar ou deletar. Retornar novo count."
+              }
+            },
+            {
+              "title": "Criar botao de like",
+              "description": "UI com animacao",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Framer Motion",
+                "files": [
+                  "components/post/like-button.tsx",
+                  "components/post/reaction-picker.tsx"
+                ],
+                "packages": [
+                  "framer-motion"
+                ],
+                "implementation_notes": "Click simples: toggle like. Long press ou hover: mostrar picker de reacoes. Animacao de bounce ao clicar. Heart fill animation. Optimistic update. Mostrar tipo da minha reacao."
+              },
+              "depends_on": [
+                "[TASK] Implementar modelo de reacoes"
+              ]
+            },
+            {
+              "title": "Otimizar contagem",
+              "description": "Cache de contadores",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Counter cache",
+                "files": [
+                  "lib/counters/reactions.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Adicionar likesCount no Post model. Incrementar/decrementar atomicamente: prisma.$executeRaw. Evitar count() em cada request. Sync periodico se drift. Alternativa: Redis para counters high-traffic."
+              },
+              "depends_on": [
+                "[TASK] Criar botao de like"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Comentarios e Respostas",
+          "description": "Como usuario, quero comentar e responder comentarios",
+          "acceptance_criteria": [
+            "Comentar em posts",
+            "Responder comentarios (threads)",
+            "Editar e deletar comentarios",
+            "Mencionar usuarios"
+          ],
+          "labels": [
+            "story",
+            "social"
+          ],
+          "depends_on": [
+            "Sistema de Likes/Reacoes"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar sistema de comentarios",
+              "description": "API com suporte a threads",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/comment/crud.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Comment: id, postId, authorId, parentId (nullable, auto-referencia), content, createdAt, updatedAt. Replies: where parentId = commentId. Limite depth: 2 niveis. Include author. Soft delete."
+              }
+            },
+            {
+              "title": "Criar UI de comentarios",
+              "description": "Lista de comentarios com replies",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tiptap",
+                "files": [
+                  "components/comments/comment-section.tsx",
+                  "components/comments/comment-item.tsx",
+                  "components/comments/reply-form.tsx"
+                ],
+                "packages": [
+                  "@tiptap/react"
+                ],
+                "implementation_notes": "Lista de comentarios top-level. Cada um com 'Ver X respostas' colapsavel. Input de reply inline. Edit inline. Menu: editar, deletar. Time relative. Carregar mais se muitos."
+              },
+              "depends_on": [
+                "[TASK] Implementar sistema de comentarios"
+              ]
+            },
+            {
+              "title": "Implementar mencoes",
+              "description": "Autocomplete de usuarios",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Tiptap Mention, Prisma",
+                "files": [
+                  "components/editor/mention-suggestion.tsx",
+                  "lib/actions/user/search-users.ts"
+                ],
+                "packages": [
+                  "@tiptap/extension-mention"
+                ],
+                "implementation_notes": "Tiptap Mention extension. Trigger: '@'. Search users by name/username. Show avatar + name. On select: insert mention node. On save: extract mentioned user IDs. Notify mentioned users."
+              },
+              "depends_on": [
+                "[TASK] Criar UI de comentarios"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Compartilhamento",
+          "description": "Como usuario, quero compartilhar conteudo",
+          "acceptance_criteria": [
+            "Compartilhar para feed (repost)",
+            "Compartilhar com comentario (quote)",
+            "Compartilhar via link externo",
+            "Copiar link do post"
+          ],
+          "labels": [
+            "story",
+            "social"
+          ],
+          "depends_on": [
+            "Sistema de Likes/Reacoes"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar repost",
+              "description": "Compartilhar no feed proprio",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/post/repost.ts",
+                  "components/post/repost-button.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Post com repostOfId (nullable). Server Action repost(postId). Criar novo Post referenciando original. No feed: mostrar 'User repostou'. Contador de reposts no original. Undo repost."
+              }
+            },
+            {
+              "title": "Implementar quote",
+              "description": "Compartilhar com comentario",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js",
+                "files": [
+                  "lib/actions/post/quote.ts",
+                  "components/post/quote-dialog.tsx",
+                  "components/post/quoted-post.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Quote = Post com quoteOfId + conteudo proprio. UI: dialog com preview do post original + editor de comentario. Render: meu conteudo + card embed do original. Notificar autor original."
+              },
+              "depends_on": [
+                "[TASK] Implementar repost"
+              ]
+            },
+            {
+              "title": "Gerar links compartilhaveis",
+              "description": "URLs amigaveis e OG tags",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js Metadata API",
+                "files": [
+                  "app/p/[postId]/page.tsx",
+                  "lib/og/generate.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Rota publica /p/[postId] para permalink. generateMetadata(): og:title, og:description, og:image (screenshot ou template). Twitter card. Botao 'Copiar link' usa navigator.clipboard. Share API para mobile."
+              },
+              "depends_on": [
+                "[TASK] Implementar repost"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Bookmarks/Salvos",
+          "description": "Como usuario, quero salvar conteudo para ver depois",
+          "acceptance_criteria": [
+            "Salvar post com um clique",
+            "Lista de posts salvos",
+            "Organizar em colecoes",
+            "Buscar nos salvos"
+          ],
+          "labels": [
+            "story",
+            "social"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar sistema de bookmarks",
+              "description": "API de posts salvos",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/bookmark/toggle.ts",
+                  "lib/actions/bookmark/list.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Bookmark: id, userId, postId, collectionId (nullable), createdAt. Unique: userId + postId. Model Collection: id, userId, name. Server Actions: toggleBookmark, getBookmarks, createCollection."
+              }
+            },
+            {
+              "title": "Criar pagina de salvos",
+              "description": "Lista com colecoes",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS",
+                "files": [
+                  "app/(dashboard)/bookmarks/page.tsx",
+                  "components/bookmarks/bookmark-list.tsx",
+                  "components/bookmarks/collection-sidebar.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Sidebar: 'Todos', colecoes custom. Main: lista de posts salvos. Filtro por colecao. Busca. Ordenar por data salvo. Drag-and-drop para mover entre colecoes. Criar/renomear/deletar colecoes."
+              },
+              "depends_on": [
+                "[TASK] Implementar sistema de bookmarks"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Perfis e Seguidores",
+      "description": "Sistema de perfis publicos e conexoes entre usuarios",
+      "labels": [
+        "epic",
+        "profiles"
+      ],
+      "depends_on": [
+        "[EPIC] Interacoes Sociais"
+      ],
+      "stories": [
+        {
+          "title": "Perfil Publico",
+          "description": "Como usuario, quero ter um perfil publico",
+          "acceptance_criteria": [
+            "Pagina de perfil com bio e avatar",
+            "Feed de posts do usuario",
+            "Estatisticas (posts, seguidores)",
+            "Links para redes sociais"
+          ],
+          "labels": [
+            "story",
+            "profiles"
+          ],
+          "tasks": [
+            {
+              "title": "Criar pagina de perfil",
+              "description": "UI de perfil publico",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js App Router, Tailwind CSS",
+                "files": [
+                  "app/u/[username]/page.tsx",
+                  "components/profile/profile-header.tsx",
+                  "components/profile/profile-tabs.tsx",
+                  "components/profile/profile-stats.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Rota dinamica /u/[username]. Header: cover image, avatar, name, bio, stats, follow button. Tabs: Posts, Replies, Likes, Media. SEO: generateMetadata com og:image do avatar. ISR com revalidate."
+              }
+            },
+            {
+              "title": "Implementar API de perfil publico",
+              "description": "Endpoint GET /users/:username",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Prisma",
+                "files": [
+                  "lib/actions/user/get-public-profile.ts",
+                  "lib/user/stats.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Buscar user por username. Include: _count de posts, followers, following. Nao expor email ou dados privados. Cache com unstable_cache. 404 se usuario nao existe ou privado."
+              },
+              "depends_on": [
+                "[TASK] Criar pagina de perfil"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Sistema de Seguidores",
+          "description": "Como usuario, quero seguir outros usuarios",
+          "acceptance_criteria": [
+            "Seguir/deixar de seguir",
+            "Lista de seguidores e seguindo",
+            "Sugestoes de quem seguir",
+            "Notificacao ao ganhar seguidor"
+          ],
+          "labels": [
+            "story",
+            "profiles"
+          ],
+          "depends_on": [
+            "Perfil Publico"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar modelo de follow",
+              "description": "Schema e API de seguidores",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/follow/toggle.ts",
+                  "lib/actions/follow/list.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Follow: id, followerId, followingId, createdAt. Unique: followerId + followingId. Self-reference no User: followers, following. Server Actions: toggleFollow, getFollowers, getFollowing. Notificar ao seguir."
+              }
+            },
+            {
+              "title": "Criar botao de seguir",
+              "description": "UI com estados follow/unfollow",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Framer Motion",
+                "files": [
+                  "components/profile/follow-button.tsx"
+                ],
+                "packages": [
+                  "framer-motion"
+                ],
+                "implementation_notes": "Estados: Follow, Following, Unfollow (on hover). Optimistic update. Loading state. Se ja seguindo, hover muda para 'Unfollow' com cor vermelha. Animacao de transicao."
+              },
+              "depends_on": [
+                "[TASK] Implementar modelo de follow"
+              ]
+            },
+            {
+              "title": "Implementar sugestoes",
+              "description": "Algoritmo de recomendacao",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Algorithm",
+                "files": [
+                  "lib/suggestions/who-to-follow.ts",
+                  "components/sidebar/suggested-users.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Sugerir: amigos de amigos, mesmos interesses, populares. Excluir: ja seguindo, bloqueados. Algoritmo simples: users followed by people I follow. Sidebar widget: 3 sugestoes. Pagina discover: mais sugestoes."
+              },
+              "depends_on": [
+                "[TASK] Implementar modelo de follow"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Mensagens Diretas",
+      "description": "Comunicacao privada entre usuarios",
+      "labels": [
+        "epic",
+        "messaging"
+      ],
+      "depends_on": [
+        "[EPIC] Perfis e Seguidores"
+      ],
+      "stories": [
+        {
+          "title": "Chat 1-1",
+          "description": "Como usuario, quero enviar mensagens privadas",
+          "acceptance_criteria": [
+            "Enviar mensagem para qualquer usuario",
+            "Historico de conversas",
+            "Status de leitura",
+            "Tempo real"
+          ],
+          "labels": [
+            "story",
+            "messaging"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar modelo de mensagens",
+              "description": "Schema de conversas e mensagens",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma",
+                "files": [
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Conversation: id, participants (User[]), lastMessageAt, createdAt. Model Message: id, conversationId, senderId, content, readAt, createdAt. Many-to-many: User <-> Conversation via ConversationParticipant."
+              }
+            },
+            {
+              "title": "Implementar WebSocket para chat",
+              "description": "Real-time messaging",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Pusher, Next.js",
+                "files": [
+                  "lib/realtime/chat.ts",
+                  "lib/actions/message/send.ts"
+                ],
+                "packages": [
+                  "pusher",
+                  "pusher-js"
+                ],
+                "implementation_notes": "Channel: private-conversation-{id}. Eventos: new-message, message-read, typing. Server Action sendMessage(): salvar no DB, trigger Pusher event. Client: subscribe on mount, update state on event."
+              },
+              "depends_on": [
+                "[TASK] Implementar modelo de mensagens"
+              ]
+            },
+            {
+              "title": "Criar UI de chat",
+              "description": "Interface de conversas",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Pusher, Tailwind CSS",
+                "files": [
+                  "app/(dashboard)/messages/page.tsx",
+                  "app/(dashboard)/messages/[conversationId]/page.tsx",
+                  "components/chat/conversation-list.tsx",
+                  "components/chat/message-thread.tsx",
+                  "components/chat/message-input.tsx"
+                ],
+                "packages": [
+                  "pusher-js"
+                ],
+                "implementation_notes": "Layout 2 colunas: lista de conversas + thread ativa. Lista: avatar, nome, last message preview, unread badge. Thread: mensagens agrupadas por dia, bolhas left/right. Input: text + emoji picker. Virtual scroll para historico longo."
+              },
+              "depends_on": [
+                "[TASK] Implementar WebSocket para chat"
+              ]
+            },
+            {
+              "title": "Implementar read receipts",
+              "description": "Status de visualizacao",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Pusher",
+                "files": [
+                  "lib/actions/message/mark-read.ts",
+                  "components/chat/read-indicator.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Ao abrir conversa: marcar mensagens como lidas (readAt = now). Trigger evento 'message-read' para sender. UI: check duplo azul se lido. Otimizar: batch update, nao em cada mensagem."
+              },
+              "depends_on": [
+                "[TASK] Criar UI de chat"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Notificacoes",
+      "description": "Sistema de notificacoes para engajamento",
+      "labels": [
+        "epic",
+        "notifications"
+      ],
+      "depends_on": [
+        "[EPIC] Interacoes Sociais"
+      ],
+      "stories": [
+        {
+          "title": "Central de Notificacoes",
+          "description": "Como usuario, quero ver todas minhas notificacoes",
+          "acceptance_criteria": [
+            "Lista de notificacoes",
+            "Agrupar por tipo",
+            "Marcar como lida",
+            "Acesso direto ao conteudo"
+          ],
+          "labels": [
+            "story",
+            "notifications"
+          ],
+          "tasks": [
+            {
+              "title": "Criar modelo de notificacoes",
+              "description": "Schema e tipos de notificacao",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma",
+                "files": [
+                  "prisma/schema.prisma",
+                  "lib/notifications/types.ts"
+                ],
+                "packages": [],
+                "implementation_notes": "Model Notification: id, userId, type (enum: LIKE, COMMENT, FOLLOW, MENTION, REPOST), actorId, entityId, entityType, readAt, createdAt. Types: define messages e links por tipo."
+              }
+            },
+            {
+              "title": "Criar pagina de notificacoes",
+              "description": "UI de lista de notificacoes",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Tailwind CSS",
+                "files": [
+                  "app/(dashboard)/notifications/page.tsx",
+                  "components/notifications/notification-list.tsx",
+                  "components/notifications/notification-item.tsx"
+                ],
+                "packages": [],
+                "implementation_notes": "Lista com tabs: All, Mentions, Likes, Comments. Cada item: avatar, mensagem, tempo, link. Unread com background highlight. Click: marcar lida + navegar. Infinite scroll."
+              },
+              "depends_on": [
+                "[TASK] Criar modelo de notificacoes"
+              ]
+            },
+            {
+              "title": "Implementar real-time",
+              "description": "Push de notificacoes instantaneas",
+              "labels": [
+                "task",
+                "fullstack"
+              ],
+              "technical_details": {
+                "stack": "Pusher, Next.js",
+                "files": [
+                  "lib/notifications/send.ts",
+                  "lib/realtime/notifications.ts"
+                ],
+                "packages": [
+                  "pusher",
+                  "pusher-js"
+                ],
+                "implementation_notes": "Funcao sendNotification(userId, notification): salvar no DB, trigger Pusher. Channel: private-user-{userId}. Client: bell badge incrementa, toast opcional. Agrupar se multiplos em curto periodo."
+              },
+              "depends_on": [
+                "[TASK] Criar pagina de notificacoes"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Push Notifications",
+          "description": "Como usuario, quero receber push notifications",
+          "acceptance_criteria": [
+            "Push no mobile e desktop",
+            "Configurar quais eventos notificam",
+            "Deep link para conteudo",
+            "Respeitar horarios de nao perturbe"
+          ],
+          "labels": [
+            "story",
+            "notifications"
+          ],
+          "depends_on": [
+            "Central de Notificacoes"
+          ],
+          "tasks": [
+            {
+              "title": "Implementar web push",
+              "description": "Service worker e push API",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Web Push API, Service Worker",
+                "files": [
+                  "public/sw.js",
+                  "lib/push/subscribe.ts",
+                  "lib/push/vapid.ts"
+                ],
+                "packages": [
+                  "web-push"
+                ],
+                "implementation_notes": "Gerar VAPID keys: web-push generate-vapid-keys. Service worker para receber push. PushManager.subscribe() no client. Salvar subscription no DB (Model PushSubscription). web-push.sendNotification() no server."
+              }
+            },
+            {
+              "title": "Integrar servico de push",
+              "description": "OneSignal ou Firebase para reliability",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "OneSignal ou Firebase FCM",
+                "files": [
+                  "lib/push/onesignal.ts",
+                  "lib/push/send.ts"
+                ],
+                "packages": [
+                  "onesignal-node"
+                ],
+                "implementation_notes": "OneSignal free tier: unlimited. Criar app, configurar. API: createNotification({ include_player_ids, contents, url }). Salvar player_id no User. Fallback se push falha: email."
+              },
+              "depends_on": [
+                "[TASK] Implementar web push"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Analytics para Criadores",
+      "description": "Metricas e insights para criadores de conteudo",
+      "labels": [
+        "epic",
+        "analytics"
+      ],
+      "depends_on": [
+        "[EPIC] Criacao de Conteudo"
+      ],
+      "stories": [
+        {
+          "title": "Dashboard de Metricas",
+          "description": "Como criador, quero ver metricas do meu conteudo",
+          "acceptance_criteria": [
+            "Views, likes, comentarios por post",
+            "Crescimento de seguidores",
+            "Melhor horario para postar",
+            "Comparativo com periodo anterior"
+          ],
+          "labels": [
+            "story",
+            "analytics"
+          ],
+          "tasks": [
+            {
+              "title": "Criar API de analytics",
+              "description": "Agregacao de metricas",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js Server Actions",
+                "files": [
+                  "lib/actions/analytics/creator-stats.ts",
+                  "lib/analytics/aggregations.ts"
+                ],
+                "packages": [
+                  "date-fns"
+                ],
+                "implementation_notes": "Metricas: totalViews, totalLikes, totalComments, followerGrowth, engagementRate. Agrupar por dia/semana. Comparar com periodo anterior. Top posts. Best time to post (baseado em engajamento por hora)."
+              }
+            },
+            {
+              "title": "Criar dashboard de creator",
+              "description": "UI com graficos e metricas",
+              "labels": [
+                "task",
+                "frontend"
+              ],
+              "technical_details": {
+                "stack": "Next.js, Recharts, Tailwind CSS",
+                "files": [
+                  "app/(dashboard)/analytics/page.tsx",
+                  "components/analytics/creator-dashboard.tsx",
+                  "components/analytics/engagement-chart.tsx"
+                ],
+                "packages": [
+                  "recharts"
+                ],
+                "implementation_notes": "Cards de metricas com variacao. Grafico de linha: engajamento ao longo do tempo. Grafico de barra: melhores horarios. Lista: top performing posts. Periodo selector: 7d, 30d, 90d."
+              },
+              "depends_on": [
+                "[TASK] Criar API de analytics"
+              ]
+            },
+            {
+              "title": "Implementar tracking de views",
+              "description": "Contar visualizacoes unicas",
+              "labels": [
+                "task",
+                "backend"
+              ],
+              "technical_details": {
+                "stack": "Prisma, Next.js",
+                "files": [
+                  "lib/analytics/track-view.ts",
+                  "prisma/schema.prisma"
+                ],
+                "packages": [],
+                "implementation_notes": "Model PostView: id, postId, viewerId (nullable), ip (hashed), userAgent, createdAt. Unique por post+viewer ou post+ip em 24h. Incrementar viewsCount no Post. Chamar em /p/[postId] server component."
+              },
+              "depends_on": [
+                "[TASK] Criar API de analytics"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

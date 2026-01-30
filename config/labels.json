@@ -1,0 +1,189 @@
+{
+  "labels": [
+    {
+      "name": "epic",
+      "color": "8B5CF6",
+      "description": "Grandes iniciativas que agrupam multiplas stories"
+    },
+    {
+      "name": "story",
+      "color": "3B82F6",
+      "description": "User story com criterios de aceitacao"
+    },
+    {
+      "name": "task",
+      "color": "10B981",
+      "description": "Tarefa tecnica especifica"
+    },
+    {
+      "name": "core",
+      "color": "EF4444",
+      "description": "Funcionalidade essencial do sistema"
+    },
+    {
+      "name": "auth",
+      "color": "F59E0B",
+      "description": "Relacionado a autenticacao e usuarios"
+    },
+    {
+      "name": "billing",
+      "color": "EC4899",
+      "description": "Relacionado a pagamentos e assinaturas"
+    },
+    {
+      "name": "onboarding",
+      "color": "06B6D4",
+      "description": "Relacionado ao onboarding de usuarios"
+    },
+    {
+      "name": "settings",
+      "color": "6B7280",
+      "description": "Configuracoes e preferencias"
+    },
+    {
+      "name": "frontend",
+      "color": "8B5CF6",
+      "description": "Trabalho de interface do usuario"
+    },
+    {
+      "name": "backend",
+      "color": "059669",
+      "description": "Trabalho de API e servidor"
+    },
+    {
+      "name": "fullstack",
+      "color": "7C3AED",
+      "description": "Trabalho que envolve front e back"
+    },
+    {
+      "name": "integration",
+      "color": "F97316",
+      "description": "Integracao com servicos externos"
+    },
+    {
+      "name": "testing",
+      "color": "14B8A6",
+      "description": "Testes automatizados"
+    },
+    {
+      "name": "security",
+      "color": "DC2626",
+      "description": "Relacionado a seguranca"
+    },
+    {
+      "name": "growth",
+      "color": "84CC16",
+      "description": "Features de crescimento e retencao"
+    },
+    {
+      "name": "enhancement",
+      "color": "A855F7",
+      "description": "Melhoria de feature existente"
+    },
+    {
+      "name": "ux",
+      "color": "F472B6",
+      "description": "Experiencia do usuario"
+    },
+    {
+      "name": "dashboard",
+      "color": "0EA5E9",
+      "description": "Dashboard e metricas"
+    },
+    {
+      "name": "workspace",
+      "color": "6366F1",
+      "description": "Workspaces e projetos"
+    },
+    {
+      "name": "tasks",
+      "color": "22C55E",
+      "description": "Gestao de tarefas"
+    },
+    {
+      "name": "collaboration",
+      "color": "EAB308",
+      "description": "Colaboracao entre usuarios"
+    },
+    {
+      "name": "automation",
+      "color": "F43F5E",
+      "description": "Automacoes e workflows"
+    },
+    {
+      "name": "analytics",
+      "color": "0891B2",
+      "description": "Relatorios e analytics"
+    },
+    {
+      "name": "feed",
+      "color": "4ADE80",
+      "description": "Feed e timeline"
+    },
+    {
+      "name": "content",
+      "color": "FB923C",
+      "description": "Criacao de conteudo"
+    },
+    {
+      "name": "social",
+      "color": "E879F9",
+      "description": "Interacoes sociais"
+    },
+    {
+      "name": "profiles",
+      "color": "38BDF8",
+      "description": "Perfis e seguidores"
+    },
+    {
+      "name": "messaging",
+      "color": "A3E635",
+      "description": "Mensagens diretas"
+    },
+    {
+      "name": "communities",
+      "color": "FB7185",
+      "description": "Comunidades e grupos"
+    },
+    {
+      "name": "notifications",
+      "color": "FBBF24",
+      "description": "Sistema de notificacoes"
+    },
+    {
+      "name": "moderation",
+      "color": "BE123C",
+      "description": "Moderacao de conteudo"
+    },
+    {
+      "name": "trust",
+      "color": "0D9488",
+      "description": "Confianca e verificacao"
+    },
+    {
+      "name": "marketing",
+      "color": "F472B6",
+      "description": "Landing page e conversao"
+    },
+    {
+      "name": "seo",
+      "color": "34D399",
+      "description": "Otimizacao para buscadores"
+    },
+    {
+      "name": "legal",
+      "color": "9CA3AF",
+      "description": "Termos, privacidade e compliance"
+    },
+    {
+      "name": "branding",
+      "color": "8B5CF6",
+      "description": "Identidade visual e verbal da marca"
+    },
+    {
+      "name": "infrastructure",
+      "color": "64748B",
+      "description": "Infraestrutura, deploy e configuracao de ambiente"
+    }
+  ]
+}

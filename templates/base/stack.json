@@ -1,0 +1,1690 @@
+{
+  "epic": {
+    "title": "Stack Tecnologica e Infraestrutura",
+    "description": "Configuracao completa da stack Next.js 15.5 + TypeScript + Prisma + Cloudflare + Easypanel",
+    "labels": [
+      "epic",
+      "core",
+      "infrastructure"
+    ],
+    "stack_definida": {
+      "framework": "Next.js 15.5 (App Router, React 19, Turbopack)",
+      "linguagem": "TypeScript 5.x (strict mode)",
+      "orm": "Prisma 6.x",
+      "banco": "PostgreSQL 16 (Easypanel managed)",
+      "auth": "NextAuth.js v5 (Auth.js) com Prisma Adapter",
+      "estado": "Zustand 5.x",
+      "validacao": "Zod 3.x",
+      "ui": "shadcn/ui + Tailwind CSS 3.4+ + Lucide React",
+      "storage": "Cloudflare R2",
+      "hosting": "Easypanel",
+      "dominio": "Cloudflare DNS"
+    }
+  },
+  "stories": [
+    {
+      "title": "Setup do Repositorio",
+      "description": "Como desenvolvedor, quero um repositorio bem estruturado para iniciar o desenvolvimento",
+      "acceptance_criteria": [
+        "Repositorio Git inicializado",
+        "README.md com instrucoes",
+        "Estrutura de pastas definida",
+        ".gitignore configurado",
+        "Branch protection configurado"
+      ],
+      "labels": [
+        "story",
+        "infrastructure"
+      ],
+      "tasks": [
+        {
+          "title": "Criar estrutura de pastas do projeto",
+          "description": "Estrutura Next.js 15.5 App Router otimizada para SaaS",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Next.js 15.5 App Router",
+            "estrutura": {
+              "app/(auth)/": "Rotas publicas: login, register, forgot-password, verify-email",
+              "app/(dashboard)/": "Rotas protegidas: dashboard, settings, billing",
+              "app/(marketing)/": "Landing page, pricing, about, blog",
+              "app/api/": "API Routes e webhooks (stripe, etc)",
+              "components/ui/": "Componentes shadcn/ui",
+              "components/forms/": "Formularios reutilizaveis com react-hook-form + zod",
+              "components/layouts/": "DashboardLayout, MarketingLayout, Sidebar, Header",
+              "lib/actions/": "Server Actions com next-safe-action",
+              "lib/validations/": "Schemas Zod para forms e API",
+              "lib/stores/": "Zustand stores (ui-store, user-store)",
+              "lib/hooks/": "Custom hooks (useAuth, useMediaQuery, useDebounce)",
+              "lib/utils.ts": "Helper cn() do shadcn",
+              "prisma/": "Schema e migrations",
+              "types/": "TypeScript types globais e next-auth.d.ts"
+            },
+            "comando_criar": "mkdir -p app/{\\(auth\\),\\(dashboard\\),\\(marketing\\),api} components/{ui,forms,layouts} lib/{actions,validations,stores,hooks} prisma public types",
+            "verificar": "ls -la && find . -type d -maxdepth 3 | grep -E 'app|components|lib' | head -20"
+          }
+        },
+        {
+          "title": "Configurar .gitignore",
+          "description": "Ignorar arquivos sensiveis e build artifacts",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Git",
+            "ignorar": [
+              "node_modules/",
+              ".next/",
+              ".env",
+              ".env.local",
+              ".env.*.local",
+              "*.log",
+              ".DS_Store",
+              "coverage/",
+              ".turbo/",
+              "dist/",
+              "prisma/*.db",
+              "prisma/*.db-journal"
+            ],
+            "manter": [
+              ".env.example",
+              "prisma/schema.prisma"
+            ],
+            "comando_criar": "curl -sL https://www.toptal.com/developers/gitignore/api/node,react,nextjs,prisma,visualstudiocode > .gitignore && echo '\\n# Prisma\\nprisma/*.db\\nprisma/*.db-journal' >> .gitignore",
+            "verificar": "cat .gitignore | grep -E 'node_modules|.env|.next|prisma' | head -10"
+          }
+        },
+        {
+          "title": "Criar README inicial",
+          "description": "Documentacao para onboarding de devs",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Markdown",
+            "secoes": [
+              "Badges (Node 20+, Next.js 15.5, TypeScript, Prisma)",
+              "Descricao do projeto",
+              "Tech Stack (Next.js, Prisma, NextAuth, Zustand, Zod, shadcn, Cloudflare R2, Easypanel)",
+              "Pre-requisitos (Node 20+, pnpm 9+)",
+              "Setup local (clone, pnpm install, cp .env.example .env.local, pnpm prisma migrate dev, pnpm dev)",
+              "Variaveis de ambiente",
+              "Scripts disponiveis",
+              "Estrutura do projeto",
+              "Deploy (Easypanel)"
+            ],
+            "badges_exemplo": "![Next.js](https://img.shields.io/badge/Next.js-15.5-black) ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue) ![Prisma](https://img.shields.io/badge/Prisma-6.x-2D3748)",
+            "verificar": "cat README.md | head -50"
+          }
+        },
+        {
+          "title": "Configurar branch protection",
+          "description": "Proteger main, exigir PR review e CI passing",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "GitHub",
+            "regras": {
+              "require_pr": true,
+              "required_approvals": 1,
+              "require_status_checks": [
+                "lint",
+                "typecheck",
+                "test"
+              ],
+              "require_up_to_date": true,
+              "block_force_push": true
+            },
+            "comando_cli": "gh repo edit --enable-branch-protection",
+            "verificar": "gh api repos/{owner}/{repo}/branches/main/protection 2>/dev/null | jq '.required_status_checks' || echo 'Configurar manualmente no GitHub'"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Setup Next.js 15.5 com TypeScript",
+      "description": "Como desenvolvedor, quero o projeto Next.js 15.5 configurado com App Router e Turbopack",
+      "acceptance_criteria": [
+        "Next.js 15.5 com App Router e React 19",
+        "TypeScript 5.x em strict mode",
+        "ESLint 9 com flat config",
+        "Prettier 3 com plugin Tailwind",
+        "Tailwind CSS 3.4+"
+      ],
+      "labels": [
+        "story",
+        "fullstack",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup do Repositorio"
+      ],
+      "tasks": [
+        {
+          "title": "Criar projeto Next.js 15.5",
+          "description": "Setup inicial com create-next-app usando pnpm",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Next.js 15.5, React 19, TypeScript 5.x, Tailwind CSS 3.4+",
+            "packages": {
+              "dependencies": {
+                "next": "15.5.x",
+                "react": "19.x",
+                "react-dom": "19.x"
+              },
+              "devDependencies": {
+                "typescript": "5.x",
+                "@types/react": "19.x",
+                "@types/node": "20.x",
+                "tailwindcss": "3.4.x",
+                "postcss": "latest",
+                "autoprefixer": "latest"
+              }
+            },
+            "comando_criar": "pnpm create next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias '@/*' --use-pnpm",
+            "turbopack": "Habilitado automaticamente em dev com: pnpm dev (usa --turbo por padrao no Next 15+)",
+            "verificar_versao": "cat package.json | grep -E '\"next\"|\"react\"' | head -3",
+            "verificar_funciona": "pnpm dev && curl -s http://localhost:3000 | head -20"
+          }
+        },
+        {
+          "title": "Configurar TypeScript strict mode",
+          "description": "Habilitar todas as verificacoes de tipo",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "TypeScript 5.x",
+            "arquivo": "tsconfig.json",
+            "config": {
+              "compilerOptions": {
+                "strict": true,
+                "noUncheckedIndexedAccess": true,
+                "noImplicitReturns": true,
+                "noFallthroughCasesInSwitch": true,
+                "forceConsistentCasingInFileNames": true,
+                "baseUrl": ".",
+                "paths": {
+                  "@/*": [
+                    "./*"
+                  ],
+                  "@/components/*": [
+                    "components/*"
+                  ],
+                  "@/lib/*": [
+                    "lib/*"
+                  ],
+                  "@/types/*": [
+                    "types/*"
+                  ]
+                }
+              }
+            },
+            "verificar": "pnpm tsc --noEmit && echo 'TypeScript OK'"
+          },
+          "depends_on": [
+            "[TASK] Criar projeto Next.js 15.5"
+          ]
+        },
+        {
+          "title": "Configurar ESLint 9 com flat config",
+          "description": "Linting moderno para TypeScript e React",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "ESLint 9.x (flat config)",
+            "packages": {
+              "devDependencies": {
+                "eslint": "9.x",
+                "eslint-config-next": "15.x",
+                "@typescript-eslint/parser": "8.x",
+                "@typescript-eslint/eslint-plugin": "8.x"
+              }
+            },
+            "arquivo": "eslint.config.mjs",
+            "config_exemplo": "import { dirname } from 'path'; import { fileURLToPath } from 'url'; import { FlatCompat } from '@eslint/eslintrc'; const __dirname = dirname(fileURLToPath(import.meta.url)); const compat = new FlatCompat({ baseDirectory: __dirname }); export default [...compat.extends('next/core-web-vitals', 'next/typescript')];",
+            "comando_lint": "pnpm lint",
+            "verificar": "pnpm lint --max-warnings 0 && echo 'Lint OK'"
+          },
+          "depends_on": [
+            "[TASK] Criar projeto Next.js 15.5"
+          ]
+        },
+        {
+          "title": "Configurar Prettier 3 com plugin Tailwind",
+          "description": "Formatacao automatica com ordenacao de classes Tailwind",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Prettier 3.x, prettier-plugin-tailwindcss",
+            "packages": {
+              "devDependencies": {
+                "prettier": "3.x",
+                "prettier-plugin-tailwindcss": "0.6.x",
+                "eslint-config-prettier": "9.x"
+              }
+            },
+            "comando_instalar": "pnpm add -D prettier prettier-plugin-tailwindcss eslint-config-prettier",
+            "arquivo_prettierrc": {
+              "semi": false,
+              "singleQuote": true,
+              "tabWidth": 2,
+              "trailingComma": "es5",
+              "printWidth": 100,
+              "plugins": [
+                "prettier-plugin-tailwindcss"
+              ]
+            },
+            "arquivo_prettierignore": "node_modules\\n.next\\ncoverage\\npnpm-lock.yaml",
+            "scripts": {
+              "format": "prettier --write .",
+              "format:check": "prettier --check ."
+            },
+            "verificar": "pnpm prettier --check . && echo 'Prettier OK'"
+          },
+          "depends_on": [
+            "[TASK] Configurar ESLint 9 com flat config"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Prisma 6 com PostgreSQL",
+      "description": "Como desenvolvedor, quero Prisma ORM configurado com PostgreSQL",
+      "acceptance_criteria": [
+        "Prisma 6.x instalado",
+        "Schema com User, Account, Session para NextAuth",
+        "Campos SaaS: stripeCustomerId, subscriptionStatus",
+        "Migrations funcionando",
+        "Seeds de desenvolvimento"
+      ],
+      "labels": [
+        "story",
+        "backend",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Instalar Prisma 6",
+          "description": "Setup inicial do Prisma com PostgreSQL",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma 6.x, PostgreSQL 16",
+            "packages": {
+              "dependencies": {
+                "@prisma/client": "6.x"
+              },
+              "devDependencies": {
+                "prisma": "6.x"
+              }
+            },
+            "comando_instalar": "pnpm add @prisma/client && pnpm add -D prisma",
+            "comando_init": "pnpm prisma init --datasource-provider postgresql",
+            "env_var": "DATABASE_URL=postgresql://user:password@localhost:5432/mydb?schema=public",
+            "nota_easypanel": "No Easypanel, usar connection string do PostgreSQL managed. Se SSL required, adicionar: ?sslmode=require",
+            "verificar": "cat prisma/schema.prisma | head -15"
+          }
+        },
+        {
+          "title": "Criar schema inicial do banco",
+          "description": "Modelos User, Account, Session compatíveis com NextAuth + campos SaaS",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma Schema Language",
+            "modelos": {
+              "User": {
+                "campos": [
+                  "id String @id @default(cuid())",
+                  "name String?",
+                  "email String @unique",
+                  "emailVerified DateTime?",
+                  "image String?",
+                  "password String?",
+                  "role Role @default(USER)",
+                  "stripeCustomerId String? @unique",
+                  "subscriptionId String?",
+                  "subscriptionStatus String?",
+                  "createdAt DateTime @default(now())",
+                  "updatedAt DateTime @updatedAt"
+                ],
+                "relations": [
+                  "accounts Account[]",
+                  "sessions Session[]"
+                ]
+              },
+              "Account": {
+                "nota": "Para OAuth providers (Google, GitHub)",
+                "campos": [
+                  "userId",
+                  "type",
+                  "provider",
+                  "providerAccountId",
+                  "refresh_token",
+                  "access_token",
+                  "expires_at",
+                  "token_type",
+                  "scope",
+                  "id_token",
+                  "session_state"
+                ]
+              },
+              "Session": {
+                "campos": [
+                  "sessionToken String @unique",
+                  "userId",
+                  "expires DateTime"
+                ]
+              },
+              "VerificationToken": {
+                "campos": [
+                  "identifier",
+                  "token @unique",
+                  "expires"
+                ],
+                "unique": "@@unique([identifier, token])"
+              }
+            },
+            "enum_role": "enum Role { USER ADMIN }",
+            "verificar": "cat prisma/schema.prisma | grep -E 'model|enum' | head -10"
+          },
+          "depends_on": [
+            "[TASK] Instalar Prisma 6"
+          ]
+        },
+        {
+          "title": "Configurar Prisma Client singleton",
+          "description": "Evitar multiplas conexoes em hot reload do dev",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma Client, Next.js",
+            "arquivo": "lib/prisma.ts",
+            "codigo": "import { PrismaClient } from '@prisma/client'\\n\\nconst globalForPrisma = globalThis as unknown as { prisma: PrismaClient }\\n\\nexport const prisma = globalForPrisma.prisma || new PrismaClient()\\n\\nif (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma",
+            "uso": "import { prisma } from '@/lib/prisma'",
+            "verificar": "cat lib/prisma.ts && pnpm prisma generate"
+          },
+          "depends_on": [
+            "[TASK] Instalar Prisma 6"
+          ]
+        },
+        {
+          "title": "Configurar migrations e scripts",
+          "description": "Scripts npm para gerenciar banco",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma Migrate",
+            "scripts_package_json": {
+              "db:generate": "prisma generate",
+              "db:migrate": "prisma migrate dev",
+              "db:migrate:deploy": "prisma migrate deploy",
+              "db:push": "prisma db push",
+              "db:studio": "prisma studio",
+              "db:reset": "prisma migrate reset",
+              "db:seed": "prisma db seed"
+            },
+            "primeira_migration": "pnpm prisma migrate dev --name init",
+            "em_producao": "pnpm prisma migrate deploy",
+            "verificar": "pnpm prisma migrate dev --name init && pnpm prisma migrate status"
+          },
+          "depends_on": [
+            "[TASK] Criar schema inicial do banco"
+          ]
+        },
+        {
+          "title": "Criar seeds de desenvolvimento",
+          "description": "Dados fake para dev e testes com Faker.js",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma Seed, @faker-js/faker, tsx",
+            "packages": {
+              "devDependencies": {
+                "@faker-js/faker": "9.x",
+                "tsx": "4.x"
+              }
+            },
+            "comando_instalar": "pnpm add -D @faker-js/faker tsx",
+            "arquivo": "prisma/seed.ts",
+            "package_json_prisma": {
+              "prisma": {
+                "seed": "tsx prisma/seed.ts"
+              }
+            },
+            "dados_seed": {
+              "admin": "Usuario admin@example.com com role ADMIN e senha hasheada",
+              "usuarios_teste": "5-10 usuarios com faker.person, faker.internet",
+              "subscriptions": "Mix de usuarios free, trial, pro"
+            },
+            "verificar": "pnpm prisma db seed && pnpm prisma studio"
+          },
+          "depends_on": [
+            "[TASK] Configurar migrations e scripts"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup NextAuth.js v5",
+      "description": "Como desenvolvedor, quero autenticacao com Auth.js (NextAuth v5)",
+      "acceptance_criteria": [
+        "NextAuth v5 instalado e configurado",
+        "Prisma Adapter conectado",
+        "Credentials Provider (email/senha)",
+        "OAuth (Google, GitHub)",
+        "Middleware protegendo /dashboard/*",
+        "Session tipada com user.id e role"
+      ],
+      "labels": [
+        "story",
+        "backend",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Prisma 6 com PostgreSQL"
+      ],
+      "tasks": [
+        {
+          "title": "Instalar NextAuth v5 com Prisma Adapter",
+          "description": "Setup inicial do Auth.js",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "NextAuth.js v5 (Auth.js), @auth/prisma-adapter",
+            "packages": {
+              "dependencies": {
+                "next-auth": "5.0.0-beta.x (ou @latest quando estavel)",
+                "@auth/prisma-adapter": "2.x"
+              }
+            },
+            "comando_instalar": "pnpm add next-auth@beta @auth/prisma-adapter",
+            "arquivos": {
+              "auth.ts": "Configuracao principal (raiz do projeto)",
+              "app/api/auth/[...nextauth]/route.ts": "export { GET, POST } from '@/auth'",
+              "middleware.ts": "Protecao de rotas"
+            },
+            "env_vars": {
+              "AUTH_SECRET": "Gerar com: openssl rand -base64 32",
+              "AUTH_URL": "http://localhost:3000 (dev) ou https://seudominio.com (prod)"
+            },
+            "verificar": "pnpm dev && curl http://localhost:3000/api/auth/providers | jq"
+          }
+        },
+        {
+          "title": "Configurar Credentials Provider",
+          "description": "Login com email/senha usando bcryptjs",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "NextAuth.js, bcryptjs",
+            "packages": {
+              "dependencies": {
+                "bcryptjs": "2.x"
+              },
+              "devDependencies": {
+                "@types/bcryptjs": "2.x"
+              }
+            },
+            "comando_instalar": "pnpm add bcryptjs && pnpm add -D @types/bcryptjs",
+            "fluxo": [
+              "1. Usuario envia email + senha no form",
+              "2. CredentialsProvider.authorize() busca user por email no Prisma",
+              "3. Se user existe, compara senha: await bcrypt.compare(password, user.password)",
+              "4. Se match, retorna { id, email, name, role }",
+              "5. Callback jwt() adiciona user.id e user.role ao token",
+              "6. Callback session() expoe user.id e user.role no client"
+            ],
+            "hash_senha": "const hashedPassword = await bcrypt.hash(password, 12)",
+            "verificar": "Criar usuario no seed com senha hasheada e testar login em /auth/login"
+          },
+          "depends_on": [
+            "[TASK] Instalar NextAuth v5 com Prisma Adapter"
+          ]
+        },
+        {
+          "title": "Configurar OAuth Providers",
+          "description": "Login social com Google e GitHub",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "NextAuth.js OAuth",
+            "providers": {
+              "google": {
+                "console": "https://console.cloud.google.com/apis/credentials",
+                "env_vars": [
+                  "GOOGLE_CLIENT_ID",
+                  "GOOGLE_CLIENT_SECRET"
+                ],
+                "callback_url": "/api/auth/callback/google",
+                "scopes": [
+                  "openid",
+                  "email",
+                  "profile"
+                ]
+              },
+              "github": {
+                "console": "https://github.com/settings/developers",
+                "env_vars": [
+                  "GITHUB_CLIENT_ID",
+                  "GITHUB_CLIENT_SECRET"
+                ],
+                "callback_url": "/api/auth/callback/github"
+              }
+            },
+            "config_auth_ts": "providers: [Google, GitHub, Credentials({...})]",
+            "verificar_google": "Acessar /api/auth/signin, clicar Google, verificar redirect e login",
+            "verificar_github": "Acessar /api/auth/signin, clicar GitHub, verificar redirect e login"
+          },
+          "depends_on": [
+            "[TASK] Configurar Credentials Provider"
+          ]
+        },
+        {
+          "title": "Tipar session com campos customizados",
+          "description": "Adicionar user.id e user.role a session",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "TypeScript, NextAuth.js",
+            "arquivo": "types/next-auth.d.ts",
+            "declaracoes": {
+              "module_next_auth": {
+                "interface_Session": {
+                  "user": {
+                    "id": "string",
+                    "role": "string"
+                  }
+                },
+                "interface_User": {
+                  "role": "string"
+                }
+              },
+              "module_next_auth_jwt": {
+                "interface_JWT": {
+                  "id": "string",
+                  "role": "string"
+                }
+              }
+            },
+            "callbacks_auth_ts": {
+              "jwt": "token.id = user.id; token.role = user.role; return token;",
+              "session": "session.user.id = token.id; session.user.role = token.role; return session;"
+            },
+            "verificar": "const { data: session } = useSession(); console.log(session.user.id) // deve ser tipado"
+          },
+          "depends_on": [
+            "[TASK] Configurar Credentials Provider"
+          ]
+        },
+        {
+          "title": "Configurar middleware de protecao",
+          "description": "Proteger /dashboard/*, /settings/*, /api/protected/*",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Middleware, NextAuth.js",
+            "arquivo": "middleware.ts",
+            "codigo": "export { auth as middleware } from '@/auth'\\n\\nexport const config = {\\n  matcher: ['/dashboard/:path*', '/settings/:path*', '/api/protected/:path*']\\n}",
+            "auth_ts_callbacks": {
+              "authorized": "({ auth }) => !!auth // true = autorizado, false = redireciona"
+            },
+            "auth_ts_pages": {
+              "signIn": "/auth/login",
+              "error": "/auth/error"
+            },
+            "verificar": "Acessar /dashboard deslogado, deve redirecionar para /auth/login"
+          },
+          "depends_on": [
+            "[TASK] Instalar NextAuth v5 com Prisma Adapter"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup shadcn/ui com Lucide",
+      "description": "Como desenvolvedor frontend, quero shadcn/ui configurado com Tailwind e Lucide icons",
+      "acceptance_criteria": [
+        "shadcn/ui inicializado (estilo New York)",
+        "Componentes essenciais instalados",
+        "Lucide React para icones",
+        "Dark mode com next-themes",
+        "Layouts base criados"
+      ],
+      "labels": [
+        "story",
+        "frontend",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Inicializar shadcn/ui",
+          "description": "Setup via CLI com estilo New York e CSS variables",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "shadcn/ui, Radix UI, Tailwind CSS, Lucide React",
+            "comando_init": "pnpm dlx shadcn@latest init",
+            "opcoes_recomendadas": {
+              "style": "new-york",
+              "base_color": "zinc",
+              "css_variables": true,
+              "tailwind_config": "tailwind.config.ts",
+              "components_location": "components",
+              "utils_location": "lib/utils"
+            },
+            "packages_instalados": [
+              "class-variance-authority",
+              "clsx",
+              "tailwind-merge",
+              "lucide-react",
+              "tailwindcss-animate"
+            ],
+            "arquivos_criados": {
+              "components.json": "Configuracao do shadcn CLI",
+              "lib/utils.ts": "Helper cn() para merge de classes Tailwind",
+              "app/globals.css": "CSS variables do tema (light/dark)"
+            },
+            "verificar": "cat components.json && cat lib/utils.ts"
+          }
+        },
+        {
+          "title": "Instalar componentes shadcn essenciais",
+          "description": "Adicionar componentes mais usados em SaaS",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "shadcn/ui",
+            "comando_instalar": "pnpm dlx shadcn@latest add button input label form card dialog sheet toast dropdown-menu tabs table avatar badge skeleton alert separator",
+            "componentes_por_categoria": {
+              "formularios": [
+                "button",
+                "input",
+                "label",
+                "form",
+                "select",
+                "checkbox",
+                "switch",
+                "textarea"
+              ],
+              "feedback": [
+                "alert",
+                "dialog",
+                "sheet",
+                "toast",
+                "skeleton",
+                "progress"
+              ],
+              "navegacao": [
+                "dropdown-menu",
+                "tabs",
+                "breadcrumb",
+                "navigation-menu"
+              ],
+              "dados": [
+                "table",
+                "card",
+                "badge",
+                "avatar",
+                "separator"
+              ]
+            },
+            "verificar": "ls components/ui/ | wc -l # deve ter 15+ componentes"
+          },
+          "depends_on": [
+            "[TASK] Inicializar shadcn/ui"
+          ]
+        },
+        {
+          "title": "Configurar Lucide React",
+          "description": "Biblioteca de icones usada pelo shadcn",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Lucide React (ja instalado pelo shadcn)",
+            "uso": {
+              "import": "import { Home, Settings, User, ChevronRight, LogOut, Moon, Sun } from 'lucide-react'",
+              "componente": "<Home className=\"h-4 w-4\" />",
+              "com_button": "<Button><Settings className=\"mr-2 h-4 w-4\" /> Configuracoes</Button>",
+              "tamanhos_comuns": {
+                "h-4 w-4": "Icones em botoes e menus",
+                "h-5 w-5": "Icones em navegacao",
+                "h-6 w-6": "Icones em headers"
+              }
+            },
+            "catalogo": "https://lucide.dev/icons/ - buscar icones por nome",
+            "verificar": "Criar componente com <Home className=\"h-6 w-6\" /> e verificar render"
+          },
+          "depends_on": [
+            "[TASK] Inicializar shadcn/ui"
+          ]
+        },
+        {
+          "title": "Configurar dark mode com next-themes",
+          "description": "Toggle de tema claro/escuro",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "next-themes 0.4.x",
+            "packages": {
+              "dependencies": {
+                "next-themes": "0.4.x"
+              }
+            },
+            "comando_instalar": "pnpm add next-themes",
+            "arquivo_providers": "app/providers.tsx - ThemeProvider wrapper",
+            "arquivo_toggle": "components/theme-toggle.tsx - Botao com Sun/Moon",
+            "config_ThemeProvider": {
+              "attribute": "class",
+              "defaultTheme": "system",
+              "enableSystem": true,
+              "disableTransitionOnChange": true
+            },
+            "tailwind_config": "darkMode: 'class'",
+            "uso_toggle": "const { theme, setTheme } = useTheme()",
+            "verificar": "Clicar no toggle, verificar classe 'dark' no <html>, verificar cores mudam"
+          },
+          "depends_on": [
+            "[TASK] Inicializar shadcn/ui"
+          ]
+        },
+        {
+          "title": "Criar componentes de layout",
+          "description": "DashboardLayout, Sidebar, Header para estrutura base",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, shadcn/ui, Lucide React",
+            "componentes": {
+              "DashboardLayout": {
+                "arquivo": "components/layouts/dashboard-layout.tsx",
+                "features": [
+                  "Sidebar collapsible",
+                  "Header com user menu",
+                  "Main content area",
+                  "Mobile: Sheet sidebar"
+                ]
+              },
+              "Sidebar": {
+                "arquivo": "components/layouts/sidebar.tsx",
+                "features": [
+                  "Nav items com Lucide icons",
+                  "Active state highlight",
+                  "Collapse/expand button",
+                  "User info no bottom"
+                ]
+              },
+              "Header": {
+                "arquivo": "components/layouts/header.tsx",
+                "features": [
+                  "Logo",
+                  "Breadcrumb",
+                  "Search (opcional)",
+                  "Notifications",
+                  "User dropdown (DropdownMenu)",
+                  "Theme toggle"
+                ]
+              },
+              "MarketingLayout": {
+                "arquivo": "components/layouts/marketing-layout.tsx",
+                "features": [
+                  "Header com nav links",
+                  "Footer com links e social"
+                ]
+              }
+            },
+            "verificar": "Importar DashboardLayout em app/(dashboard)/layout.tsx e verificar render"
+          },
+          "depends_on": [
+            "[TASK] Instalar componentes shadcn essenciais",
+            "[TASK] Configurar dark mode com next-themes"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Zustand para Estado Global",
+      "description": "Como desenvolvedor, quero estado global type-safe com Zustand",
+      "acceptance_criteria": [
+        "Zustand 5.x instalado",
+        "UI Store (sidebar, modals)",
+        "User Store com persist",
+        "Hooks customizados"
+      ],
+      "labels": [
+        "story",
+        "frontend",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Instalar Zustand 5",
+          "description": "Setup do gerenciador de estado",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Zustand 5.x",
+            "packages": {
+              "dependencies": {
+                "zustand": "5.x"
+              }
+            },
+            "comando_instalar": "pnpm add zustand",
+            "vantagens": [
+              "Menor bundle que Redux/MobX",
+              "API simples e intuitiva",
+              "TypeScript first",
+              "Middlewares uteis (persist, devtools)"
+            ],
+            "verificar": "cat package.json | grep zustand"
+          }
+        },
+        {
+          "title": "Criar UI Store",
+          "description": "Estado para controles de UI (sidebar, modals)",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Zustand",
+            "arquivo": "lib/stores/ui-store.ts",
+            "estado": {
+              "sidebarOpen": "boolean - Sidebar expanded/collapsed",
+              "sidebarMobileOpen": "boolean - Mobile menu",
+              "activeModal": "string | null - Modal ID aberto"
+            },
+            "acoes": {
+              "toggleSidebar": "() => set((s) => ({ sidebarOpen: !s.sidebarOpen }))",
+              "setSidebarMobileOpen": "(open: boolean) => set({ sidebarMobileOpen: open })",
+              "openModal": "(id: string) => set({ activeModal: id })",
+              "closeModal": "() => set({ activeModal: null })"
+            },
+            "uso": "const { sidebarOpen, toggleSidebar } = useUIStore()",
+            "verificar": "Usar toggleSidebar() em botao e verificar sidebar muda"
+          },
+          "depends_on": [
+            "[TASK] Instalar Zustand 5"
+          ]
+        },
+        {
+          "title": "Criar User Store com persist",
+          "description": "Cache de preferencias do usuario com persistencia",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Zustand, persist middleware",
+            "arquivo": "lib/stores/user-store.ts",
+            "estado": {
+              "preferences": {
+                "theme": "light | dark | system",
+                "sidebarCollapsed": "boolean",
+                "notifications": "boolean"
+              }
+            },
+            "middleware_persist": {
+              "name": "user-preferences",
+              "storage": "localStorage (default)",
+              "partialize": "(state) => ({ preferences: state.preferences })"
+            },
+            "codigo_exemplo": "export const useUserStore = create<UserState>()(persist((set) => ({ preferences: { theme: 'system' }, setPreference: (key, value) => set((s) => ({ preferences: { ...s.preferences, [key]: value } })) }), { name: 'user-preferences' }))",
+            "verificar": "Mudar preference, recarregar pagina, verificar que persistiu no localStorage"
+          },
+          "depends_on": [
+            "[TASK] Instalar Zustand 5"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Zod para Validacao",
+      "description": "Como desenvolvedor, quero validacao type-safe com Zod",
+      "acceptance_criteria": [
+        "Zod instalado",
+        "Schemas para auth (login, register)",
+        "Integracao com react-hook-form",
+        "Validacao de env vars",
+        "Server Actions type-safe"
+      ],
+      "labels": [
+        "story",
+        "fullstack",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Instalar Zod e react-hook-form",
+          "description": "Setup para validacao de formularios",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Zod 3.x, react-hook-form 7.x, @hookform/resolvers",
+            "packages": {
+              "dependencies": {
+                "zod": "3.x",
+                "react-hook-form": "7.x",
+                "@hookform/resolvers": "3.x"
+              }
+            },
+            "comando_instalar": "pnpm add zod react-hook-form @hookform/resolvers",
+            "verificar": "cat package.json | grep -E 'zod|react-hook-form|resolvers'"
+          }
+        },
+        {
+          "title": "Criar schemas de validacao",
+          "description": "Schemas Zod reutilizaveis para auth e user",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Zod",
+            "arquivo": "lib/validations/auth.ts",
+            "schemas": {
+              "loginSchema": {
+                "email": "z.string().email('Email invalido')",
+                "password": "z.string().min(1, 'Senha obrigatoria')"
+              },
+              "registerSchema": {
+                "name": "z.string().min(2, 'Nome muito curto')",
+                "email": "z.string().email('Email invalido')",
+                "password": "z.string().min(8, 'Minimo 8 caracteres').regex(/[A-Z]/, 'Precisa ter maiuscula').regex(/[0-9]/, 'Precisa ter numero')",
+                "confirmPassword": "z.string()",
+                "refine": "(data) => data.password === data.confirmPassword, { message: 'Senhas nao conferem', path: ['confirmPassword'] }"
+              }
+            },
+            "tipo_inferido": "type LoginInput = z.infer<typeof loginSchema>",
+            "verificar": "loginSchema.parse({ email: 'test@test.com', password: '12345678' }) // deve passar"
+          },
+          "depends_on": [
+            "[TASK] Instalar Zod e react-hook-form"
+          ]
+        },
+        {
+          "title": "Configurar validacao de env vars",
+          "description": "Type-safe environment variables com @t3-oss/env",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "@t3-oss/env-nextjs, Zod",
+            "packages": {
+              "dependencies": {
+                "@t3-oss/env-nextjs": "0.11.x"
+              }
+            },
+            "comando_instalar": "pnpm add @t3-oss/env-nextjs",
+            "arquivo": "lib/env.ts",
+            "schema": {
+              "server": {
+                "DATABASE_URL": "z.string().url()",
+                "AUTH_SECRET": "z.string().min(32)",
+                "STRIPE_SECRET_KEY": "z.string().startsWith('sk_')",
+                "STRIPE_WEBHOOK_SECRET": "z.string().startsWith('whsec_')",
+                "RESEND_API_KEY": "z.string().startsWith('re_')",
+                "CLOUDFLARE_R2_ACCESS_KEY_ID": "z.string()",
+                "CLOUDFLARE_R2_SECRET_ACCESS_KEY": "z.string()",
+                "CLOUDFLARE_R2_BUCKET_NAME": "z.string()",
+                "CLOUDFLARE_ACCOUNT_ID": "z.string()"
+              },
+              "client": {
+                "NEXT_PUBLIC_APP_URL": "z.string().url()",
+                "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY": "z.string().startsWith('pk_')"
+              }
+            },
+            "verificar": "Remover DATABASE_URL do .env.local e rodar pnpm dev - deve falhar com erro claro"
+          },
+          "depends_on": [
+            "[TASK] Instalar Zod e react-hook-form"
+          ]
+        },
+        {
+          "title": "Configurar Server Actions type-safe",
+          "description": "next-safe-action para Server Actions validadas",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "next-safe-action 7.x, Zod",
+            "packages": {
+              "dependencies": {
+                "next-safe-action": "7.x"
+              }
+            },
+            "comando_instalar": "pnpm add next-safe-action",
+            "arquivo": "lib/safe-action.ts",
+            "config": {
+              "actionClient": "createSafeActionClient()",
+              "authActionClient": "actionClient.use(async ({ next }) => { const session = await auth(); if (!session?.user) throw new Error('Unauthorized'); return next({ ctx: { user: session.user } }); })"
+            },
+            "uso": "export const updateProfile = authActionClient.schema(updateProfileSchema).action(async ({ parsedInput, ctx }) => { const { user } = ctx; // ... })",
+            "beneficios": [
+              "Validacao Zod automatica",
+              "Tipos inferidos para input e output",
+              "Middleware de auth reutilizavel",
+              "Error handling padronizado"
+            ],
+            "verificar": "Criar action e verificar que TypeScript infere tipos corretamente"
+          },
+          "depends_on": [
+            "[TASK] Criar schemas de validacao"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Cloudflare R2 Storage",
+      "description": "Como desenvolvedor, quero storage de arquivos com Cloudflare R2",
+      "acceptance_criteria": [
+        "Bucket R2 criado no Cloudflare",
+        "AWS SDK S3 configurado para R2",
+        "Funcoes de upload/download",
+        "Presigned URLs funcionando"
+      ],
+      "labels": [
+        "story",
+        "backend",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Criar bucket no Cloudflare R2",
+          "description": "Setup do bucket via Cloudflare Dashboard",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "Cloudflare R2",
+            "passos": [
+              "1. Acessar https://dash.cloudflare.com > R2",
+              "2. Create bucket (nome: meuapp-uploads ou similar)",
+              "3. Anotar: bucket name, account ID",
+              "4. Manage R2 API Tokens > Create API token",
+              "5. Permissoes: Object Read & Write",
+              "6. Copiar: Access Key ID, Secret Access Key"
+            ],
+            "env_vars": {
+              "CLOUDFLARE_ACCOUNT_ID": "Seu account ID (visivel na URL do dashboard)",
+              "CLOUDFLARE_R2_ACCESS_KEY_ID": "Access Key do token criado",
+              "CLOUDFLARE_R2_SECRET_ACCESS_KEY": "Secret Key do token criado",
+              "CLOUDFLARE_R2_BUCKET_NAME": "Nome do bucket (ex: meuapp-uploads)",
+              "CLOUDFLARE_R2_PUBLIC_URL": "Opcional: custom domain se configurado"
+            },
+            "verificar": "Acessar R2 dashboard e verificar bucket aparece na lista"
+          }
+        },
+        {
+          "title": "Configurar AWS SDK S3 para R2",
+          "description": "Usar @aws-sdk/client-s3 com endpoint R2",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "@aws-sdk/client-s3 3.x, @aws-sdk/s3-request-presigner",
+            "packages": {
+              "dependencies": {
+                "@aws-sdk/client-s3": "3.x",
+                "@aws-sdk/s3-request-presigner": "3.x"
+              }
+            },
+            "comando_instalar": "pnpm add @aws-sdk/client-s3 @aws-sdk/s3-request-presigner",
+            "arquivo": "lib/storage/r2-client.ts",
+            "config_S3Client": {
+              "region": "auto",
+              "endpoint": "https://{CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com",
+              "credentials": {
+                "accessKeyId": "process.env.CLOUDFLARE_R2_ACCESS_KEY_ID",
+                "secretAccessKey": "process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY"
+              }
+            },
+            "verificar": "ListObjectsV2Command para listar objetos do bucket"
+          },
+          "depends_on": [
+            "[TASK] Criar bucket no Cloudflare R2"
+          ]
+        },
+        {
+          "title": "Criar funcoes de storage",
+          "description": "Helpers para upload, download, delete, presigned URLs",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "@aws-sdk/client-s3, @aws-sdk/s3-request-presigner",
+            "arquivo": "lib/storage/index.ts",
+            "funcoes": {
+              "uploadFile": {
+                "params": "(file: Buffer, key: string, contentType: string)",
+                "usa": "PutObjectCommand",
+                "retorna": "Promise<{ url: string, key: string }>"
+              },
+              "deleteFile": {
+                "params": "(key: string)",
+                "usa": "DeleteObjectCommand",
+                "retorna": "Promise<void>"
+              },
+              "getSignedUploadUrl": {
+                "params": "(key: string, contentType: string, expiresIn = 3600)",
+                "usa": "getSignedUrl(client, new PutObjectCommand({...}), { expiresIn })",
+                "retorna": "Promise<string> - URL para upload direto"
+              },
+              "getSignedDownloadUrl": {
+                "params": "(key: string, expiresIn = 3600)",
+                "usa": "getSignedUrl(client, new GetObjectCommand({...}), { expiresIn })",
+                "retorna": "Promise<string> - URL para download"
+              }
+            },
+            "verificar": "Fazer upload de arquivo de teste e verificar no R2 dashboard"
+          },
+          "depends_on": [
+            "[TASK] Configurar AWS SDK S3 para R2"
+          ]
+        },
+        {
+          "title": "Criar API routes de upload",
+          "description": "Endpoints para solicitar presigned URLs",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js API Routes, R2",
+            "arquivo": "app/api/upload/route.ts",
+            "fluxo_upload_direto": [
+              "1. Client POST /api/upload com { filename, contentType }",
+              "2. Server gera presigned PUT URL (expira em 5min)",
+              "3. Server retorna { uploadUrl, key }",
+              "4. Client faz PUT direto para R2 com o arquivo",
+              "5. Upload vai direto pro R2, nao passa pelo server Next.js"
+            ],
+            "beneficios": [
+              "Server nao processa arquivo (menos CPU/memoria)",
+              "Suporta arquivos grandes",
+              "Menor latencia"
+            ],
+            "validacao": "Validar contentType permitido, tamanho max, extensao",
+            "verificar": "Testar upload de imagem via frontend e verificar no R2"
+          },
+          "depends_on": [
+            "[TASK] Criar funcoes de storage"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Easypanel para Deploy",
+      "description": "Como desenvolvedor, quero deploy automatizado no Easypanel com PostgreSQL managed",
+      "acceptance_criteria": [
+        "Projeto configurado no Easypanel",
+        "PostgreSQL provisionado",
+        "Variaveis de ambiente configuradas",
+        "Dominio Cloudflare apontando",
+        "Deploy automatico via GitHub"
+      ],
+      "labels": [
+        "story",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup CI/CD"
+      ],
+      "tasks": [
+        {
+          "title": "Configurar projeto no Easypanel",
+          "description": "Setup inicial do app Next.js",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "Easypanel, Next.js",
+            "passos": [
+              "1. Acessar Easypanel dashboard",
+              "2. Create New Project",
+              "3. Add App > selecionar tipo 'App' ou 'Dockerfile'",
+              "4. Conectar repositorio GitHub",
+              "5. Configurar build:",
+              "   - Build Command: pnpm build",
+              "   - Start Command: pnpm start",
+              "   - Port: 3000",
+              "6. Aguardar primeiro deploy"
+            ],
+            "dockerfile_opcional": "Se preferir usar Dockerfile: FROM node:20-alpine, WORKDIR /app, COPY package.json pnpm-lock.yaml, RUN corepack enable && pnpm install, COPY . ., RUN pnpm build, CMD pnpm start",
+            "verificar": "Acessar URL temporaria do Easypanel e verificar app rodando"
+          }
+        },
+        {
+          "title": "Provisionar PostgreSQL",
+          "description": "Criar instancia PostgreSQL managed no Easypanel",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "PostgreSQL 16, Easypanel",
+            "passos": [
+              "1. No projeto, Add Service > Database > PostgreSQL",
+              "2. Configurar versao: 16",
+              "3. Definir storage (5GB+ recomendado)",
+              "4. Copiar connection string gerada",
+              "5. Adicionar DATABASE_URL nas env vars do app"
+            ],
+            "connection_string_formato": "postgresql://postgres:SENHA@postgres-NOME:5432/postgres",
+            "verificar": "pnpm prisma db push (deve conectar e criar tabelas)"
+          },
+          "depends_on": [
+            "[TASK] Configurar projeto no Easypanel"
+          ]
+        },
+        {
+          "title": "Configurar variaveis de ambiente",
+          "description": "Adicionar todas as env vars de producao",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "Easypanel Environment Variables",
+            "vars_obrigatorias": {
+              "DATABASE_URL": "postgresql://... (do PostgreSQL Easypanel)",
+              "AUTH_SECRET": "openssl rand -base64 32",
+              "AUTH_URL": "https://seudominio.com",
+              "NEXT_PUBLIC_APP_URL": "https://seudominio.com",
+              "STRIPE_SECRET_KEY": "sk_live_...",
+              "STRIPE_WEBHOOK_SECRET": "whsec_...",
+              "STRIPE_PUBLISHABLE_KEY": "pk_live_...",
+              "CLOUDFLARE_ACCOUNT_ID": "...",
+              "CLOUDFLARE_R2_ACCESS_KEY_ID": "...",
+              "CLOUDFLARE_R2_SECRET_ACCESS_KEY": "...",
+              "CLOUDFLARE_R2_BUCKET_NAME": "...",
+              "RESEND_API_KEY": "re_..."
+            },
+            "dica": "Gerar AUTH_SECRET em producao diferente de dev",
+            "verificar": "Deploy e verificar que app inicia sem erros de env var faltando"
+          },
+          "depends_on": [
+            "[TASK] Provisionar PostgreSQL"
+          ]
+        },
+        {
+          "title": "Configurar dominio Cloudflare",
+          "description": "Apontar DNS do Cloudflare para Easypanel",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "Cloudflare DNS, Easypanel",
+            "passos": [
+              "1. No Easypanel, ir em Settings > Domains",
+              "2. Add domain: seudominio.com",
+              "3. Copiar IP ou CNAME fornecido",
+              "4. No Cloudflare DNS, criar records:",
+              "   - A: @ -> IP do Easypanel (Proxied)",
+              "   - CNAME: www -> @ (Proxied)",
+              "5. Aguardar propagacao (ate 24h, geralmente minutos)",
+              "6. No Easypanel, verificar que certificado SSL foi gerado"
+            ],
+            "cloudflare_settings": {
+              "SSL/TLS": "Full (strict)",
+              "Always Use HTTPS": true,
+              "Minimum TLS Version": "1.2"
+            },
+            "verificar_dns": "dig seudominio.com +short",
+            "verificar_ssl": "curl -I https://seudominio.com | grep -i strict"
+          },
+          "depends_on": [
+            "[TASK] Configurar variaveis de ambiente"
+          ]
+        },
+        {
+          "title": "Configurar deploy automatico",
+          "description": "Deploy em push para main via webhook GitHub",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "Easypanel, GitHub Webhooks",
+            "passos": [
+              "1. No app Easypanel, ir em Settings > Source",
+              "2. Habilitar 'Auto Deploy'",
+              "3. Branch: main (ou branch de producao)",
+              "4. Easypanel cria webhook automaticamente no GitHub",
+              "5. Testar: fazer commit em main e verificar deploy inicia"
+            ],
+            "rollback": "No Easypanel, manter historico de deploys para rollback rapido",
+            "verificar": "git push origin main && verificar deploy nos logs do Easypanel"
+          },
+          "depends_on": [
+            "[TASK] Configurar dominio Cloudflare"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Setup Testes",
+      "description": "Como desenvolvedor, quero testes automatizados configurados",
+      "acceptance_criteria": [
+        "Vitest para unit tests",
+        "Testing Library para componentes",
+        "Playwright para E2E",
+        "Coverage report"
+      ],
+      "labels": [
+        "story",
+        "testing",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Configurar Vitest",
+          "description": "Test runner rapido compatível com Vite",
+          "labels": [
+            "task",
+            "testing"
+          ],
+          "technical_details": {
+            "stack": "Vitest 2.x, jsdom",
+            "packages": {
+              "devDependencies": {
+                "vitest": "2.x",
+                "@vitejs/plugin-react": "4.x",
+                "jsdom": "25.x",
+                "@vitest/coverage-v8": "2.x"
+              }
+            },
+            "comando_instalar": "pnpm add -D vitest @vitejs/plugin-react jsdom @vitest/coverage-v8",
+            "arquivo": "vitest.config.ts",
+            "config": {
+              "test": {
+                "globals": true,
+                "environment": "jsdom",
+                "setupFiles": [
+                  "./lib/test-setup.ts"
+                ],
+                "include": [
+                  "**/*.{test,spec}.{ts,tsx}"
+                ],
+                "coverage": {
+                  "provider": "v8",
+                  "reporter": [
+                    "text",
+                    "html"
+                  ],
+                  "exclude": [
+                    "node_modules",
+                    ".next"
+                  ]
+                }
+              },
+              "resolve": {
+                "alias": {
+                  "@/*": "./*"
+                }
+              }
+            },
+            "scripts": {
+              "test": "vitest",
+              "test:run": "vitest run",
+              "test:coverage": "vitest run --coverage"
+            },
+            "verificar": "pnpm test:run"
+          }
+        },
+        {
+          "title": "Configurar Testing Library",
+          "description": "Testes de componentes React",
+          "labels": [
+            "task",
+            "testing"
+          ],
+          "technical_details": {
+            "stack": "Testing Library React",
+            "packages": {
+              "devDependencies": {
+                "@testing-library/react": "16.x",
+                "@testing-library/jest-dom": "6.x",
+                "@testing-library/user-event": "14.x"
+              }
+            },
+            "comando_instalar": "pnpm add -D @testing-library/react @testing-library/jest-dom @testing-library/user-event",
+            "arquivo_setup": "lib/test-setup.ts",
+            "setup": "import '@testing-library/jest-dom/vitest'",
+            "mocks_necessarios": {
+              "next/navigation": "vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }), usePathname: () => '/' }))",
+              "next-themes": "vi.mock('next-themes', () => ({ useTheme: () => ({ theme: 'light', setTheme: vi.fn() }) }))"
+            },
+            "verificar": "Criar teste de Button e rodar pnpm test"
+          },
+          "depends_on": [
+            "[TASK] Configurar Vitest"
+          ]
+        },
+        {
+          "title": "Configurar Playwright",
+          "description": "Testes E2E com browser real",
+          "labels": [
+            "task",
+            "testing"
+          ],
+          "technical_details": {
+            "stack": "Playwright 1.x",
+            "packages": {
+              "devDependencies": {
+                "@playwright/test": "1.x"
+              }
+            },
+            "comando_instalar": "pnpm add -D @playwright/test && pnpm exec playwright install",
+            "arquivo": "playwright.config.ts",
+            "config": {
+              "testDir": "./e2e",
+              "webServer": {
+                "command": "pnpm dev",
+                "port": 3000,
+                "reuseExistingServer": true
+              },
+              "use": {
+                "baseURL": "http://localhost:3000",
+                "trace": "on-first-retry"
+              }
+            },
+            "scripts": {
+              "test:e2e": "playwright test",
+              "test:e2e:ui": "playwright test --ui"
+            },
+            "verificar": "pnpm test:e2e"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Setup CI/CD com GitHub Actions",
+      "description": "Como desenvolvedor, quero pipeline de CI automatizado",
+      "acceptance_criteria": [
+        "Workflow CI (lint, typecheck, test)",
+        "Cache de dependencias",
+        "Verificacao em PRs"
+      ],
+      "labels": [
+        "story",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Testes"
+      ],
+      "tasks": [
+        {
+          "title": "Criar workflow de CI",
+          "description": "Lint, typecheck, test em push e PRs",
+          "labels": [
+            "task",
+            "infrastructure"
+          ],
+          "technical_details": {
+            "stack": "GitHub Actions",
+            "arquivo": ".github/workflows/ci.yml",
+            "triggers": [
+              "push to main",
+              "pull_request to main"
+            ],
+            "jobs": {
+              "lint": "pnpm lint --max-warnings 0",
+              "typecheck": "pnpm tsc --noEmit",
+              "test": "pnpm test:run",
+              "build": "pnpm build (opcional, Easypanel ja faz)"
+            },
+            "cache": "pnpm/action-setup@v4 com cache habilitado",
+            "node_version": "20.x",
+            "verificar": "Abrir PR e verificar checks passando"
+          }
+        }
+      ]
+    },
+    {
+      "title": "Setup Monitoramento",
+      "description": "Como desenvolvedor, quero monitoramento de erros e health check",
+      "acceptance_criteria": [
+        "Sentry configurado",
+        "Health check endpoint",
+        "Logging estruturado"
+      ],
+      "labels": [
+        "story",
+        "infrastructure"
+      ],
+      "depends_on": [
+        "Setup Next.js 15.5 com TypeScript"
+      ],
+      "tasks": [
+        {
+          "title": "Configurar Sentry",
+          "description": "Error tracking para producao",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Sentry, @sentry/nextjs",
+            "packages": {
+              "dependencies": {
+                "@sentry/nextjs": "8.x"
+              }
+            },
+            "comando_setup": "pnpm add @sentry/nextjs && pnpm exec @sentry/wizard@latest -i nextjs",
+            "arquivos_criados": [
+              "sentry.client.config.ts",
+              "sentry.server.config.ts",
+              "sentry.edge.config.ts"
+            ],
+            "env_vars": {
+              "SENTRY_DSN": "https://xxx@xxx.ingest.sentry.io/xxx",
+              "SENTRY_AUTH_TOKEN": "Para upload de source maps (opcional)"
+            },
+            "verificar": "throw new Error('Test Sentry') em dev, verificar aparece no Sentry dashboard"
+          }
+        },
+        {
+          "title": "Criar health check endpoint",
+          "description": "Endpoint para monitoramento externo",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js API Routes",
+            "arquivo": "app/api/health/route.ts",
+            "response": {
+              "status": "ok | degraded | error",
+              "timestamp": "new Date().toISOString()",
+              "version": "process.env.npm_package_version",
+              "checks": {
+                "database": "await prisma.$queryRaw`SELECT 1`"
+              }
+            },
+            "http_codes": {
+              "200": "Tudo OK",
+              "503": "Servico indisponivel (DB down, etc)"
+            },
+            "monitoramento": "Usar UptimeRobot, Better Uptime ou similar para pingar /api/health",
+            "verificar": "curl http://localhost:3000/api/health | jq"
+          }
+        }
+      ]
+    }
+  ]
+}

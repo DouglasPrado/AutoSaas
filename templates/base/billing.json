@@ -1,0 +1,489 @@
+{
+  "epic": {
+    "title": "Billing e Assinaturas",
+    "description": "Sistema de pagamentos, planos e gestao de assinaturas",
+    "labels": [
+      "epic",
+      "core",
+      "billing"
+    ],
+    "depends_on": [
+      "[EPIC] Autenticacao e Gestao de Usuarios"
+    ]
+  },
+  "stories": [
+    {
+      "title": "Pagina de Planos e Precos",
+      "description": "Como visitante, quero ver os planos disponiveis para escolher o melhor para mim",
+      "acceptance_criteria": [
+        "Exibir todos os planos com precos",
+        "Destacar plano recomendado",
+        "Comparativo de features por plano",
+        "Toggle mensal/anual com desconto",
+        "CTA claro para cada plano"
+      ],
+      "labels": [
+        "story",
+        "billing"
+      ],
+      "tasks": [
+        {
+          "title": "Criar pagina de pricing",
+          "description": "UI responsiva com cards de planos",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, TypeScript, Tailwind CSS",
+            "files": [
+              "app/(marketing)/pricing/page.tsx",
+              "components/pricing/pricing-cards.tsx",
+              "components/pricing/pricing-toggle.tsx",
+              "components/pricing/feature-comparison.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-switch",
+              "framer-motion"
+            ],
+            "implementation_notes": "Buscar planos do Stripe via Server Component. Usar Switch do Radix para toggle mensal/anual. Calcular desconto anual (ex: 2 meses gratis). Destacar plano 'popular' com badge e border. Animar precos com Framer Motion ao trocar periodo."
+          }
+        },
+        {
+          "title": "Criar API de planos",
+          "description": "Endpoint GET /api/plans",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js API Routes, Stripe SDK",
+            "files": [
+              "app/api/plans/route.ts",
+              "lib/stripe/plans.ts",
+              "types/billing.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Usar stripe.prices.list({ active: true, expand: ['data.product'] }). Cachear resposta com unstable_cache por 1h. Retornar array com: id, name, description, prices (monthly/yearly), features (do metadata do Product). Ordenar por preco."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de pricing"
+          ]
+        },
+        {
+          "title": "Configurar planos no Stripe",
+          "description": "Criar products e prices no Stripe",
+          "labels": [
+            "task",
+            "backend",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Stripe Dashboard ou Stripe CLI",
+            "files": [
+              "scripts/seed-stripe-products.ts",
+              "lib/stripe/config.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Criar Products no Stripe: Free, Pro, Enterprise. Cada Product tem 2 Prices: monthly e yearly. Adicionar metadata no Product: features (JSON array), popular (boolean), limits (JSON). Script para criar via API: stripe.products.create(), stripe.prices.create()."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Checkout e Pagamento",
+      "description": "Como usuario, quero assinar um plano de forma segura",
+      "acceptance_criteria": [
+        "Checkout integrado com Stripe",
+        "Suporte a cartao de credito",
+        "Exibir resumo antes de confirmar",
+        "Recibo por email apos pagamento",
+        "Ativacao imediata do plano"
+      ],
+      "labels": [
+        "story",
+        "billing"
+      ],
+      "depends_on": [
+        "Pagina de Planos e Precos"
+      ],
+      "tasks": [
+        {
+          "title": "Integrar Stripe Checkout",
+          "description": "Implementar fluxo de checkout",
+          "labels": [
+            "task",
+            "backend",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Stripe Checkout Sessions, Next.js Server Actions",
+            "files": [
+              "lib/actions/billing/create-checkout.ts",
+              "app/api/checkout/route.ts",
+              "lib/stripe/checkout.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Usar stripe.checkout.sessions.create({ mode: 'subscription', customer: stripeCustomerId, line_items: [{ price: priceId }], success_url, cancel_url, metadata: { userId } }). Criar Stripe Customer se nao existir. Salvar stripeCustomerId no User model."
+          }
+        },
+        {
+          "title": "Criar pagina de checkout",
+          "description": "UI do processo de pagamento",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Stripe.js",
+            "files": [
+              "app/(dashboard)/checkout/[priceId]/page.tsx",
+              "components/billing/checkout-button.tsx"
+            ],
+            "packages": [
+              "@stripe/stripe-js"
+            ],
+            "implementation_notes": "Botao que chama Server Action para criar Checkout Session. Redirect para session.url (hosted Stripe Checkout). Alternativa: usar Stripe Elements para checkout embarcado com CardElement. Loading state durante criacao da session."
+          },
+          "depends_on": [
+            "[TASK] Integrar Stripe Checkout"
+          ]
+        },
+        {
+          "title": "Implementar webhooks do Stripe",
+          "description": "Processar eventos de pagamento",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js API Routes, Stripe Webhooks",
+            "files": [
+              "app/api/webhooks/stripe/route.ts",
+              "lib/stripe/webhook-handlers.ts",
+              "lib/stripe/subscription.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Verificar assinatura com stripe.webhooks.constructEvent(body, sig, webhookSecret). Handlers para: checkout.session.completed (ativar subscription), invoice.paid (renovacao), invoice.payment_failed (marcar falha), customer.subscription.deleted (cancelar). Usar raw body (export const config = { api: { bodyParser: false } })."
+          },
+          "depends_on": [
+            "[TASK] Integrar Stripe Checkout"
+          ]
+        },
+        {
+          "title": "Configurar emails transacionais",
+          "description": "Email de confirmacao de pagamento",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Stripe Automatic Emails ou Resend",
+            "files": [
+              "lib/email/templates/payment-success.tsx",
+              "lib/email/templates/subscription-activated.tsx"
+            ],
+            "packages": [
+              "resend",
+              "@react-email/components"
+            ],
+            "implementation_notes": "Ativar Stripe Automatic Emails para recibos (Settings > Emails). Para emails custom: enviar via Resend no webhook checkout.session.completed. Template com: nome do plano, preco, proxima cobranca, link para portal."
+          },
+          "depends_on": [
+            "[TASK] Implementar webhooks do Stripe"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Gestao de Assinatura",
+      "description": "Como assinante, quero gerenciar minha assinatura",
+      "acceptance_criteria": [
+        "Ver plano atual e proxima cobranca",
+        "Fazer upgrade/downgrade de plano",
+        "Atualizar metodo de pagamento",
+        "Ver historico de faturas",
+        "Baixar recibos em PDF"
+      ],
+      "labels": [
+        "story",
+        "billing"
+      ],
+      "depends_on": [
+        "Checkout e Pagamento"
+      ],
+      "tasks": [
+        {
+          "title": "Criar pagina de billing",
+          "description": "Dashboard de gestao da assinatura",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, Stripe SDK",
+            "files": [
+              "app/(dashboard)/settings/billing/page.tsx",
+              "components/billing/subscription-card.tsx",
+              "components/billing/invoice-list.tsx",
+              "components/billing/payment-method.tsx"
+            ],
+            "packages": [
+              "stripe",
+              "date-fns"
+            ],
+            "implementation_notes": "Server Component busca subscription atual via stripe.subscriptions.retrieve(). Mostrar: nome do plano, status, preco, current_period_end formatado. Listar invoices com stripe.invoices.list({ customer }). Link para hosted_invoice_url do PDF."
+          }
+        },
+        {
+          "title": "Implementar mudanca de plano",
+          "description": "API para upgrade/downgrade",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Stripe Subscriptions, Next.js Server Actions",
+            "files": [
+              "lib/actions/billing/change-plan.ts",
+              "lib/stripe/subscription.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Usar stripe.subscriptions.update(subscriptionId, { items: [{ id: itemId, price: newPriceId }], proration_behavior: 'create_prorations' }). Proration: cobrar diferenca proporcional no upgrade. Modal de confirmacao mostrando preco proratizado."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de billing"
+          ]
+        },
+        {
+          "title": "Implementar portal do Stripe",
+          "description": "Integrar Customer Portal",
+          "labels": [
+            "task",
+            "backend",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Stripe Customer Portal",
+            "files": [
+              "lib/actions/billing/create-portal-session.ts",
+              "components/billing/manage-subscription-button.tsx"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Usar stripe.billingPortal.sessions.create({ customer: stripeCustomerId, return_url }). Configurar portal no Stripe Dashboard: permitir mudanca de plano, cancelamento, atualizar payment method. Botao 'Gerenciar Assinatura' redireciona para portal.url."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de billing"
+          ]
+        },
+        {
+          "title": "Gerar PDFs de recibo",
+          "description": "Criar recibos em PDF para download",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Stripe Hosted Invoice ou React PDF",
+            "files": [
+              "lib/stripe/invoices.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Stripe ja gera PDFs automaticamente. Acessar via invoice.invoice_pdf ou invoice.hosted_invoice_url. Para PDF custom: usar @react-pdf/renderer. Listar invoices: stripe.invoices.list({ customer, limit: 10 }). Retornar array com: id, amount_paid, status, invoice_pdf, created."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de billing"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Cancelamento de Assinatura",
+      "description": "Como assinante, quero poder cancelar minha assinatura",
+      "acceptance_criteria": [
+        "Fluxo de cancelamento com pesquisa de motivo",
+        "Opcao de pausar ao inves de cancelar",
+        "Acesso ate fim do periodo pago",
+        "Email de confirmacao de cancelamento",
+        "Opcao de reativar antes do fim"
+      ],
+      "labels": [
+        "story",
+        "billing"
+      ],
+      "depends_on": [
+        "Gestao de Assinatura"
+      ],
+      "tasks": [
+        {
+          "title": "Criar fluxo de cancelamento",
+          "description": "UI com pesquisa e confirmacao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Radix Dialog, React Hook Form",
+            "files": [
+              "components/billing/cancel-subscription-dialog.tsx",
+              "components/billing/cancellation-survey.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-dialog",
+              "react-hook-form"
+            ],
+            "implementation_notes": "Modal multi-step: 1) Motivo (radio: preco, nao uso, faltam features, outro), 2) Oferta de retencao (desconto ou pause), 3) Confirmacao final. Salvar motivo no DB para analytics. Mostrar data ate quando tera acesso."
+          }
+        },
+        {
+          "title": "Implementar API de cancelamento",
+          "description": "Endpoint para cancelar assinatura",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Stripe Subscriptions, Next.js Server Actions",
+            "files": [
+              "lib/actions/billing/cancel-subscription.ts",
+              "lib/stripe/subscription.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Usar stripe.subscriptions.update(subscriptionId, { cancel_at_period_end: true }). Isso mantem acesso ate o fim do periodo. Para cancelamento imediato: stripe.subscriptions.cancel(). Webhook customer.subscription.updated para atualizar status no DB."
+          },
+          "depends_on": [
+            "[TASK] Criar fluxo de cancelamento"
+          ]
+        },
+        {
+          "title": "Implementar retencao",
+          "description": "Ofertas de retencao antes de cancelar",
+          "labels": [
+            "task",
+            "frontend",
+            "growth"
+          ],
+          "technical_details": {
+            "stack": "Stripe Coupons, Next.js",
+            "files": [
+              "components/billing/retention-offer.tsx",
+              "lib/actions/billing/apply-retention-coupon.ts"
+            ],
+            "packages": [
+              "stripe"
+            ],
+            "implementation_notes": "Criar Coupon no Stripe: 20% off por 3 meses. Se usuario aceitar: stripe.subscriptions.update(subscriptionId, { coupon: retentionCouponId }). Alternativa: pausar subscription com stripe.subscriptions.update({ pause_collection: { behavior: 'void' } })."
+          },
+          "depends_on": [
+            "[TASK] Implementar API de cancelamento"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Trial e Periodo de Teste",
+      "description": "Como novo usuario, quero testar o produto antes de pagar",
+      "acceptance_criteria": [
+        "Trial de 14 dias sem cartao",
+        "Notificacao quando trial expira",
+        "Conversao facil para plano pago",
+        "Limites claros durante trial"
+      ],
+      "labels": [
+        "story",
+        "billing",
+        "growth"
+      ],
+      "depends_on": [
+        "Checkout e Pagamento"
+      ],
+      "tasks": [
+        {
+          "title": "Implementar logica de trial",
+          "description": "Controle de periodo e limites",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Prisma, Stripe Subscriptions",
+            "files": [
+              "lib/billing/trial.ts",
+              "lib/billing/limits.ts",
+              "prisma/schema.prisma"
+            ],
+            "packages": [
+              "stripe",
+              "date-fns"
+            ],
+            "implementation_notes": "Adicionar campos no User: trialEndsAt (DateTime), plan (enum: FREE, TRIAL, PRO). No registro, setar trialEndsAt = addDays(now, 14). Middleware checkTrialStatus() verifica se expirou. Para trial com Stripe: subscription_data: { trial_period_days: 14 } no Checkout."
+          }
+        },
+        {
+          "title": "Criar emails de trial",
+          "description": "Sequencia de emails durante trial",
+          "labels": [
+            "task",
+            "backend",
+            "growth"
+          ],
+          "technical_details": {
+            "stack": "Resend, React Email, Cron Jobs",
+            "files": [
+              "lib/email/templates/trial-welcome.tsx",
+              "lib/email/templates/trial-ending.tsx",
+              "lib/email/templates/trial-expired.tsx",
+              "lib/cron/trial-emails.ts"
+            ],
+            "packages": [
+              "resend",
+              "@react-email/components"
+            ],
+            "implementation_notes": "Cron job diario (via Vercel Cron ou trigger.dev): 1) Dia 1: Welcome email, 2) Dia 10: 'Restam 4 dias', 3) Dia 14: 'Trial expirou, upgrade agora'. Query: users where trialEndsAt between dates. Template com CTA para /pricing."
+          },
+          "depends_on": [
+            "[TASK] Implementar logica de trial"
+          ]
+        },
+        {
+          "title": "Criar banner de trial",
+          "description": "UI mostrando dias restantes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, date-fns",
+            "files": [
+              "components/billing/trial-banner.tsx",
+              "app/(dashboard)/layout.tsx"
+            ],
+            "packages": [
+              "date-fns"
+            ],
+            "implementation_notes": "Banner fixo no topo do dashboard para usuarios em trial. Mostrar: 'Restam X dias de trial' com formatDistanceToNow(). Botao 'Upgrade agora' linkando para /pricing. Mudar cor para vermelho quando < 3 dias. Esconder apos upgrade."
+          },
+          "depends_on": [
+            "[TASK] Implementar logica de trial"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,869 @@
+{
+  "epic": {
+    "title": "Landing Page e Marketing",
+    "description": "Pagina de conversao, SEO e elementos de marketing para atrair e converter visitantes",
+    "labels": [
+      "epic",
+      "core",
+      "marketing"
+    ]
+  },
+  "stories": [
+    {
+      "title": "Hero Section",
+      "description": "Como visitante, quero entender rapidamente o que o produto faz e seu valor",
+      "acceptance_criteria": [
+        "Headline clara e impactante",
+        "Subheadline explicando o beneficio",
+        "CTA principal visivel (signup/trial)",
+        "Imagem ou video do produto",
+        "Responsivo em todos os devices"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - Headline Principal"
+      ],
+      "tasks": [
+        {
+          "title": "Criar componente Hero",
+          "description": "UI do hero section com headline, subheadline e CTA",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js App Router, Tailwind CSS, Framer Motion",
+            "files": [
+              "app/(marketing)/page.tsx",
+              "components/marketing/hero-section.tsx",
+              "components/marketing/hero-cta.tsx"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "Full viewport height. Gradiente de fundo ou pattern. Headline: text-4xl md:text-6xl font-bold. Subheadline: text-xl text-muted-foreground. CTA buttons: primary (filled) + secondary (outline). Animacao de entrada com Framer Motion."
+          }
+        },
+        {
+          "title": "Implementar video/animacao do produto",
+          "description": "Embed de video ou animacao demonstrativa",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Lottie ou Video embed",
+            "files": [
+              "components/marketing/product-demo.tsx",
+              "components/marketing/browser-mockup.tsx"
+            ],
+            "packages": [
+              "lottie-react"
+            ],
+            "implementation_notes": "Opcoes: Lottie animation, video embed (mp4 lazy-loaded), ou GIF otimizado. Browser mockup com shadow. Lazy load com Intersection Observer. Fallback: imagem estatica para JS desabilitado."
+          },
+          "depends_on": [
+            "[TASK] Criar componente Hero"
+          ]
+        },
+        {
+          "title": "Criar variantes para A/B test",
+          "description": "Diferentes versoes de headline para testar",
+          "labels": [
+            "task",
+            "frontend",
+            "growth"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Feature flags",
+            "files": [
+              "components/marketing/hero-variants.tsx",
+              "lib/ab-testing/get-variant.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Usar cookies para persistir variante. Math.random() < 0.5 para split 50/50. Ou integrar Vercel Flags / PostHog. Passar variant ID para analytics. Log conversion por variante."
+          },
+          "depends_on": [
+            "[TASK] Criar componente Hero"
+          ],
+          "related_to": [
+            "[EPIC] Otimizacao de Landing Page"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Secao de Features",
+      "description": "Como visitante, quero conhecer as principais funcionalidades do produto",
+      "acceptance_criteria": [
+        "Grid de features com icones",
+        "Titulo e descricao curta de cada feature",
+        "Screenshots ou ilustracoes",
+        "Link para saber mais de cada feature"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "Hero Section"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - Descricao de Features"
+      ],
+      "tasks": [
+        {
+          "title": "Criar componente de feature card",
+          "description": "Card reutilizavel com icone, titulo e descricao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, Lucide Icons",
+            "files": [
+              "components/marketing/feature-card.tsx",
+              "components/marketing/feature-icon.tsx"
+            ],
+            "packages": [
+              "lucide-react"
+            ],
+            "implementation_notes": "Props: icon, title, description, link?. Card com hover effect (scale + shadow). Icon: fundo colorido circular. Variante: horizontal (icon left) ou vertical (icon top). Animacao on scroll."
+          }
+        },
+        {
+          "title": "Criar grid de features",
+          "description": "Layout responsivo para lista de features",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS Grid",
+            "files": [
+              "components/marketing/features-section.tsx",
+              "components/marketing/features-grid.tsx"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "Grid: 1 col mobile, 2 cols tablet, 3 cols desktop. Gap consistente. Section header: titulo + subtitulo. Stagger animation: cards aparecem em sequencia. Max 6-9 features para nao sobrecarregar."
+          },
+          "depends_on": [
+            "[TASK] Criar componente de feature card"
+          ]
+        },
+        {
+          "title": "Criar secao de feature detalhada",
+          "description": "Alternancia imagem/texto para features principais",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, Next/Image",
+            "files": [
+              "components/marketing/feature-showcase.tsx",
+              "components/marketing/feature-detail.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Layout: alternating left/right image-text. Flexbox com flex-row-reverse para alternar. Imagem: Next/Image com sizes para responsive. Animate on scroll: imagem slide in do lado. Bullet points dos beneficios."
+          },
+          "depends_on": [
+            "[TASK] Criar componente de feature card"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Social Proof e Depoimentos",
+      "description": "Como visitante, quero ver que outras pessoas confiam no produto",
+      "acceptance_criteria": [
+        "Logos de clientes/parceiros",
+        "Depoimentos com foto e nome",
+        "Metricas de uso (usuarios, empresas)",
+        "Avaliacoes e estrelas"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "Secao de Features"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - Social Proof Copy"
+      ],
+      "tasks": [
+        {
+          "title": "Criar barra de logos",
+          "description": "Carousel ou grid de logos de clientes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, CSS Animation",
+            "files": [
+              "components/marketing/logo-cloud.tsx",
+              "components/marketing/logo-carousel.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Logos em grayscale, coloridos on hover. Infinite scroll com CSS animation (marquee effect). Ou grid estatico. SVGs para qualidade. 'Trusted by' ou 'Used by teams at' header. Filter grayscale(100%) -> grayscale(0) on hover."
+          }
+        },
+        {
+          "title": "Criar componente de testimonial",
+          "description": "Card de depoimento com foto, nome e texto",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, Embla Carousel",
+            "files": [
+              "components/marketing/testimonial-card.tsx",
+              "components/marketing/testimonials-section.tsx"
+            ],
+            "packages": [
+              "embla-carousel-react"
+            ],
+            "implementation_notes": "Card: quote icon, texto, avatar, nome, cargo, empresa. Carousel com Embla: autoplay, dots navigation. Mobile: 1 card, desktop: 3 cards visiveis. Star rating opcional. Video testimonials se disponivel."
+          }
+        },
+        {
+          "title": "Criar secao de metricas",
+          "description": "Numeros grandes com contadores animados",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Framer Motion, Intersection Observer",
+            "files": [
+              "components/marketing/stats-section.tsx",
+              "components/marketing/animated-counter.tsx"
+            ],
+            "packages": [
+              "framer-motion"
+            ],
+            "implementation_notes": "3-4 metricas: '10k+ Users', '99.9% Uptime', '50+ Countries'. useInView para trigger. Animar de 0 ate valor final. Duracao ~2s com easing. Numeros grandes (text-4xl), labels menores. Icones decorativos."
+          },
+          "related_to": [
+            "[STORY] Otimizacao - Social Proof Dinamico"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Secao de Pricing",
+      "description": "Como visitante, quero ver os planos e precos disponiveis",
+      "acceptance_criteria": [
+        "Cards de planos lado a lado",
+        "Destaque no plano recomendado",
+        "Toggle mensal/anual",
+        "Lista de features por plano",
+        "CTA para cada plano"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "billing"
+      ],
+      "depends_on": [
+        "Social Proof e Depoimentos"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - Secao de Pricing Copy",
+        "[EPIC] Billing e Assinaturas"
+      ],
+      "tasks": [
+        {
+          "title": "Criar componente de pricing card",
+          "description": "Card com preco, features e CTA",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS, Stripe",
+            "files": [
+              "components/marketing/pricing-card.tsx",
+              "components/marketing/pricing-feature-list.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Props: name, price, period, features[], popular?, cta. Popular: border destacado, badge 'Most Popular'. Features: checkmark + texto, strikethrough para nao inclusos. Hover: scale up sutil. Shadow para elevacao."
+          }
+        },
+        {
+          "title": "Implementar toggle de periodo",
+          "description": "Alternar entre mensal e anual com desconto",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Radix Switch, Framer Motion",
+            "files": [
+              "components/marketing/pricing-toggle.tsx",
+              "components/marketing/pricing-section.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-switch",
+              "framer-motion"
+            ],
+            "implementation_notes": "Switch ou Tab: Monthly | Yearly (Save 20%). Estado local ou URL param. Animar mudanca de preco com Framer Motion (crossfade). Mostrar economia anual: '$X/year saved'. Badge de desconto."
+          },
+          "depends_on": [
+            "[TASK] Criar componente de pricing card"
+          ]
+        },
+        {
+          "title": "Criar comparativo de planos",
+          "description": "Tabela detalhada de features por plano",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS",
+            "files": [
+              "components/marketing/pricing-comparison.tsx",
+              "components/marketing/comparison-table.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Tabela: features nas linhas, planos nas colunas. Check/X para boolean features. Valor para features quantitativas. Sticky header com nomes dos planos. Collapsible em mobile. Link 'Compare all features'."
+          },
+          "depends_on": [
+            "[TASK] Criar componente de pricing card"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "FAQ Section",
+      "description": "Como visitante, quero encontrar respostas para duvidas comuns",
+      "acceptance_criteria": [
+        "Lista de perguntas frequentes",
+        "Accordion expansivel",
+        "Categorias de perguntas",
+        "Busca no FAQ"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "Secao de Pricing"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - FAQ Content"
+      ],
+      "tasks": [
+        {
+          "title": "Criar componente de accordion",
+          "description": "FAQ com expand/collapse",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Radix Accordion, Framer Motion",
+            "files": [
+              "components/marketing/faq-section.tsx",
+              "components/marketing/faq-item.tsx"
+            ],
+            "packages": [
+              "@radix-ui/react-accordion"
+            ],
+            "implementation_notes": "Radix Accordion para acessibilidade. Animacao de altura com CSS ou Framer Motion. Icone + ou chevron que rota. Um item aberto por vez (type='single'). Resposta com rich text se necessario."
+          }
+        },
+        {
+          "title": "Criar CMS para FAQ",
+          "description": "Gerenciar perguntas via admin ou markdown",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "MDX ou Contentlayer",
+            "files": [
+              "content/faq/*.mdx",
+              "lib/content/faq.ts"
+            ],
+            "packages": [
+              "contentlayer",
+              "next-contentlayer"
+            ],
+            "implementation_notes": "Opcao simples: array de objetos em arquivo .ts. Melhor: MDX files com frontmatter (question, category, order). Contentlayer para type-safety. Ou: Notion API, Sanity CMS para nao-devs editarem."
+          },
+          "depends_on": [
+            "[TASK] Criar componente de accordion"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "CTA Final e Footer",
+      "description": "Como visitante, quero uma ultima chamada para acao antes de sair",
+      "acceptance_criteria": [
+        "CTA section antes do footer",
+        "Footer com links uteis",
+        "Links para redes sociais",
+        "Links legais (termos, privacidade)",
+        "Newsletter signup"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "FAQ Section"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - CTAs"
+      ],
+      "tasks": [
+        {
+          "title": "Criar CTA section final",
+          "description": "Banner com headline e botao de conversao",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS",
+            "files": [
+              "components/marketing/cta-section.tsx",
+              "components/marketing/cta-banner.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Full width, background gradiente ou imagem. Headline: 'Ready to get started?'. Subheadline reforco de valor. CTA buttons: 'Start Free Trial' primary, 'Schedule Demo' secondary. Centralizado, padding generoso."
+          }
+        },
+        {
+          "title": "Criar footer completo",
+          "description": "Footer com colunas de links",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Tailwind CSS",
+            "files": [
+              "components/marketing/footer.tsx",
+              "components/marketing/footer-links.tsx",
+              "components/marketing/social-links.tsx"
+            ],
+            "packages": [
+              "lucide-react"
+            ],
+            "implementation_notes": "Colunas: Product, Company, Resources, Legal. Logo + tagline. Social icons: Twitter, LinkedIn, GitHub. Copyright. Newsletter form opcional. Theme toggle. Language selector se i18n. Mobile: accordion ou stack."
+          },
+          "related_to": [
+            "Paginas Legais"
+          ]
+        },
+        {
+          "title": "Implementar newsletter signup",
+          "description": "Formulario de email com integracao",
+          "labels": [
+            "task",
+            "fullstack",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Next.js Server Actions, Resend ou Mailchimp",
+            "files": [
+              "components/marketing/newsletter-form.tsx",
+              "lib/actions/newsletter/subscribe.ts"
+            ],
+            "packages": [
+              "resend"
+            ],
+            "implementation_notes": "Form: input email + botao. Server Action: validar email, adicionar a lista. Resend Audiences ou Mailchimp API. Success: 'Check your inbox!'. Error handling. Double opt-in recomendado. GDPR: checkbox de consentimento."
+          },
+          "depends_on": [
+            "[TASK] Criar footer completo"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "SEO e Meta Tags",
+      "description": "Como produto, quero ser encontrado nos buscadores",
+      "acceptance_criteria": [
+        "Meta tags otimizadas",
+        "Open Graph para redes sociais",
+        "Schema.org markup",
+        "Sitemap.xml",
+        "Robots.txt configurado"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "seo"
+      ],
+      "depends_on": [
+        "Hero Section",
+        "Secao de Features"
+      ],
+      "related_to": [
+        "[STORY] Copywriting da Landing Page - SEO Copywriting"
+      ],
+      "tasks": [
+        {
+          "title": "Configurar meta tags",
+          "description": "Title, description, keywords por pagina",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Metadata API",
+            "files": [
+              "app/(marketing)/layout.tsx",
+              "app/(marketing)/page.tsx",
+              "lib/seo/metadata.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Usar Metadata API do Next.js. generateMetadata() para paginas dinamicas. Default em layout.tsx. Title template: '%s | MyApp'. Description: 150-160 chars. Keywords opcionais (menos importante hoje)."
+          }
+        },
+        {
+          "title": "Implementar Open Graph",
+          "description": "OG tags para compartilhamento social",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Metadata API, OG Image",
+            "files": [
+              "app/opengraph-image.tsx",
+              "lib/seo/og-config.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "OG tags: og:title, og:description, og:image, og:url, og:type. Twitter cards: twitter:card='summary_large_image'. Gerar OG image dinamicamente com Route Handler ou usar imagem estatica. Testar com Facebook Debugger."
+          },
+          "depends_on": [
+            "[TASK] Configurar meta tags"
+          ]
+        },
+        {
+          "title": "Adicionar Schema.org",
+          "description": "Structured data para rich snippets",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "JSON-LD, Next.js",
+            "files": [
+              "components/seo/json-ld.tsx",
+              "lib/seo/schemas.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "JSON-LD em <script type='application/ld+json'>. Schemas: Organization, WebSite, Product, FAQPage. Testar com Google Rich Results Test. Componente reutilizavel JsonLd que recebe schema object."
+          },
+          "depends_on": [
+            "[TASK] Configurar meta tags"
+          ]
+        },
+        {
+          "title": "Gerar sitemap dinamico",
+          "description": "Sitemap.xml automatico",
+          "labels": [
+            "task",
+            "backend"
+          ],
+          "technical_details": {
+            "stack": "Next.js sitemap.ts",
+            "files": [
+              "app/sitemap.ts",
+              "app/robots.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Next.js gera sitemap via app/sitemap.ts. Exportar MetadataRoute.Sitemap. Incluir: paginas estaticas, blog posts, etc. robots.ts: allow all, sitemap URL. Submeter para Google Search Console."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Analytics e Tracking",
+      "description": "Como produto, quero medir conversoes e comportamento",
+      "acceptance_criteria": [
+        "Google Analytics configurado",
+        "Eventos de conversao trackeados",
+        "Heatmaps opcionais",
+        "UTM parameters capturados"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "analytics"
+      ],
+      "depends_on": [
+        "Hero Section",
+        "CTA Final e Footer"
+      ],
+      "related_to": [
+        "[EPIC] Otimizacao de Landing Page"
+      ],
+      "tasks": [
+        {
+          "title": "Integrar Google Analytics",
+          "description": "GA4 com eventos customizados",
+          "labels": [
+            "task",
+            "frontend",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Google Analytics 4",
+            "files": [
+              "components/analytics/google-analytics.tsx",
+              "lib/analytics/gtag.ts"
+            ],
+            "packages": [
+              "@next/third-parties"
+            ],
+            "implementation_notes": "Usar @next/third-parties/google ou script manual. GA4 measurement ID: G-XXXXXXX. Eventos: page_view (automatico), sign_up, begin_checkout. NEXT_PUBLIC_GA_ID env var. Consent mode para GDPR."
+          }
+        },
+        {
+          "title": "Implementar tracking de conversao",
+          "description": "Eventos para signup, trial, checkout",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Google Analytics, Conversion API",
+            "files": [
+              "lib/analytics/track.ts",
+              "lib/analytics/events.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Funcao track(eventName, params). Eventos: 'signup_started', 'signup_completed', 'trial_started', 'checkout_initiated', 'purchase'. Parametros: value, currency, method. Chamar em Server Actions e client events."
+          },
+          "depends_on": [
+            "[TASK] Integrar Google Analytics"
+          ]
+        },
+        {
+          "title": "Capturar UTM parameters",
+          "description": "Salvar origem do trafego",
+          "labels": [
+            "task",
+            "fullstack"
+          ],
+          "technical_details": {
+            "stack": "Next.js, Cookies",
+            "files": [
+              "lib/analytics/utm.ts",
+              "middleware.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "No middleware ou client: ler utm_source, utm_medium, utm_campaign, utm_content, utm_term da URL. Salvar em cookie por 30 dias. Enviar junto com signup/purchase. Atribuicao first-touch ou last-touch."
+          },
+          "depends_on": [
+            "[TASK] Integrar Google Analytics"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Performance e Core Web Vitals",
+      "description": "Como produto, quero que a landing carregue rapido",
+      "acceptance_criteria": [
+        "LCP < 2.5s",
+        "FID < 100ms",
+        "CLS < 0.1",
+        "Score > 90 no Lighthouse",
+        "Imagens otimizadas"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "frontend"
+      ],
+      "depends_on": [
+        "Hero Section",
+        "Secao de Features",
+        "Social Proof e Depoimentos",
+        "Secao de Pricing",
+        "FAQ Section",
+        "CTA Final e Footer"
+      ],
+      "related_to": [
+        "[STORY] Otimizacao - Speed Optimization"
+      ],
+      "tasks": [
+        {
+          "title": "Otimizar imagens",
+          "description": "WebP, lazy loading, srcset",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js Image, Sharp",
+            "files": [
+              "next.config.js",
+              "components/ui/optimized-image.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Usar next/image para todas imagens. Props: sizes para responsive, priority para above-fold. Formato: WebP automatico. Placeholder: blur com blurDataURL. Lazy load padrao. CDN: Vercel ou Cloudinary."
+          }
+        },
+        {
+          "title": "Implementar code splitting",
+          "description": "Carregar JS sob demanda",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, dynamic imports",
+            "files": [
+              "components/marketing/*.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "next/dynamic para componentes pesados: carousels, charts, video players. ssr: false se nao precisa SSR. Loading component enquanto carrega. Analisar bundle com @next/bundle-analyzer."
+          }
+        },
+        {
+          "title": "Configurar CDN",
+          "description": "Assets servidos via CDN",
+          "labels": [
+            "task",
+            "backend",
+            "integration"
+          ],
+          "technical_details": {
+            "stack": "Vercel Edge Network ou Cloudflare",
+            "files": [
+              "next.config.js",
+              "vercel.json"
+            ],
+            "packages": [],
+            "implementation_notes": "Vercel automaticamente serve via Edge. Headers de cache: stale-while-revalidate. Assets estaticos: immutable cache. Fontes: next/font com display swap. Preconnect para third-party domains."
+          }
+        },
+        {
+          "title": "Auditar Core Web Vitals",
+          "description": "Medir e corrigir metricas",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Lighthouse, Web Vitals",
+            "files": [
+              "lib/analytics/web-vitals.ts"
+            ],
+            "packages": [
+              "web-vitals"
+            ],
+            "implementation_notes": "Medir com web-vitals library. Enviar para analytics. Lighthouse CI no PR. Targets: LCP < 2.5s, FID < 100ms, CLS < 0.1. Ferramentas: PageSpeed Insights, Chrome DevTools. Fix CLS: reservar espaco para imagens."
+          },
+          "depends_on": [
+            "[TASK] Otimizar imagens",
+            "[TASK] Implementar code splitting",
+            "[TASK] Configurar CDN"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Paginas Legais",
+      "description": "Como produto, preciso de paginas de termos e privacidade",
+      "acceptance_criteria": [
+        "Termos de Uso",
+        "Politica de Privacidade",
+        "Politica de Cookies",
+        "Banner de cookies LGPD/GDPR"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "legal"
+      ],
+      "tasks": [
+        {
+          "title": "Criar pagina de Termos de Uso",
+          "description": "Template legal customizavel",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, MDX",
+            "files": [
+              "app/(marketing)/terms/page.tsx",
+              "content/legal/terms.mdx"
+            ],
+            "packages": [
+              "@next/mdx"
+            ],
+            "implementation_notes": "Conteudo em MDX para facil edicao. Prose styling com Tailwind Typography. Table of contents. Last updated date. Download PDF opcional. Consultar advogado para conteudo real."
+          }
+        },
+        {
+          "title": "Criar pagina de Privacidade",
+          "description": "Politica de privacidade LGPD compliant",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, MDX",
+            "files": [
+              "app/(marketing)/privacy/page.tsx",
+              "content/legal/privacy.mdx"
+            ],
+            "packages": [
+              "@next/mdx"
+            ],
+            "implementation_notes": "Sections: dados coletados, uso, compartilhamento, retencao, direitos do usuario, contato DPO. LGPD: direitos de acesso, correcao, exclusao. Link para exercer direitos. Versao em portugues obrigatoria."
+          }
+        },
+        {
+          "title": "Implementar cookie banner",
+          "description": "Consentimento de cookies com opcoes",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "technical_details": {
+            "stack": "Next.js, cookies-next",
+            "files": [
+              "components/legal/cookie-banner.tsx",
+              "lib/cookies/consent.ts"
+            ],
+            "packages": [
+              "cookies-next"
+            ],
+            "implementation_notes": "Banner fixo no bottom. Opcoes: Accept All, Reject Non-Essential, Customize. Categorias: necessary (sempre), analytics, marketing. Salvar preferencias em cookie. Bloquear scripts ate consentimento. Link para politica de cookies."
+          },
+          "depends_on": [
+            "[TASK] Criar pagina de Privacidade"
+          ],
+          "related_to": [
+            "Analytics e Tracking"
+          ]
+        }
+      ]
+    }
+  ]
+}

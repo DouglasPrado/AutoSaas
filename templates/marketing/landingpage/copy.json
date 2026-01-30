@@ -1,0 +1,1010 @@
+{
+  "epic": {
+    "title": "Copywriting da Landing Page",
+    "description": "Textos persuasivos, headlines, CTAs e conteudo que converte visitantes em clientes",
+    "labels": [
+      "epic",
+      "marketing",
+      "content"
+    ],
+    "related_to": [
+      "[EPIC] Landing Page e Marketing"
+    ]
+  },
+  "stories": [
+    {
+      "title": "Headline Principal",
+      "description": "Como visitante, quero entender o valor do produto em segundos",
+      "acceptance_criteria": [
+        "Headline clara e direta (max 10 palavras)",
+        "Comunica beneficio principal",
+        "Gera curiosidade ou urgencia",
+        "Testavel com A/B testing",
+        "Variantes para diferentes segmentos"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - Hero Section"
+      ],
+      "tasks": [
+        {
+          "title": "Pesquisar dores do publico",
+          "description": "Entrevistar clientes e analisar concorrentes",
+          "labels": [
+            "task",
+            "ux"
+          ],
+          "technical_details": {
+            "stack": "Ferramentas de pesquisa, Planilhas",
+            "files": [
+              "docs/research/customer-interviews.md",
+              "docs/research/competitor-analysis.md",
+              "docs/research/pain-points.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Conduzir 5-10 entrevistas com clientes atuais ou potenciais. Perguntas: qual problema tentava resolver, como encontrou o produto, o que quase fez desistir. Analisar 5 concorrentes: headlines usadas, proposta de valor, tom de voz. Documentar top 5 dores mais mencionadas. Usar ferramentas: Typeform para surveys, Hotjar para feedback. Output: documento com insights priorizados."
+          }
+        },
+        {
+          "title": "Criar 10 variantes de headline",
+          "description": "Brainstorm de headlines para teste",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Pesquisar dores do publico"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, AI Writing Tools",
+            "files": [
+              "docs/copy/headline-variants.md",
+              "lib/content/headlines.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Criar 10 variantes usando formulas comprovadas: beneficio + tempo (Ex: 'Dobre suas vendas em 30 dias'), pergunta + dor (Ex: 'Cansado de perder clientes?'), numero + resultado (Ex: '10.000 empresas ja usam'). Incluir variantes: diretas, com curiosidade, com urgencia, com social proof. Documentar hipotese de cada variante. Exportar como constantes TypeScript para uso no codigo."
+          }
+        },
+        {
+          "title": "Validar headlines com usuarios",
+          "description": "Teste de preferencia com publico-alvo",
+          "labels": [
+            "task",
+            "ux"
+          ],
+          "depends_on": [
+            "[TASK] Criar 10 variantes de headline"
+          ],
+          "technical_details": {
+            "stack": "UsabilityHub, Google Forms, Hotjar",
+            "files": [
+              "docs/research/headline-validation.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Teste de preferencia: mostrar 2 headlines lado a lado, pedir para escolher. Testar com 50-100 pessoas do publico-alvo. Usar UsabilityHub Five Second Test: mostrar headline por 5s, perguntar o que entendeu. Metricas: preferencia %, clareza (1-5), relevancia (1-5). Selecionar top 3 para A/B testing real. Documentar resultados e insights."
+          }
+        },
+        {
+          "title": "Implementar headline vencedora",
+          "description": "Aplicar no componente Hero",
+          "labels": [
+            "task",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Validar headlines com usuarios",
+            "[TASK] Criar componente Hero"
+          ],
+          "technical_details": {
+            "stack": "Next.js, TypeScript, Tailwind CSS",
+            "files": [
+              "components/landing/hero-section.tsx",
+              "lib/content/headlines.ts",
+              "lib/content/types.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Arquivo headlines.ts com constantes: export const HEADLINES = {main: '...', variants: [...]}. Componente Hero importa headline centralizado. Tipografia: text-4xl md:text-5xl lg:text-6xl font-bold. Animacao sutil de entrada com Framer Motion. Suportar interpolacao dinamica: 'Perfeito para {userType}'. Preparar estrutura para A/B testing futuro com getVariant()."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Subheadline e Proposta de Valor",
+      "description": "Como visitante, quero entender como o produto resolve meu problema",
+      "acceptance_criteria": [
+        "Subheadline complementa headline",
+        "Explica o 'como' em 1-2 frases",
+        "Usa linguagem do cliente",
+        "Evita jargoes tecnicos",
+        "Inclui diferencial competitivo"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content"
+      ],
+      "depends_on": [
+        "Headline Principal"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - Hero Section"
+      ],
+      "tasks": [
+        {
+          "title": "Definir proposta de valor unica",
+          "description": "UVP clara e diferenciada",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Pesquisar dores do publico"
+          ],
+          "technical_details": {
+            "stack": "Canvas de Proposta de Valor, Documentacao",
+            "files": [
+              "docs/strategy/value-proposition.md",
+              "docs/strategy/competitive-advantage.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Usar Value Proposition Canvas: Jobs-to-be-done do cliente, Pains, Gains. Definir: O que fazemos, Para quem, Qual problema resolve, Por que somos diferentes. Formula: '[Produto] ajuda [persona] a [resultado] atraves de [diferencial]'. Validar com time de produto. Resultado: 1 frase de UVP + 3 diferenciais competitivos."
+          }
+        },
+        {
+          "title": "Escrever subheadlines",
+          "description": "Variantes de subheadline",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Definir proposta de valor unica"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "docs/copy/subheadlines.md",
+              "lib/content/subheadlines.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "3-5 variantes de subheadline, cada uma com angulo diferente: beneficio, processo, social proof, urgencia. Max 25 palavras cada. Evitar: jargoes tecnicos, promessas vagas, linguagem corporativa. Incluir: verbos de acao, numeros especificos quando possivel. Exportar como constantes para uso no codigo."
+          }
+        },
+        {
+          "title": "Revisar com time de produto",
+          "description": "Validar precisao tecnica",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Escrever subheadlines"
+          ],
+          "technical_details": {
+            "stack": "Notion, Google Docs, Reunioes",
+            "files": [
+              "docs/copy/review-feedback.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Agendar review com PM e tech lead. Verificar: promessas sao tecnicamente possiveis, features mencionadas existem, numeros sao precisos. Documentar feedback e ajustes. Aprovar versao final. Criar checklist para futuras revisoes."
+          }
+        }
+      ]
+    },
+    {
+      "title": "CTAs (Call-to-Action)",
+      "description": "Como visitante, quero saber exatamente o que fazer em seguida",
+      "acceptance_criteria": [
+        "CTA principal claro e acionavel",
+        "Verbo de acao no inicio",
+        "Cria senso de urgencia",
+        "CTA secundario para hesitantes",
+        "Microcopy de suporte"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content"
+      ],
+      "depends_on": [
+        "Headline Principal"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - Hero Section",
+        "[STORY] Landing Page - CTA Final e Footer",
+        "[STORY] Otimizacao - A/B Testing de CTAs"
+      ],
+      "tasks": [
+        {
+          "title": "Definir CTA principal",
+          "description": "Texto do botao principal",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "docs/copy/cta-strategy.md",
+              "lib/content/ctas.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Formula: [Verbo de acao] + [Beneficio/Resultado]. Exemplos: 'Comecar Gratis', 'Criar Minha Conta', 'Ver Demo', 'Testar por 14 Dias'. Evitar: 'Enviar', 'Submit', 'Clique aqui'. Testar clareza: usuario entende o que acontece ao clicar? Definir CTA para cada contexto: hero, pricing, footer. Exportar como constantes tipadas."
+          }
+        },
+        {
+          "title": "Criar CTAs secundarios",
+          "description": "Alternativas para diferentes intencoes",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Definir CTA principal"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "lib/content/ctas.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "CTA secundario para quem nao esta pronto: 'Ver Demo', 'Falar com Vendas', 'Baixar Guia'. Posicionar como link ou botao outline. Menor destaque visual que CTA principal. Cada CTA leva para acao diferente: demo -> video/tour, vendas -> Calendly, guia -> lead magnet. Mapear intencao do usuario para CTA apropriado."
+          }
+        },
+        {
+          "title": "Escrever microcopy",
+          "description": "Texto abaixo do CTA (ex: 'Sem cartao')",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Definir CTA principal"
+          ],
+          "technical_details": {
+            "stack": "TypeScript, Tailwind CSS",
+            "files": [
+              "lib/content/microcopy.ts",
+              "components/landing/cta-with-microcopy.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Microcopy reduz friccao e objecoes. Exemplos: 'Sem cartao de credito', 'Cancele quando quiser', 'Setup em 2 minutos', '14 dias gratis'. Posicionar abaixo do botao em texto pequeno (text-sm text-muted-foreground). Incluir icone de check ou shield para trust. Criar componente CtaWithMicrocopy que aceita cta e microcopy como props."
+          }
+        },
+        {
+          "title": "Criar variantes para teste",
+          "description": "A/B testing de CTAs",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Definir CTA principal",
+            "[TASK] Criar CTAs secundarios"
+          ],
+          "related_to": [
+            "[STORY] Otimizacao - A/B Testing de CTAs"
+          ],
+          "technical_details": {
+            "stack": "TypeScript, A/B Testing Engine",
+            "files": [
+              "lib/content/cta-variants.ts",
+              "lib/ab-testing/cta-experiments.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Criar 3-5 variantes do CTA principal para teste. Variar: texto (Comecar vs Criar vs Testar), tom (urgente vs casual), especificidade (Gratis vs 14 dias gratis). Estrutura: {id, text, microcopy, hypothesis}. Integrar com sistema de A/B testing. Definir metrica de sucesso: CTR, signup rate. Documentar hipotese de cada variante."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Descricao de Features",
+      "description": "Como visitante, quero entender o que o produto faz por mim",
+      "acceptance_criteria": [
+        "Foco em beneficios, nao features",
+        "Linguagem simples e clara",
+        "Formato escaneavel",
+        "Exemplos concretos de uso",
+        "Conecta feature com resultado"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content"
+      ],
+      "depends_on": [
+        "Subheadline e Proposta de Valor"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - Secao de Features"
+      ],
+      "tasks": [
+        {
+          "title": "Listar features principais",
+          "description": "Selecionar top 6 features",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Documentacao",
+            "files": [
+              "docs/copy/feature-list.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Criterios de selecao: resolve dor principal, diferencial competitivo, facil de explicar, prova de valor rapida. Limite de 6 features para landing (evitar overwhelm). Ordenar por: importancia para usuario > diferenciacao > complexidade tecnica. Para cada feature: nome curto, beneficio principal, caso de uso."
+          }
+        },
+        {
+          "title": "Converter features em beneficios",
+          "description": "Reescrever focando no usuario",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Listar features principais"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "docs/copy/features-as-benefits.md",
+              "lib/content/features.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Transformar feature tecnica em beneficio: 'Integracao com Slack' -> 'Receba notificacoes onde voce ja trabalha'. Formula: 'Com [feature], voce pode [beneficio] para [resultado]'. Evitar: jargoes, siglas, linguagem tecnica. Usar: verbos de acao, resultados tangiveis. Teste: cliente entende sem contexto tecnico?"
+          }
+        },
+        {
+          "title": "Criar titulos de feature",
+          "description": "Headlines curtas para cada feature",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Converter features em beneficios"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/features.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Titulo: 3-5 palavras max, foco no beneficio. Exemplos: 'Colabore em Tempo Real', 'Automatize Tarefas Repetitivas', 'Acompanhe Seu Progresso'. Evitar: nomes de features tecnicos, verbos passivos. Padrao: verbo acao + objeto/beneficio. Manter consistencia de estilo entre todos os titulos."
+          }
+        },
+        {
+          "title": "Escrever descricoes",
+          "description": "1-2 frases por feature",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Criar titulos de feature"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/features.ts",
+              "lib/content/types.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Descricao: 15-25 palavras, complementa o titulo. Estrutura: como funciona + resultado. Exemplo titulo: 'Colabore em Tempo Real' -> descricao: 'Trabalhe junto com sua equipe no mesmo documento. Veja mudancas instantaneamente e nunca perca uma atualizacao.' Exportar como array tipado: Feature[] com title, description, icon, link."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Social Proof Copy",
+      "description": "Como visitante, quero ver que outros confiam no produto",
+      "acceptance_criteria": [
+        "Depoimentos autenticos",
+        "Metricas de credibilidade",
+        "Logos de clientes conhecidos",
+        "Casos de uso especificos",
+        "Resultados quantificaveis"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - Social Proof e Depoimentos",
+        "[STORY] Otimizacao - Social Proof Dinamico"
+      ],
+      "tasks": [
+        {
+          "title": "Coletar depoimentos",
+          "description": "Pedir reviews para clientes satisfeitos",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Email, Typeform, Notion",
+            "files": [
+              "docs/copy/testimonial-collection.md",
+              "docs/templates/testimonial-request-email.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Identificar clientes promotores (NPS 9-10). Email template: agradecer, pedir 2-3 frases sobre experiencia, perguntar se pode usar foto/nome/empresa. Perguntas guia: qual problema resolvia, como produto ajudou, resultado obtido. Formulario Typeform com campos: depoimento, nome, cargo, empresa, permissao de uso, foto. Meta: 10-15 depoimentos coletados."
+          }
+        },
+        {
+          "title": "Editar depoimentos",
+          "description": "Tornar concisos e impactantes",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Coletar depoimentos"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "lib/content/testimonials.ts",
+              "lib/content/types.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Editar para: max 150 caracteres para cards, max 300 para destaque. Manter voz original do cliente. Destacar: resultados especificos, emocao, problema resolvido. Aprovar edicoes com cliente antes de publicar. Estrutura: Testimonial[] com quote, author, role, company, image, featured (boolean)."
+          }
+        },
+        {
+          "title": "Definir metricas de destaque",
+          "description": "Numeros impressionantes para exibir",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Analytics, Documentacao, TypeScript",
+            "files": [
+              "lib/content/metrics.ts",
+              "docs/copy/key-metrics.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Metricas de impacto: usuarios ativos, empresas usando, paises, uptime %, satisfacao. Formato: numero grande + contexto. Exemplos: '10.000+ empresas', '99.9% uptime', '4.8 estrelas'. Atualizar metricas mensalmente via cron ou manual. Arredondar para baixo (etica). Estrutura: Metric[] com value, label, icon, trend (up/down)."
+          }
+        },
+        {
+          "title": "Escrever mini case studies",
+          "description": "Resumos de sucesso de clientes",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Coletar depoimentos",
+            "[TASK] Editar depoimentos"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "lib/content/case-studies.ts",
+              "docs/copy/case-studies/"
+            ],
+            "packages": [],
+            "implementation_notes": "Formato: Desafio (1 frase) -> Solucao (1 frase) -> Resultado (numero). Exemplo: 'Startup X gastava 10h/semana em tarefas manuais. Com [produto], automatizaram processos e economizam 8h/semana.' Ideal: 3 mini cases de segmentos diferentes. Para landing: versao curta (50 palavras). Link para case completo se houver."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Secao de Pricing Copy",
+      "description": "Como visitante, quero entender o valor de cada plano",
+      "acceptance_criteria": [
+        "Nomes de planos memoraveis",
+        "Descricao clara de cada plano",
+        "Destaque do plano recomendado",
+        "Framing de preco positivo",
+        "Garantia e reducao de risco"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content",
+        "billing"
+      ],
+      "depends_on": [
+        "CTAs (Call-to-Action)"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - Secao de Pricing",
+        "[EPIC] Billing e Assinaturas"
+      ],
+      "tasks": [
+        {
+          "title": "Nomear planos",
+          "description": "Nomes que comunicam valor",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "lib/content/pricing.ts",
+              "docs/copy/pricing-strategy.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Opcoes de naming: por tamanho (Starter/Pro/Enterprise), por persona (Individual/Team/Business), por valor (Basic/Plus/Premium). Evitar: nomes negativos (Basic pode parecer inferior), nomes confusos. Incluir emoji ou icone representativo. Validar se nome comunica para quem e o plano."
+          }
+        },
+        {
+          "title": "Escrever descricoes de planos",
+          "description": "Resumo de cada plano em 1 frase",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Nomear planos"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/pricing.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Descricao: identifica persona + beneficio principal. Exemplos: Starter: 'Perfeito para freelancers comecando', Pro: 'Para times que precisam colaborar', Enterprise: 'Solucao completa para grandes empresas'. Max 10 palavras. Posicionar abaixo do nome do plano. Estrutura: Plan[] com name, description, price, features[], cta, highlighted (boolean)."
+          }
+        },
+        {
+          "title": "Criar copy de garantia",
+          "description": "Texto de money-back guarantee",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/pricing.ts",
+              "lib/content/guarantees.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Elementos de reducao de risco: garantia de 30 dias, cancele quando quiser, sem compromisso, suporte gratis. Posicionar proximo ao CTA de pricing. Icone de escudo ou check. Texto: 'Garantia de 30 dias - se nao gostar, devolvemos seu dinheiro.' Verificar com juridico/financeiro antes de publicar."
+          }
+        },
+        {
+          "title": "Escrever ancoragem de preco",
+          "description": "Comparacao com alternativas",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Escrever descricoes de planos"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/pricing.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Ancoragem: mostrar valor relativo. Exemplos: 'Menos que um cafe por dia', 'Economize 20% no plano anual', 'Equivalente a [comparacao tangivel]'. Mostrar preco anterior riscado se houver desconto. Destacar economia anual vs mensal. Comparar com custo de nao usar (perda de tempo, oportunidade). Posicionar estrategicamente para influenciar percepcao de valor."
+          }
+        }
+      ]
+    },
+    {
+      "title": "FAQ Content",
+      "description": "Como visitante, quero respostas para minhas duvidas",
+      "acceptance_criteria": [
+        "Perguntas reais de clientes",
+        "Respostas claras e concisas",
+        "Aborda objecoes de venda",
+        "Tom conversacional",
+        "Links para mais informacoes"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content"
+      ],
+      "depends_on": [
+        "Descricao de Features",
+        "Secao de Pricing Copy"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - FAQ Section"
+      ],
+      "tasks": [
+        {
+          "title": "Coletar perguntas frequentes",
+          "description": "Levantar duvidas com suporte e vendas",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Intercom, Zendesk, Notion",
+            "files": [
+              "docs/copy/faq-collection.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Fontes: tickets de suporte, conversas de vendas, chat ao vivo, reviews. Entrevistar time de suporte: 'Quais perguntas voces mais recebem?'. Analisar buscas internas do site. Categorias: produto, pricing, suporte, seguranca, integracao. Meta: 20-30 perguntas coletadas, selecionar top 10-15 para landing."
+          }
+        },
+        {
+          "title": "Categorizar perguntas",
+          "description": "Agrupar por tema",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Coletar perguntas frequentes"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "lib/content/faq.ts",
+              "lib/content/types.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Categorias sugeridas: Geral, Produto, Precos, Suporte, Seguranca. Ordenar: perguntas mais importantes primeiro, objecoes de venda no topo. Estrutura: FAQCategory[] com name, questions: FAQ[]. Cada FAQ: question, answer, category, relatedLinks?[]. Limite: 3-5 perguntas por categoria para landing."
+          }
+        },
+        {
+          "title": "Escrever respostas",
+          "description": "Respostas curtas e uteis",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Categorizar perguntas"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/faq.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Formato: resposta direta primeiro, depois contexto se necessario. Max 50-100 palavras. Tom: amigavel, nao corporativo. Evitar: jargoes, respostas evasivas. Incluir: links para docs quando relevante, CTA quando oportuno. Exemplo: 'Sim, oferecemos plano gratis para sempre. [Link: Ver planos]'. Testar: resposta realmente responde a pergunta?"
+          }
+        },
+        {
+          "title": "Identificar objecoes",
+          "description": "Perguntas que escondem objecoes",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Coletar perguntas frequentes"
+          ],
+          "technical_details": {
+            "stack": "Documentacao",
+            "files": [
+              "docs/copy/objection-handling.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Objecoes comuns: preco alto, complexidade, tempo de setup, seguranca de dados, comparacao com concorrente. Mapear pergunta -> objecao -> resposta que resolve. Exemplo: 'Qual a diferenca para [concorrente]?' = objecao de comparacao. Resposta: destacar diferencial unico, nao criticar concorrente. Posicionar FAQs de objecao estrategicamente."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Urgencia e Escassez",
+      "description": "Como marketer, quero criar senso de urgencia legitimo",
+      "acceptance_criteria": [
+        "Ofertas por tempo limitado",
+        "Vagas limitadas (se real)",
+        "Countdown timers",
+        "Copy de urgencia sem ser pushy",
+        "Honestidade nas limitacoes"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content",
+        "growth"
+      ],
+      "depends_on": [
+        "CTAs (Call-to-Action)"
+      ],
+      "related_to": [
+        "[STORY] Otimizacao - Exit Intent Popup"
+      ],
+      "tasks": [
+        {
+          "title": "Definir ofertas limitadas",
+          "description": "Promocoes reais com prazo",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Documentacao, TypeScript",
+            "files": [
+              "docs/copy/promotions.md",
+              "lib/content/offers.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Tipos de oferta: desconto por tempo (Black Friday), vagas limitadas (beta), bonus exclusivo (early adopter). IMPORTANTE: so usar escassez real - fake urgency destroi confianca. Definir: oferta, prazo real, quantidade real (se aplicavel), regras. Estrutura: Offer[] com title, description, discount, validUntil, maxRedemptions?."
+          }
+        },
+        {
+          "title": "Escrever copy de urgencia",
+          "description": "Textos que motivam acao",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Definir ofertas limitadas"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/urgency-copy.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Formulas: 'Oferta valida ate [data]', 'Apenas [X] vagas restantes', 'Garanta seu desconto de [X]% hoje'. Evitar: pressao excessiva, ALL CAPS, multiplos pontos de exclamacao. Tom: informativo sobre oportunidade, nao manipulativo. Testar: usuario se sente pressionado ou informado? Variantes para A/B testing."
+          }
+        },
+        {
+          "title": "Criar banners promocionais",
+          "description": "Copy para banners de oferta",
+          "labels": [
+            "task",
+            "content",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Escrever copy de urgencia"
+          ],
+          "technical_details": {
+            "stack": "Next.js, TypeScript, Tailwind CSS",
+            "files": [
+              "components/marketing/promo-banner.tsx",
+              "lib/content/banners.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Banner no topo da pagina: headline + CTA + countdown (se aplicavel). Componente PromoBanner: dismissable (salva em localStorage), mostra apenas durante periodo da promocao. Props: title, cta, link, validUntil, dismissable. Cores: destaque (amarelo/laranja) mas harmonioso com design. Mobile: texto mais curto, CTA abreviado."
+          }
+        }
+      ]
+    },
+    {
+      "title": "Microcopy e UX Writing",
+      "description": "Como visitante, quero orientacao clara em cada interacao",
+      "acceptance_criteria": [
+        "Labels de formulario claros",
+        "Mensagens de erro uteis",
+        "Placeholders informativos",
+        "Tooltips quando necessario",
+        "Confirmacoes amigaveis"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content",
+        "ux"
+      ],
+      "depends_on": [
+        "CTAs (Call-to-Action)",
+        "Headline Principal"
+      ],
+      "related_to": [
+        "[STORY] Otimizacao - Otimizacao de Formularios"
+      ],
+      "tasks": [
+        {
+          "title": "Auditar microcopy existente",
+          "description": "Revisar todos os textos pequenos",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "technical_details": {
+            "stack": "Planilha, Documentacao",
+            "files": [
+              "docs/copy/microcopy-audit.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Criar inventario de todo microcopy: labels, placeholders, erros, tooltips, botoes, links. Avaliar cada um: claro? conciso? util? tom consistente? Identificar problemas: jargoes, textos genericos ('Erro'), inconsistencias. Priorizar por impacto: formularios de conversao primeiro. Output: planilha com texto atual, problema, sugestao."
+          }
+        },
+        {
+          "title": "Reescrever labels de form",
+          "description": "Labels claros e concisos",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Auditar microcopy existente"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/form-labels.ts",
+              "lib/i18n/pt-BR/forms.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Labels: substantivo claro, sem dois pontos no final. Exemplos: 'Email' (nao 'Seu email:'), 'Senha' (nao 'Digite sua senha'). Placeholders: exemplo do formato esperado ('nome@empresa.com'). Helper text: quando campo precisa explicacao adicional. Estrutura centralizada para i18n futuro. Manter consistencia em toda aplicacao."
+          }
+        },
+        {
+          "title": "Criar mensagens de erro",
+          "description": "Erros que ajudam a corrigir",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Auditar microcopy existente"
+          ],
+          "technical_details": {
+            "stack": "TypeScript, Zod",
+            "files": [
+              "lib/content/error-messages.ts",
+              "lib/validation/messages.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Estrutura: [O que deu errado] + [Como corrigir]. Exemplos: 'Email invalido. Verifique se incluiu @ e dominio.' nao 'Erro de validacao'. Tom: neutro, nao culpar usuario. Especifico por tipo de erro: required, format, min/max, unique. Integrar com Zod custom error messages. Centralizar para consistencia e i18n."
+          }
+        },
+        {
+          "title": "Escrever mensagens de sucesso",
+          "description": "Confirmacoes que engajam",
+          "labels": [
+            "task",
+            "content"
+          ],
+          "depends_on": [
+            "[TASK] Auditar microcopy existente"
+          ],
+          "technical_details": {
+            "stack": "TypeScript",
+            "files": [
+              "lib/content/success-messages.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Estrutura: [Confirmacao] + [Proximo passo]. Exemplos: 'Conta criada! Verifique seu email para ativar.', 'Alteracoes salvas. Voce pode continuar editando.' Tom: positivo mas nao exagerado (evitar 'Incrivel!!!'). Incluir CTA quando relevante. Usar em toasts, modais de confirmacao, paginas de sucesso. Consistencia de tom em toda app."
+          }
+        }
+      ]
+    },
+    {
+      "title": "SEO Copywriting",
+      "description": "Como produto, quero ranquear para termos relevantes",
+      "acceptance_criteria": [
+        "Keywords naturalmente integradas",
+        "Title tags otimizadas",
+        "Meta descriptions persuasivas",
+        "Headers com keywords",
+        "Alt texts descritivos"
+      ],
+      "labels": [
+        "story",
+        "marketing",
+        "content",
+        "seo"
+      ],
+      "depends_on": [
+        "Headline Principal",
+        "Descricao de Features"
+      ],
+      "related_to": [
+        "[STORY] Landing Page - SEO e Meta Tags"
+      ],
+      "tasks": [
+        {
+          "title": "Pesquisar keywords",
+          "description": "Identificar termos de busca relevantes",
+          "labels": [
+            "task",
+            "seo"
+          ],
+          "technical_details": {
+            "stack": "Ahrefs, SEMrush, Google Search Console",
+            "files": [
+              "docs/seo/keyword-research.md",
+              "lib/content/keywords.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Ferramentas: Ahrefs, SEMrush, Ubersuggest, Google Keyword Planner. Tipos: head terms (alto volume), long-tail (baixa competicao), branded. Metricas: volume, dificuldade, CPC (indica intencao comercial). Mapear keyword para pagina/secao. Estrutura: Keyword[] com term, volume, difficulty, intent (informational/transactional), targetPage."
+          }
+        },
+        {
+          "title": "Otimizar title tags",
+          "description": "Titulos com keyword e CTA",
+          "labels": [
+            "task",
+            "seo",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Pesquisar keywords",
+            "[TASK] Implementar headline vencedora"
+          ],
+          "technical_details": {
+            "stack": "Next.js Metadata API",
+            "files": [
+              "app/layout.tsx",
+              "app/page.tsx",
+              "lib/seo/metadata.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Formato: [Keyword Principal] | [Beneficio] | [Brand]. Max 60 caracteres. Usar Next.js Metadata API: export const metadata = {title: '...'}. Funcao helper generateMetadata() para paginas dinamicas. Incluir keyword principal no inicio. Testar no SERP preview. Variar titulo por pagina (home vs features vs pricing)."
+          }
+        },
+        {
+          "title": "Escrever meta descriptions",
+          "description": "Descricoes que geram cliques",
+          "labels": [
+            "task",
+            "seo",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Pesquisar keywords"
+          ],
+          "technical_details": {
+            "stack": "Next.js Metadata API",
+            "files": [
+              "lib/seo/metadata.ts",
+              "lib/content/meta-descriptions.ts"
+            ],
+            "packages": [],
+            "implementation_notes": "Max 155 caracteres. Estrutura: [Gancho/Beneficio] + [O que e] + [CTA]. Incluir keyword naturalmente. Usar linguagem ativa. Incluir CTA: 'Comece gratis', 'Saiba mais'. Testar: description aparece bem no Google? Gera vontade de clicar? Criar variantes para A/B testing via Search Console."
+          }
+        },
+        {
+          "title": "Revisar headers H1-H6",
+          "description": "Hierarquia com keywords",
+          "labels": [
+            "task",
+            "seo",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Pesquisar keywords"
+          ],
+          "technical_details": {
+            "stack": "Next.js, React, Auditoria SEO",
+            "files": [
+              "app/(marketing)/page.tsx",
+              "docs/seo/header-hierarchy.md"
+            ],
+            "packages": [],
+            "implementation_notes": "Regras: apenas 1 H1 por pagina (headline principal), H2 para secoes, H3 para subsecoes. Incluir keywords em H1 e alguns H2s naturalmente. Evitar: pular niveis (H1 -> H3), headers so para estilo. Auditar com Screaming Frog ou extensao SEO. Manter hierarquia semantica para acessibilidade. Documentar estrutura de headers por pagina."
+          }
+        },
+        {
+          "title": "Escrever alt texts",
+          "description": "Descricoes de imagens para SEO",
+          "labels": [
+            "task",
+            "seo",
+            "frontend"
+          ],
+          "depends_on": [
+            "[TASK] Pesquisar keywords"
+          ],
+          "technical_details": {
+            "stack": "Next.js Image, TypeScript",
+            "files": [
+              "lib/content/image-alts.ts",
+              "components/ui/seo-image.tsx"
+            ],
+            "packages": [],
+            "implementation_notes": "Alt text: descreve o que a imagem mostra, nao o que voce quer rankear. Max 125 caracteres. Incluir keyword SE relevante e natural. Evitar: 'imagem de...', keyword stuffing. Imagens decorativas: alt='' (vazio). Criar componente SeoImage que requer alt. Auditar imagens sem alt com ferramenta de acessibilidade."
+          }
+        }
+      ]
+    }
+  ]
+}
